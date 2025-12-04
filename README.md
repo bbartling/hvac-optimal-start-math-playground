@@ -75,40 +75,6 @@ This is a classic **Multiple Linear Regression** problem, essentially fitting $y
 
 ---
 
-### 4. Model Details
-
-**Model 1: Manual Simple Regression:**
-
-$$
-t = \alpha_{1,a} \cdot (\Delta T^2) + \alpha_{1,b}
-$$
-
-In this formula, the duration ($t$) is the dependent variable ($y$), and the squared temperature difference ($\Delta T^2$) is the single independent variable ($x$).
-
-* **Implementation:** Model 1 implements the core tuning logic in `_compute_regression_for_mode` by manually calculating the sums needed for the **ordinary least squares (OLS)** solution.
-* **Why Manual?** Simple Linear Regression has basic, closed-form equations (the familiar $\frac{n \Sigma xy - \Sigma x \Sigma y}{n \Sigma x^2 - (\Sigma x)^2}$ formula) that are short and reliable enough to code directly without needing external libraries.
-
----
-
-**Model 3: Scikit-learn for Multiple Regression**
-
-$$
-t = \alpha_{3,a} \cdot \Delta T + \alpha_{3,b} \cdot \Delta T \cdot \text{WF} + \alpha_{3,d}
-$$
-
-In this formula, the model has **two distinct features** used for prediction:
-1.  **Feature $x_1$:** The temperature difference ($\Delta T$).
-2.  **Feature $x_2$:** The weather-compensated term ($\Delta T \cdot \text{WF}$), where $\text{WF} = \frac{T_{sp} - T_{o}}{60.0}$.
-
-This is a classic **Multiple Linear Regression** problem, essentially fitting $y \approx \alpha_{3,a} \cdot x_1 + \alpha_{3,b} \cdot x_2 + \alpha_{3,d}$.
-
-* **Implementation:** Model 3 uses the `sklearn.linear_model.LinearRegression` class in its `_compute_regression_for_mode` method.
-* **Why Scikit-learn?** Implementing Multiple Linear Regression requires **matrix algebra** (specifically, solving $\mathbf{w} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$). Using `scikit-learn` handles the necessary matrix computations (like inverting the feature matrix) and ensures better numerical stability and optimization, greatly simplifying the code compared to a manual implementation.
-
-</details>
-
----
-
 <details>
 <summary>🧑‍🏫 30-Day Crash Course: Self-Tuning Algebraic Models & EMA (Optimal Start math refresher)</summary>
 
