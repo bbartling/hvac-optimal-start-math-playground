@@ -205,11 +205,11 @@ You saw:
 
 1. Form the two equations.  
 2. Solve for slope **m** and intercept **b**.  
-3. Write the final form \\(t = m \Delta T + b\\).
+3. Write the final form `t = m \Delta T + b`.
 
 ---
 
-## Day 3 — Quadratics Refresher: Why Model 1 Uses \\((\Delta T)^2\\)
+## Day 3 — Quadratics Refresher: Why Model 1 Uses `(\Delta T)^2`
 
 **Goal:** Understand why PNNL Model 1 uses a squared term and how to work with it.
 
@@ -234,7 +234,7 @@ $$
 
 captures this “curving upward” behavior. That’s what PNNL **Model 1** does.
 
-### 2. Introduce \\(x = (\Delta T)^2\\)
+### 2. Introduce `x = (\Delta T)^2`
 
 To simplify, we define:
 
@@ -260,15 +260,15 @@ $$
 
 and we want to predict for:
 
-- ΔT = 3°F → \\(x = 9\\)  
-- ΔT = 5°F → \\(x = 25\\)  
-- ΔT = 7°F → \\(x = 49\\)
+- ΔT = 3°F → `x = 9`  
+- ΔT = 5°F → `x = 25`  
+- ΔT = 7°F → `x = 49`
 
 Compute:
 
-- For x = 9: \\(t = 0.7 \cdot 9 + 6 = 12.3\\)  
-- For x = 25: \\(t = 0.7 \cdot 25 + 6 = 23.5\\)  
-- For x = 49: \\(t = 0.7 \cdot 49 + 6 = 40.3\\)
+- For x = 9: `t = 0.7 \cdot 9 + 6 = 12.3`  
+- For x = 25: `t = 0.7 \cdot 25 + 6 = 23.5`  
+- For x = 49: `t = 0.7 \cdot 49 + 6 = 40.3`
 
 Notice time grows faster than ΔT — that’s the “curvature”.
 
@@ -319,7 +319,7 @@ You observe:
 - ΔT = 7°F → t = 52 min  
 
 1. Compute x = (ΔT)² for both points.  
-2. Solve for a and b in \\(t = a x + b\\).  
+2. Solve for a and b in `t = a x + b`.  
 3. Optionally, predict t for ΔT = 5°F.
 
 ---
@@ -330,7 +330,7 @@ You observe:
 
 ### 1. Why Systems Matter in Optimal Start
 
-- **Model 1** has two unknowns: \\(t = a (\Delta T)^2 + b\\).  
+- **Model 1** has two unknowns: `t = a (\Delta T)^2 + b`.  
 - **Model 3** has three unknowns:
 
   $$
@@ -381,8 +381,8 @@ $$
 
 where:
 
-- \\(x_{i1} = \Delta T_i\\)  
-- \\(x_{i2} = \Delta T_i \cdot WF_i\\)
+- `x_{i1} = \Delta T_i`  
+- `x_{i2} = \Delta T_i \cdot WF_i`
 
 You get three equations, three unknowns — solvable by algebra or a small matrix solve.
 
@@ -399,7 +399,7 @@ $$
 
 1. Subtract to get a.  
 2. Plug back to get b.  
-3. Write \\(t = a \Delta T + b\\).
+3. Write `t = a \Delta T + b`.
 
 ---
 
@@ -427,7 +427,7 @@ For optimal start:
 
 ### 2. Two‑Point Linear Regression
 
-Given two points \\((x_1, t_1)\\) and \\((x_2, t_2)\\):
+Given two points `(x_1, t_1)` and `(x_2, t_2)`:
 
 Slope:
 
@@ -476,8 +476,8 @@ You observed:
 - ΔT = 6°F → t = 44 min → x = 36  
 
 1. Compute a using the two x,t pairs.  
-2. Compute b using \\(b = t_1 - a x_1\\).  
-3. Write final \\(t = a x + b\\).
+2. Compute b using `b = t_1 - a x_1`.  
+3. Write final `t = a x + b`.
 
 ---
 
@@ -509,7 +509,7 @@ $$
 
 where:
 
-- \\(\text{rate}_{measured} = \Delta T / \Delta t\\) for that morning  
+- `\text{rate}_{measured} = \Delta T / \Delta t` for that morning  
 - α is a small learning factor (e.g. 0.05–0.20)
 
 **Type 2 — EMA on Coefficients (Model 1 & 3)**
@@ -577,8 +577,8 @@ Old model:
 
 Let α = 0.12.
 
-1. Compute \\(x = (\Delta T)^2 = 100\\).  
-2. Compute predicted time: \\(t_{pred} = 0.85 \cdot 100 + 12\\).  
+1. Compute `x = (\Delta T)^2 = 100`.  
+2. Compute predicted time: `t_{pred} = 0.85 \cdot 100 + 12`.  
 3. Compute today’s implied slope:
 
    $$
@@ -592,7 +592,7 @@ Let α = 0.12.
    $$
 
    (since 1 − 0.12 = 0.88)  
-   and keep \\(b_{new} = b_{old}\\) for this single‑point update.
+   and keep `b_{new} = b_{old}` for this single‑point update.
 
 ---
 
@@ -649,7 +649,7 @@ As x goes 4 → 16 → 36 → 64 → 100, t grows in a roughly smooth, slightly 
 If you add outdoor temperatures:
 
 - Cold mornings with similar ΔT but longer warm‑up → suggests OAT is influencing things.  
-- Model 3 adds the \\(\Delta T \cdot WF\\) term to represent that.
+- Model 3 adds the `\Delta T \cdot WF` term to represent that.
 
 ### 5. Micro‑Exercise
 
@@ -661,7 +661,7 @@ Use this smaller table:
 | B   | 5  | 26         |
 | C   | 8  | 60         |
 
-1. Compute \\(t / \Delta T\\) for each day.  
+1. Compute `t / \Delta T` for each day.  
 2. Decide whether a linear model seems reasonable or whether the 8°F/60 min point looks disproportionately large (curving up).  
 3. In words, say whether you’d start with Model 0, 1, or 3 for this site.
 
@@ -1088,7 +1088,7 @@ Write and test these three functions in a simple Python script or notebook with 
 Solve:
 
 - 2×2:  
-  \\(18 = 3k + c\\), \\(30 = 5k + c\\)  
+  `18 = 3k + c`, `30 = 5k + c`  
 - 3×3: small, made‑up Model 3 system.
 
 ### 2. Micro‑Exercise
