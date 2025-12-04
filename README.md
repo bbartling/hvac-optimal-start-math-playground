@@ -1,9 +1,9 @@
 # hvac-optimal-start-math-playground
 This repo teaches HVAC optimal-start math + contains Python learning playground material.
 
-This reference outlines the consistent inputs and outputs used across `OptimalStartModel1` and `OptimalStartModel3` based on the PNNL paper in the [pdf](https://github.com/bbartling/niagara4-vibe-code-addict/tree/develop/pdf) directory.
+This reference outlines the consistent inputs and outputs used across `OptimalStartModel1` and `OptimalStartModel3` based on the PNNL paper in the $$pdf$$(https://github.com/bbartling/niagara4-vibe-code-addict/tree/develop/pdf) directory.
 
-Also see active Java versions on the vibe coder [repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md) which is actively being tested by Ben in the field in the Niagara4 framework in a `ProgramObject`.
+Also see active Java versions on the vibe coder $$repository$$(https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md) which is actively being tested by Ben in the field in the Niagara4 framework in a `ProgramObject`.
 
 
 ---
@@ -14,6 +14,7 @@ Also see active Java versions on the vibe coder [repository](https://github.com/
 
 The models are formulated from a simplified thermal-resistance and capacitance model (2R1C or 1R1C) of the zone dynamics.
 
+* TODO add model zero for the Linear Model
 | Model | Underlying Equation | Description |
 | :--- | :--- | :--- |
 | **Model 1** | $t_{opt} = \alpha_{1,a}(T_{sp} - T_{z,0})^{2} + \alpha_{1,b}$ | **Quadratic:** Assumes thermal mass is concentrated in the indoor air (1R1C model) and neglects outdoor temperature influence. Best for interior/well-insulated zones. |
@@ -22,6 +23,7 @@ The models are formulated from a simplified thermal-resistance and capacitance m
 
 The difference in implementation stems directly from the mathematical **complexity** of the underlying models:
 
+* TODO add model zero for the Linear Model
 * **Model 1** uses a **Simple Linear Regression** formulation ($y = mx + c$), which is easy to implement manually with a basic set of equations.
 * **Model 3** requires **Multiple Linear Regression** ($y = a \cdot x_1 + b \cdot x_2 + d$), which is complex and better handled by a dedicated library like scikit-learn.
 
@@ -150,9 +152,9 @@ At the end, you’ll understand PNNL Model 0/1/3 completely from the math side.
 
 ### **Day 8 — What an EMA actually is (the simplest definition)**
 
-[
+$$
 EMA_{new} = EMA_{old} + \alpha (x - EMA_{old})
-]
+$$
 
 Why this is perfect for self-tuning BAS models.
 
@@ -213,9 +215,9 @@ Why this is perfect for self-tuning BAS models.
 
 ### **Day 15 — PNNL Model 0 (pure linear EMA model)**
 
-[
+$$
 t = \frac{\Delta T}{rate_{EMA}}
-]
+$$
 
 How this is literally the simplest self-tuning model in BAS.
 
@@ -223,9 +225,9 @@ How this is literally the simplest self-tuning model in BAS.
 
 ### **Day 16 — PNNL Model 1 (quadratic algebraic tuning)**
 
-[
+$$
 t = a(\Delta T)^2 + b
-]
+$$
 
 * How solving two parameters = automatic tuning
 * Why fitting curve to real data is self-calibration
@@ -243,9 +245,9 @@ t = a(\Delta T)^2 + b
 
 ### **Day 18 — PNNL Model 3 structure**
 
-[
+$$
 t = a (\Delta T) + b (\Delta T \cdot WF) + d
-]
+$$
 
 * 3 unknowns
 * 3 equations → solvable
@@ -423,9 +425,9 @@ Examples:
 
 In warm-up / optimal start problems:
 
-[
+$$
 \Delta T = T_{setpoint} - T_{zone,start}
-]
+$$
 
 That’s it — delta is just subtraction.
 
@@ -444,9 +446,9 @@ In controls we usually talk about:
 
 Mathematically this is:
 
-[
+$$
 \text{Rate} = \frac{\Delta T}{\Delta t}
-]
+$$
 
 **Important:**
 In optimal start models, the **rate of temperature change** is literally the **degree-per-minute** (DPM) number used in Niagara’s Model 0.
@@ -462,9 +464,9 @@ If you know:
 
 Then predicted warm-up time is:
 
-[
+$$
 t = \frac{\Delta T}{\text{rate}}
-]
+$$
 
 This is the **entire foundation** of Model 0 (Linear EMA model).
 
@@ -479,9 +481,9 @@ All advanced models (Model 1, Model 3) still rely on the idea of ΔT and warming
 Zone = **65°F**
 Setpoint = **72°F**
 
-[
+$$
 \Delta T = 72 - 65 = 7^\circ F
-]
+$$
 
 Easy.
 
@@ -493,13 +495,13 @@ Start = 65°F
 End = 72°F
 Time = 35 minutes
 
-[
+$$
 \Delta T = 7^\circ F
-]
+$$
 
-[
+$$
 \text{rate} = \frac{7}{35} = 0.20^\circ F/\text{min}
-]
+$$
 
 This **0.20°F/min** is what Niagara stores in `degreesPerMinute`.
 
@@ -514,9 +516,9 @@ SP = 72°F
 ΔT = 4°F
 Rate = 0.20°F/min
 
-[
+$$
 t = \frac{4}{0.20} = 20\ \text{minutes}
-]
+$$
 
 That’s it — **Model 0 prediction**.
 
@@ -586,9 +588,9 @@ You’ve seen this a thousand times, but today we translate it into **HVAC physi
 
 The classic line equation:
 
-[
+$$
 y = m x + b
-]
+$$
 
 Breaks down into:
 
@@ -612,9 +614,9 @@ Let’s map it directly.
 
 ### If
 
-[
+$$
 t = a\cdot\Delta T + b
-]
+$$
 
 Then:
 
@@ -637,16 +639,16 @@ Let’s say your building typically warms at:
 
 The inverse is:
 
-[
+$$
 \frac{1}{0.20} = 5\ \text{min per degree}
-]
+$$
 
 This 5 minutes/°F is your *slope*.
 In linear form:
 
-[
+$$
 t = 5(\Delta T) + b
-]
+$$
 
 Then the **intercept b** might be:
 
@@ -658,9 +660,9 @@ Then the **intercept b** might be:
 
 So maybe:
 
-[
+$$
 t = 5(\Delta T) + 7
-]
+$$
 
 That’s a **valid Model-1-like linear warm-up approximation**.
 
@@ -679,44 +681,48 @@ Use the two points to solve for **m** and **b**.
 
 ### Step 1 — Two equations
 
-[
+$$
 \begin{aligned}
 33 &= 5m + b \
 22 &= 3m + b
 \end{aligned}
-]
+$$
 
 ### Step 2 — Subtract equations
 
-[
+$$
 (33 - 22) = (5m - 3m)
-]
-[
+$$
+
+$$
 11 = 2m
-]
-[
+$$
+
+$$
 m = 5.5\ \text{min/°F}
-]
+$$
 
 ### Step 3 — Plug back to find b
 
 Use 22 = 3m + b:
 
-[
+$$
 22 = 3(5.5) + b
-]
-[
+$$
+
+$$
 22 = 16.5 + b
-]
-[
+$$
+
+$$
 b = 5.5\ \text{minutes}
-]
+$$
 
 ### Final linear warm-up model:
 
-[
+$$
 t = 5.5(\Delta T) + 5.5
-]
+$$
 
 Notice how nicely that makes sense:
 
@@ -731,15 +737,15 @@ This is exactly what Niagara is computing in the background in Model 1 and Model
 
 ### **Example A — Predict warm-up**
 
-[
+$$
 t = 4(ΔT) + 6
-]
+$$
 
 If ΔT = 8°F:
 
-[
+$$
 t = 4×8 + 6 = 38\ \text{min}
-]
+$$
 
 ---
 
@@ -750,18 +756,18 @@ t = 4×8 + 6 = 38\ \text{min}
 
 Slope:
 
-[
+$$
 m = \frac{46 - 32}{6 - 4} = \frac{14}{2} = 7\ \text{min/°F}
-]
+$$
 
 ---
 
 ### **Example C — Interpret intercept**
 
 If
-[
+$$
 t = 6ΔT + 10
-]
+$$
 
 then **10 min** means:
 
@@ -806,9 +812,9 @@ Send me your answers or ask me to check them.
 
 Everything — EMA, Models 1 & 3, self-tuning — ultimately plugs back into:
 
-[
+$$
 t = m x + b
-]
+$$
 
 It’s all slope and intercept with different definitions of “x.”
 
@@ -851,17 +857,17 @@ This is because:
 
 A simple linear model:
 
-[
+$$
 t = m\Delta T + b
-]
+$$
 
 **underestimates** runtime for large ΔT.
 
 A quadratic:
 
-[
+$$
 t = a(\Delta T)^2 + b
-]
+$$
 
 **adds curvature** — meaning:
 
@@ -899,9 +905,9 @@ This shape matches real building warm-ups much better than a straight line.
 
 Model 1 formula:
 
-[
+$$
 t = a(\Delta T)^2 + b
-]
+$$
 
 Where:
 
@@ -953,44 +959,48 @@ Step 1 — Compute x = ΔT²
 
 Step 2 — Write equations
 
-[
+$$
 \begin{aligned}
 10 &= a(4) + b \
 20 &= a(16) + b \
 38 &= a(36) + b
 \end{aligned}
-]
+$$
 
 Step 3 — Use any two to solve for a and b
 Let’s subtract equations 2 & 1:
 
-[
+$$
 (20 - 10) = a(16 - 4)
-]
-[
+$$
+
+$$
 10 = 12a
-]
-[
+$$
+
+$$
 a = \frac{10}{12} = 0.8333
-]
+$$
 
 Now plug into eq. 1:
 
-[
+$$
 10 = 4(0.8333) + b
-]
-[
+$$
+
+$$
 10 = 3.333 + b
-]
-[
+$$
+
+$$
 b = 6.667
-]
+$$
 
 Final quadratic warm-up model:
 
-[
+$$
 t = 0.8333(\Delta T)^2 + 6.667
-]
+$$
 
 This is PNNL Model 1 in action, computed entirely from real field data.
 
@@ -1000,15 +1010,15 @@ This is PNNL Model 1 in action, computed entirely from real field data.
 
 ### **Example A — Predict warm-up**
 
-[
+$$
 t = 0.5(\Delta T)^2 + 4
-]
+$$
 
 If ΔT = 7°F:
 
-[
+$$
 t = 0.5(49) + 4 = 28.5\ \text{min}
-]
+$$
 
 ---
 
@@ -1099,9 +1109,9 @@ Just say: **“Day 4 please.”**
 
 In **Model 1**, you solve for **two unknowns**:
 
-[
+$$
 t = a(\Delta T)^2 + b
-]
+$$
 
 Unknowns:
 
@@ -1114,9 +1124,9 @@ You need **two equations** (two datapoints) to solve it.
 
 In **Model 3**, you solve for **three unknowns**:
 
-[
+$$
 t = a(\Delta T) + b(\Delta T \cdot WF) + d
-]
+$$
 
 Unknowns:
 
@@ -1138,12 +1148,12 @@ This is the heart of **self-tuning**.
 
 Given:
 
-[
+$$
 \begin{aligned}
 16 &= 9a + b \
 30 &= 25a + b
 \end{aligned}
-]
+$$
 
 This came from your earlier Model 1 example.
 
@@ -1151,31 +1161,31 @@ Goal: eliminate **b**.
 
 Subtract the first equation from the second:
 
-[
+$$
 (30 - 16) = (25a - 9a)
-]
+$$
 
-[
+$$
 14 = 16a
-]
+$$
 
-[
+$$
 a = \frac{14}{16} = 0.875
-]
+$$
 
 Then solve for **b**:
 
-[
+$$
 16 = 9(0.875) + b
-]
+$$
 
-[
+$$
 16 = 7.875 + b
-]
+$$
 
-[
+$$
 b = 8.125
-]
+$$
 
 That’s the whole method.
 PNNL Model 1 internally does exactly this.
@@ -1188,29 +1198,29 @@ You don’t need to solve this by hand today — just understand the structure.
 
 Model 3 formula:
 
-[
+$$
 t = a(\Delta T) + b(\Delta T \cdot WF) + d
-]
+$$
 
 Each datapoint creates one equation:
 
 ### Datapoint 1:
 
-[
+$$
 t_1 = a x_{11} + b x_{12} + d
-]
+$$
 
 ### Datapoint 2:
 
-[
+$$
 t_2 = a x_{21} + b x_{22} + d
-]
+$$
 
 ### Datapoint 3:
 
-[
+$$
 t_3 = a x_{31} + b x_{32} + d
-]
+$$
 
 Where:
 
@@ -1228,48 +1238,48 @@ You just need to know why it works.
 
 Solve the system:
 
-[
+$$
 \begin{aligned}
 8 &= 2m + b \
 20 &= 6m + b
 \end{aligned}
-]
+$$
 
 ### Step 1 — Subtract equations
 
-[
+$$
 (20 - 8) = (6m - 2m)
-]
+$$
 
-[
+$$
 12 = 4m
-]
+$$
 
-[
+$$
 m = 3
-]
+$$
 
 ### Step 2 — Solve for b
 
 Use 8 = 2m + b:
 
-[
+$$
 8 = 2(3) + b
-]
+$$
 
-[
+$$
 8 = 6 + b
-]
+$$
 
-[
+$$
 b = 2
-]
+$$
 
 ### ✔ Final model:
 
-[
+$$
 t = 3\Delta T + 2
-]
+$$
 
 **That’s a realistic warm-up equation.**
 
@@ -1279,12 +1289,12 @@ t = 3\Delta T + 2
 
 ### **Example A — Solve the system**
 
-[
+$$
 \begin{aligned}
 18 &= 3k + c \
 30 &= 5k + c
 \end{aligned}
-]
+$$
 
 Find **k** and **c**.
 
@@ -1294,9 +1304,9 @@ Find **k** and **c**.
 
 If:
 
-[
+$$
 t = 4\Delta T + 7
-]
+$$
 
 Then **7 minutes** is your:
 
@@ -1321,12 +1331,12 @@ Because:
 
 Solve this 2×2 system:
 
-[
+$$
 \begin{aligned}
 14 &= 4a + b \
 26 &= 8a + b
 \end{aligned}
-]
+$$
 
 ### What to do:
 
@@ -1334,9 +1344,9 @@ Solve this 2×2 system:
 2. Plug a back in → solve for **b**
 3. Tell me your final model:
 
-[
+$$
 t = a(\Delta T) + b
-]
+$$
 
 Send me:
 
@@ -1367,6 +1377,269 @@ They allow the BAS to **solve for coefficients** directly from real warm-up data
 <details>
 <summary>Day 5 </summary>
 
+Here is **📘 Day 5**, written in the exact same structured, HVAC-friendly, intuitive style as Days 1–4.
+
+---
+
+# **📘 Day 5 — Regression Without Statistics (Just Algebra)**
+
+**30-Day Crash Course: Self-Tuning Algebraic Models & EMA**
+*Today we learn how “regression” in optimal start is nothing more than solving simple equations — no statistics package, no sci-py, no calculus.*
+
+---
+
+# **1. Why regression ≠ statistics in optimal start**
+
+When people hear *regression*, they imagine:
+
+* big data
+* least-squares solvers
+* linear algebra libraries
+* machine learning
+
+But in the context of HVAC optimal start, regression is simply:
+
+> “Solve for the coefficients that best fit your warm-up data.”
+
+That’s it.
+
+### For Model 1:
+
+$$
+t = a x + b
+$$
+(where (x = \Delta T^2))
+
+### For Model 3:
+
+$$
+t = a x_1 + b x_2 + d
+$$
+(where (x_1 = \Delta T) and (x_2 = \Delta T \cdot WF))
+
+You’re just solving 2 or 3 equations with 2 or 3 unknowns.
+
+Pure algebra.
+No statistics.
+No randomness.
+No probability.
+
+---
+
+# **2. Why solving a line through two points *is* regression**
+
+If you have two warm-up datapoints:
+
+$$
+(x_1, t_1)
+$$
+
+$$
+(x_2, t_2)
+$$
+
+You do:
+
+$$
+m = \frac{t_2 - t_1}{x_2 - x_1}
+$$
+
+$$
+b = t_1 - m x_1
+$$
+
+This is literally a regression.
+It is the best possible line through those two points.
+
+The only difference is:
+
+* **Model 0** → no regression, just EMA
+* **Model 1** → 2-point algebraic regression
+* **Model 3** → 3-point algebraic regression
+
+Everything is solvable by hand.
+
+---
+
+# **3. Why this is good news for BAS controls**
+
+* You never need numpy or sklearn
+* Niagara runs this in real-time
+* BAS techs can understand tuning behavior
+* It’s explainable
+* It’s transparent
+* It matches the physics (ΔT drives minutes)
+
+This is why PNNL chose these models — they’re powerful but simple enough to run in a controller.
+
+---
+
+# **4. A Clean Example of Algebraic Regression**
+
+You have two warmed-up datapoints:
+
+| ΔT | x = ΔT² | t  |
+| -- | ------- | -- |
+| 3  | 9       | 14 |
+| 7  | 49      | 50 |
+
+Solve:
+$$
+t = a x + b
+$$
+
+### Step 1 — Compute slope (a)
+
+$$
+a = \frac{50 - 14}{49 - 9}
+$$
+
+$$
+a = \frac{36}{40} = 0.9
+$$
+
+### Step 2 — Solve for intercept (b)
+
+$$
+14 = 9(0.9) + b
+$$
+
+$$
+14 = 8.1 + b
+$$
+
+$$
+b = 5.9
+$$
+
+### Final regression model:
+
+$$
+t = 0.9x + 5.9
+$$
+
+You just performed a regression.
+
+---
+
+# **5. Regression intuition for HVAC engineers**
+
+If the building warms *faster*:
+
+* slope becomes smaller
+* intercept may shrink
+
+If the building warms *slower*:
+
+* slope becomes larger
+* intercept grows
+
+The math tells the story of the building.
+
+When your operators say:
+
+> “The building took longer this morning.”
+
+Your model will automatically adjust the slope upward.
+
+This is the heart of **self-tuning** behavior.
+
+---
+
+# **6. Mini-Examples (super quick)**
+
+### **Example A — Solve the regression**
+
+Points:
+(ΔT² = 4, t = 10)
+(ΔT² = 25, t = 40)
+
+Find **a** and **b**.
+
+---
+
+### **Example B — Rerun slope if new data arrives**
+
+Old points:
+(9, 20) → 20 min
+(25, 40) → 40 min
+
+New morning datapoint:
+(16, 30) → 30 min
+
+How will the slope **change**?
+
+### Hint:
+
+* old slope was (40 – 20)/(25 – 9)
+* new slope should reflect faster warm-up
+
+---
+
+### **Example C — Interpret b**
+
+If:
+
+$$
+t = 0.6x + 8
+$$
+
+Then:
+
+* **8 minutes** = fixed overhead (lag, valve stroking, coil heating, duct warm-up)
+* **0.6x** = ΔT²-driven part of runtimes
+
+---
+
+# **7. Day 5 Micro-Exercise (You Solve This)**
+
+You have these warm-up datapoints:
+
+| ΔT | x = ΔT² | t  |
+| -- | ------- | -- |
+| 4  | 16      | 26 |
+| 6  | 36      | 44 |
+
+Solve:
+
+$$
+t = a x + b
+$$
+
+### What to do:
+
+1. Compute
+   $$
+   a = \frac{44 - 26}{36 - 16}
+   $$
+
+2. Solve for
+   $$
+   b = t_1 - ax_1
+   $$
+
+3. Give me your final equation:
+
+$$
+t = a x + b
+$$
+
+I’ll check your result.
+
+---
+
+# **Key Takeaway From Day 5**
+
+Regression in HVAC optimal start is nothing more than:
+
+* Compute ΔT
+* Square it (Model 1)
+* Solve a simple line through two points
+* Store the coefficients
+* Update tomorrow
+
+It’s algebra — not statistics, not machine learning.
+
 
 </details>
 
@@ -1375,7 +1648,323 @@ They allow the BAS to **solve for coefficients** directly from real warm-up data
 
 <details>
 <summary>Day 6 </summary>
+Here is **📘 Day 6**, following the exact same tone, format, and “BAS-tech friendly algebra” style as Days 1–5.
+Today is a BIG ONE — this is where **self-tuning** actually becomes intuitive.
 
+---
+
+# **📘 Day 6 — What “Self-Tuning” Really Means (No Statistics, No ML)**
+
+**30-Day Crash Course: Self-Tuning Algebraic Models & EMA**
+*Today you learn how Niagara Models 0, 1, and 3 “update themselves” each morning.*
+
+---
+
+# **1. Why HVAC Models Must Self-Tune**
+
+Buildings **change constantly**:
+
+* weather
+* occupancy
+* equipment degradation
+* morning sun
+* economizer position
+* someone left the door open
+* coil fouling
+* VAV minimums changed
+* night setback changed
+
+A fixed model would be wrong within **weeks**.
+
+Thus:
+
+> **Every morning is a new data point.
+> Every morning the model retunes itself.**
+
+This is why optimal start works in real buildings.
+
+---
+
+# **2. Two Flavors of Self-Tuning**
+
+There are really only two types:
+
+---
+
+## **Type 1 — Self-tuning with EMA (Model 0)**
+
+This handles **single-slope** models.
+
+Niagara’s linear model uses:
+
+$$
+\text{newRate} = \alpha \cdot \text{measuredRate} + (1 - \alpha)\cdot \text{oldRate}
+$$
+
+Where:
+
+* **measuredRate** = “today's actual °F/min”
+* **oldRate** = yesterday’s remembered rate
+* **α** (“alpha”) = weight factor (0.05–0.20 typically)
+
+You can do this with NO stats library.
+
+Just algebra and a loop.
+
+---
+
+## **Type 2 — Self-tuning via Algebraic Regression (Model 1, Model 3)**
+
+This handles models with **coefficients**:
+
+* Model 1: `a`, `b`
+* Model 3: `a`, `b`, `d`
+
+Every morning:
+
+* one new point → update coefficients
+* old coefficients get blended with new (very light smoothing)
+
+Think:
+
+> **Today’s observed warm-up redefines the line (or plane).**
+
+It’s not machine learning.
+It’s not a statistical package.
+It’s literally:
+**Solve two equations for a and b again.**
+
+---
+
+# **3. Self-Tuning Example — Linear EMA (Model 0)**
+
+Let’s say:
+
+* Yesterday’s DPM = **0.20°F/min**
+* Today you actually warmed:
+
+$$
+\Delta T = 6^\circ
+$$
+
+$$
+\Delta t = 30\ \text{min}
+$$
+
+So actual = (6 / 30 = 0.20°F/min) ← same as before.
+
+If α = 0.10:
+
+$$
+\text{newRate} = 0.10(0.20) + 0.90(0.20)
+$$
+
+Same result — building is consistent.
+
+Now imagine today had a poor warm-up:
+
+$$
+\Delta T = 6^\circ
+$$
+
+$$
+\Delta t = 40\ \text{min}
+$$
+
+MeasuredRate = 6/40 = **0.15**
+
+Now:
+
+$$
+\text{newRate} = 0.10(0.15) + 0.90(0.20)
+$$
+
+$$
+= 0.015 + 0.18 = 0.195°F/min
+$$
+
+New slope nudges downward — building is slower.
+
+This is **self-tuning in one line of Python**.
+
+---
+
+# **4. Self-Tuning Example — Model 1 Regression**
+
+Two new warm-up datapoints:
+
+| ΔT | x = ΔT² | t  |
+| -- | ------- | -- |
+| 5  | 25      | 38 |
+| 9  | 81      | 82 |
+
+Solve:
+
+$$
+t = a x + b
+$$
+
+You solve:
+
+$$
+a = \frac{82 - 38}{81 - 25}
+$$
+
+$$
+b = 38 - 25a
+$$
+
+This gives today’s new coefficients.
+
+To self-tune:
+
+$$
+a_{\text{new}} = 0.85 a_{\text{old}} + 0.15 a_{\text{today}}
+$$
+
+$$
+b_{\text{new}} = 0.85 b_{\text{old}} + 0.15 b_{\text{today}}
+$$
+
+That’s it.
+
+No machine learning.
+Just weighted updating.
+
+This is *exactly* how Niagara does it.
+
+---
+
+# **5. Why Smoothing Is Required**
+
+Buildings are noisy.
+
+If you fully replaced coefficients every morning:
+
+* one strange morning ruins the model
+* VAV faults distort the slope
+* cold start after a holiday shifts predictions wildly
+* false starts from bad SP changes corrupt warm-up data
+
+Smoothing makes the model **stable**.
+
+The blend factor:
+
+* typically 0.05–0.25
+* same concept as EMA
+* just applied to coefficients instead of rates
+
+---
+
+# **6. Mini-Examples (you try)**
+
+### **Example A — EMA update**
+
+OldRate = 0.18
+MeasuredRate = 0.24
+α = 0.15
+
+Compute:
+
+$$
+\text{newRate} = \alpha M + (1 - \alpha)O
+$$
+
+---
+
+### **Example B — Algebraic update**
+
+Old a = 1.1
+Old b = 8.0
+
+Today you solve:
+
+$$
+a_{today} = 1.5,\quad b_{today} = 6.0
+$$
+
+Blend with α = 0.10:
+
+Compute:
+
+$$
+a_{\text{new}}
+$$
+
+$$
+b_{\text{new}}
+$$
+
+---
+
+# **7. Day 6 Micro-Exercise (Your turn)**
+
+You observed a warm-up:
+
+* ΔT = 8°F
+* Warm-up time = 55 min
+
+Old model:
+
+$$
+t = 0.9x + 10
+$$
+
+Where:
+
+$$
+x = (\Delta T)^2
+$$
+
+### Step 1 — Compute today’s measured predicted_time
+
+Today’s prediction:
+
+$$
+x = 8^2 = 64
+$$
+
+$$
+t_{predicted} = 0.9(64) + 10
+$$
+
+### Step 2 — Compare predicted vs actual
+
+Actual = 55 min
+
+Was the model too fast or too slow?
+
+### Step 3 — Update using α = 0.10
+
+Blend the coefficients:
+
+$$
+a_{\text{new}} = 0.9(1 - \alpha) + a_{today}\alpha
+$$
+
+But you must compute **a_today** using:
+
+$$
+a_{today} = \frac{t_{actual2} - t_{actual1}}{x_2 - x_1}
+$$
+
+Hint: You only have ONE point, so assume b stays constant for today.
+
+*(This is how Niagara handles 1-point updates.)*
+
+---
+
+# ⭐ Key Takeaway From Day 6
+
+Self-tuning is nothing fancy:
+
+* **Model 0** → EMA of warming rate
+* **Model 1** → regression coefficients updated with smoothing
+* **Model 3** → multivariable regression updated with smoothing
+
+It’s all algebra + weighted averages.
+
+That’s it.
 
 </details>
 
