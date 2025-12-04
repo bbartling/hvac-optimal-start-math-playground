@@ -2,9 +2,16 @@
 
 This repo teaches HVAC optimal-start math + contains Python learning playground material.
 
-This reference outlines the consistent inputs and outputs used across `OptimalStartModel1` and `OptimalStartModel3` based on the PNNL paper in the [pdf](https://github.com/bbartling/niagara4-vibe-code-addict/tree/develop/pdf) directory.
+This reference outlines the consistent inputs and outputs used across `OptimalStartModel1` and `OptimalStartModel3` based on the PNNL paper in the [pdf](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper) directory.
 
-Also see active Java versions on the vibe coder [repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md) which is actively being tested by Ben in the field in the Niagara4 framework in a `ProgramObject`.
+
+Also see the active Java implementations in the Vibe Coder
+[repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md).
+These versions are currently being tested by Ben in the field on a Niagara 4 `ProgramObject` for Models 0 and 1.
+
+Because a `ProgramObject` has practical limitations, **Model 3 (Multiple Regression)** is omitted from the Niagara implementation to avoid doing complex matrix algebra by hand.
+However, **Model 3 is fully supported in Python**, where math libraries make regression and matrix operations straightforward.
+
 
 ---
 

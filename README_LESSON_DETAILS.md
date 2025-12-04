@@ -114,11 +114,12 @@ Everything else (EMA, regression, self‑tuning) builds directly on these.
 
 ---
 
-## Day 2 — Linear Formula Refresher: \\(y = m x + b\\) (HVAC Warm‑Up Edition)
+## Day 2 — Linear Formula Refresher: \(y = m x + b\) (HVAC Warm-Up Edition)
 
 **Goal:** See how the classic line equation maps to “minutes vs ΔT” in a building.
 
-### 1. What \\(y = m x + b\\) Really Means
+### 1. What \(y = m x + b\) Really Means
+
 
 The standard line:
 
