@@ -8,8 +8,7 @@ Also see active Java versions on the vibe coder [repository](https://github.com/
 
 ---
 
-<details>
-<summary>📝 Model Equations Summary</summary>
+## 📝 Model Equations Summary
 
 The models are formulated from a simplified thermal-resistance and capacitance model (2R1C or 1R1C) of the zone dynamics.
 
@@ -27,9 +26,9 @@ The difference in implementation stems directly from the mathematical **complexi
 
 ---
 
-### 4. Model Details
+## 4. Model Details
 
-**Model 0: Linear EMA**
+### Model 0: Linear EMA
 
 $$
 t = \frac{\Delta T}{\text{rate}_{EMA}}
@@ -41,9 +40,7 @@ $$
 \text{rate}_{EMA,new} = \text{rate}_{EMA,old} + \alpha \cdot (\text{rate}_{observed} - \text{rate}_{EMA,old})
 $$
 
----
-
-**Model 1: Manual Simple Regression**
+### Model 1: Manual Simple Regression
 
 $$
 t = \alpha_{1,a} \cdot (\Delta T^2) + \alpha_{1,b}
@@ -54,9 +51,7 @@ In this formula, the duration ($t$) is the dependent variable ($y$), and the squ
 * **Implementation:** Model 1 implements the core tuning logic in `_compute_regression_for_mode` by manually calculating the sums needed for the **ordinary least squares (OLS)** solution.
 * **Why Manual?** Simple Linear Regression has basic, closed-form equations (the familiar $\frac{n \Sigma xy - \Sigma x \Sigma y}{n \Sigma x^2 - (\Sigma x)^2}$ formula) that are short and reliable enough to code directly without needing external libraries.
 
----
-
-**Model 3: Scikit-learn for Multiple Regression**
+### Model 3: Scikit-learn for Multiple Regression
 
 $$
 t = \alpha_{3,a} \cdot \Delta T + \alpha_{3,b} \cdot \Delta T \cdot \text{WF} + \alpha_{3,d}
@@ -71,26 +66,13 @@ This is a classic **Multiple Linear Regression** problem, essentially fitting $y
 * **Implementation:** Model 3 uses the `sklearn.linear_model.LinearRegression` class in its `_compute_regression_for_mode` method.
 * **Why Scikit-learn?** Implementing Multiple Linear Regression requires **matrix algebra** (specifically, solving $\mathbf{w} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$). Using `scikit-learn` handles the necessary matrix computations (like inverting the feature matrix) and ensures better numerical stability and optimization, greatly simplifying the code compared to a manual implementation.
 
-</details>
-
 ---
 
-<details>
-<summary>🧑‍🏫 30-Day Crash Course: Self-Tuning Algebraic Models & EMA (Optimal Start math refresher)</summary>
+## 🧑‍🏫 30-Day Crash Course: Self-Tuning Algebraic Models & EMA
 
-Here is a **focused 30-day crash course** designed **specifically for your background** (HVAC, BAS, Niagara, physics, control systems), but aimed at refreshing the **math of self-tuning algebraic models** and **EMA (Exponential Moving Average)** exactly as they appear in PNNL Optimal Start Models 0, 1, and 3.
+> **Note:** This course is designed for BAS/HVAC professionals. Each lesson takes 10–20 minutes.
 
-> Feed into ChatGPT and ask it day by day to make you a new lesson!
-
-This curriculum is **practical**, **Niagara-relevant**, and **hands-on**, with tiny exercises you can do in your head or in a 10-line Python cell.
-
-**Designed for: Niagara Programmer + BAS Controls Engineer + Optimization Developer**
-
-Each day is 10–20 minutes. At the end, you’ll understand PNNL Model 0/1/3 completely from the math side.
-
----
-
-### WEEK 1 — Foundations of Change, Slopes, and Estimation (Algebra Refresh)
+### WEEK 1 — Foundations of Change, Slopes, and Estimation
 
 **Day 1 — Δ (delta), rate-of-change, degrees-per-minute**
 * Computing $\Delta T$
@@ -124,8 +106,6 @@ Each day is 10–20 minutes. At the end, you’ll understand PNNL Model 0/1/3 co
 **Day 7 — Review & interpret sample warm-up data**
 * Identify patterns
 * When linear vs quadratic vs weather-based model makes sense
-
----
 
 ### WEEK 2 — Exponential Moving Average (EMA) Mastery
 
@@ -163,8 +143,6 @@ Why this is perfect for self-tuning BAS models.
 **Day 14 — Week 2 review**
 * Re-do EMA examples
 * Re-express them verbally in building control terms
-
----
 
 ### WEEK 3 — Self-Tuning Algebraic Optimal Start Models
 
