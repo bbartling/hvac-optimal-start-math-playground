@@ -79,6 +79,24 @@ This is a classic **Multiple Linear Regression** problem, essentially fitting $y
 
 > **Note:** This course is designed for BAS/HVAC professionals. Each lesson takes 10–20 minutes.
 
+### 👉 **[See Daily Lesson Details](README_LESSON_DETAILS.md)**
+
+Your personal day-by-day companion for this 30-day crash course.
+
+Upload it into your favorite AI assistant and let it **coach you**, **clarify concepts**, and **walk you through the math** — *not to cheat*, but to accelerate your understanding of these advanced HVAC optimization techniques.
+
+Every concept you learn here contributes directly to:
+
+🌡️ **Reducing HVAC runtime**
+⚡ **Cutting energy waste**
+🏢 **Smoother building operation**
+🌎 **A healthier planet and environment**
+
+This is the same math behind high-performance BAS systems, Optimal Start models, and real-world energy savings.
+Use it, experiment with it, modify it — **become dangerous with it** 😀😊😂🤣.
+
+---
+
 ### WEEK 1 — Foundations of Change, Slopes, and Estimation
 
 **Day 1 — Δ (delta), rate-of-change, degrees-per-minute**
@@ -249,24 +267,7 @@ Combine everything from the month:
 
 ---
 
-### 👉 **[See Daily Lesson Details](README_LESSON_DETAILS.md)**
 
-Your personal day-by-day companion for this 30-day crash course.
-
-Upload it into your favorite AI assistant and let it **coach you**, **clarify concepts**, and **walk you through the math** — *not to cheat*, but to accelerate your understanding of these advanced HVAC optimization techniques.
-
-Every concept you learn here contributes directly to:
-
-🌡️ **Reducing HVAC runtime**
-⚡ **Cutting energy waste**
-🏢 **Smoother building operation**
-🌎 **A healthier planet and environment**
-
-This is the same math behind high-performance BAS systems, Optimal Start models, and real-world energy savings.
-Use it, experiment with it, modify it — **become dangerous with it** 😀😊😂🤣.
-
-
----
 
 ## 📜 License
 
