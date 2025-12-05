@@ -1,31 +1,82 @@
 # hvac-optimal-start-math-playground
 
-This repo teaches HVAC optimal-start math + contains Python learning playground material.
 
-This reference outlines the consistent inputs and outputs used across `OptimalStartModel1` and `OptimalStartModel3` based on the PNNL paper in the [pdf](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper) directory.
+This repo teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning methods. It is intentionally written for **BAS technicians with a basic algebra background**, not necessarily for advanced academic audiences such as PhD-level engineers—**but anyone is welcome to learn, contribute, and get involved!**
 
 
-Also see the active Java implementations in the Vibe Coder
+It also documents the **standardized inputs and outputs** used across all models described in the PNNL paper in the
+[pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper).
+Model 0 is not part of the PNNL publication—it is included here as a **traditional linear degrees-per-minute (DPM) optimal-start method**, commonly found in BAS platforms.
+
+You can also see **active Java implementations** in the Vibe Coder
 [repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md).
-These versions are currently being tested by Ben in the field on a Niagara 4 `ProgramObject` for Models 0 and 1.
+These versions are currently being field-tested by Ben in Niagara 4 `ProgramObject` form for Models 0 and 1.
 
-Because a `ProgramObject` has practical limitations, **Model 3 (Multiple Regression)** is omitted from the Niagara implementation to avoid doing complex matrix algebra by hand.
-However, **Model 3 is fully supported in Python**, where math libraries make regression and matrix operations straightforward.
 
+> **Note:** The PNNL paper identifies Model 3 as the most accurate overall, but only *slightly* more effective than Model 1. In practice, Model 1 often performs nearly as well while being much simpler to implement. Because of this, Model 1 can be the most robust and practical choice—especially in environments where Model 3’s multiple-regression tooling is not available. **Hence, in Niagara, `ProgramObject`s have practical limitations, and Model 3 (Multiple Regression) is omitted to avoid manual matrix algebra.** Model 0 and Model 1 are implemented instead, where the computation fits comfortably within Niagara’s environment. However, **Model 3 is fully supported in Python**, where regression and matrix operations are straightforward using standard math libraries.
 
 ---
 
-## 📝 Model Summary (The "Plain English" Version)
+## 📝 Model Summary — The Plain-English Version
 
-We use different math models because different zones behave differently. Here is the cheat sheet for which model does what.
+Different mathematical shapes capture different building behaviors. None of these models are “for interior zones” or “for RTUs only.”
+They are *tools* — and whichever predicts most accurately at a given site is the right one.
 
-| Model | The Logic (Plain English) | Best Application |
-| :--- | :--- | :--- |
-| **Model 0** | **The "Cruise Control"**<br>It assumes your unit heats up at a constant speed (e.g., 0.5°F per minute). It simply averages yesterday's speed to guess today's. | **General Use**<br>Great for mild climates or simple RTUs where precision isn't critical. |
-| **Model 1** | **The "Heavy Lifter"**<br>It knows that heating up a cold room gets harder the longer it runs. [cite_start]It uses a curved line (quadratic) instead of a straight one. [cite: 236, 237] | [cite_start]**Interior Zones**<br>Best for zones with thick walls (high thermal mass) that ignore the weather outside. [cite: 237] |
-| **Model 2** | **The "Weather Watcher"**<br>Like Model 0, but it checks if it's colder outside than yesterday. [cite_start]If it's colder, it adds extra runtime automatically. [cite: 221, 223] | [cite_start]**Perimeter Zones**<br>Best for zones with windows or thin walls that feel the outdoor temperature immediately. [cite: 223] |
-| **Model 3** | **The "Smart Brain"**<br>The most accurate model. [cite_start]It looks at *both* how cold the room is AND how cold it is outside to calculate the perfect start time. [cite: 252] | [cite_start]**High Performance**<br>Best for maximum energy savings on complex zones where OAT swings matter a lot. [cite: 1688] |
-| **Model 4** | [cite_start]**The "Coaster"**<br>It assumes the temperature change slows down as it gets closer to the setpoint (like a car coasting to a stop). [cite: 270, 271] | **Fast Systems**<br>Good for systems that heat up fast initially but struggle to squeeze out the last few degrees. |
+### **📘 Optimal Start Models (0–4)**
+
+| Model                                            | What It Does (Plain English)                                                                                                                                                           |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Model 0 — Linear (Classic BAS Optimal Start)** | Assumes the building warms at a **constant rate** (e.g., 0.5°F per minute). Learns that rate via EMA. Simple, stable, and similar to how most legacy BAS systems estimate start times. |
+| **Model 1 — Quadratic (Curved Relationship)**    | Models warm-up time as increasing **non-linearly** as ΔT grows. Useful when large deltas take disproportionately longer than small deltas — a very common real-world behavior.         |
+| **Model 2 — Linear + Weather Bump**              | Same as Model 0 but adds a small correction when today's weather is colder than reference conditions. Rarely used; mathematically limited, but included for completeness.              |
+| **Model 3 — Weather-Enhanced Linear Model**      | Models warm-up as a combination of **ΔT** *and* a **weather factor (WF)**. Much more expressive than Model 2. Handles weather swings well and is the most general-purpose model.       |
+| **Model 4 — Saturation / Coasting Model**        | Models situations where heating slows down as it nears setpoint. Useful when the last few degrees take disproportionately longer (coil approach, stratification, low airflow, etc.).   |
+
+---
+
+# 🔍 How to Choose a Model (General Guidance)
+
+This replaces the “Best Application” column with guidance that is **non-prescriptive** and **agnostic about zone type**.
+
+### **When to use Model 0 (Linear)**
+
+* Building behaves roughly linearly on most mornings
+* ΔT range is small or moderate
+* Weather variation is mild or irrelevant
+* You want the simplest, most stable predictor
+
+This model is closest to classic BAS optimal start.
+
+### **When to use Model 1 (Quadratic)**
+
+* Warm-up time “curves,” especially for large ΔT
+* Morning warm-ups take much longer beyond ~6–10°F gap
+* You want to capture increased effort at large deltas
+
+Very common in high-mass buildings.
+
+### **When to use Model 2**
+
+* Almost never — included for research / completeness
+* Very light weather correction only
+
+### **When to use Model 3 (Weather-Enhanced Linear)**
+
+* Site has **wide temperature swings**
+* Cold mornings take *much* longer, even at similar ΔT
+* Perimeter zones vary more with OAT
+* You want the most flexible and general-purpose model
+
+This is the **recommended default** when weather varies significantly.
+
+### **When to use Model 4 (Saturation / Coasting)**
+
+* Building heats quickly at first but slows dramatically near setpoint
+* Common in: radiant systems, large coils, low airflow, stratification
+* Useful when the last 2°F take 50% of total warm-up time
+
+---
+
 
 ### 🛠️ How hard are they to program?
 
