@@ -2,7 +2,13 @@
 
 This repo teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning methods. It is intentionally written for **BAS technicians with a basic algebra background**, not necessarily for advanced academic audiences such as PhD-level engineers—**but anyone is welcome to learn, contribute, and get involved!**
 
-With the assumption that BAS technicians already understand HVAC physics and system behavior at a high level, the lesson plans require only intermediate math — roughly high-school–level advanced algebra — plus beginner-level Python (basic syntax and math operators).
+All optimal-start models share one goal: predicting the `minutes` needed for a zone to reach setpoint before occupancy. When properly tuned, this becomes a powerful energy-savings strategy.
+
+```text
+[ Zone Temp, Setpoint, Schedule ]  --->  { OPTIMAL-START MATH MODEL }  --->  Minutes to Warm/Cool
+```
+
+This repository dives deeply into **how each mathematical model transforms these inputs into a time prediction**, and why the math matters for real BAS performance. The assumption that learner already understand HVAC physics and system behavior at a high level, the lesson plans require only intermediate math — roughly high-school–level advanced algebra — plus beginner-level Python (basic syntax and math operators). 
 
 The project standardizes the **inputs, outputs, and mathematical structures** used across all models described in the PNNL publication (see the
 [pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper)).
@@ -98,7 +104,7 @@ $$
 This model adds an **outdoor air temperature adjustment** to the simple linear rate. It compares today's outdoor temperature ($T_{o,curr}$) to yesterday's ($T_{o,prev}$) relative to a reference temperature ($T_{o,r}$, typically $0^\circ C$ for heating or $100^\circ F$ for cooling).
 
   * $\alpha_{2,a}$: The learned rate of temperature change (similar to Model 0).
-  * [cite_start]**Adjustment Factor:** If it is colder today than yesterday, the ratio increases, extending the predicted start time[cite: 161].
+  * [cite_start]**Adjustment Factor:** If it is colder today than yesterday, the ratio increases, extending the predicted start time.
 
 **Python Implementation:**
 
@@ -152,7 +158,7 @@ $$
 t = \frac{\ln(\alpha_{4,a} / \alpha_{4,b})}{\ln(\alpha_{4,c})}
 $$
 
-This model assumes the zone temperature behaves like a **first-order differential equation** (exponential decay towards setpoint). [cite_start]It fits the "decay rate" ($\alpha_{4,c}$) based on how quickly the error ($T_{sp} - T_z$) reduced during the previous run[cite: 271, 317].
+This model assumes the zone temperature behaves like a **first-order differential equation** (exponential decay towards setpoint). [cite_start]It fits the "decay rate" ($\alpha_{4,c}$) based on how quickly the error ($T_{sp} - T_z$) reduced during the previous run.
 
   * $\alpha_{4,a}$: The acceptable temperature deadband (e.g., $0.5^\circ F$).
   * $\alpha_{4,b}$: The initial temperature difference ($T_{sp} - T_{z,0}$).
@@ -358,7 +364,7 @@ Upload this text into your AI assistant to act as your daily math coach.
 *Focus: Real World Problems & Hybrid Logic*
 
 **Day 36 — The "Monday Morning" Problem Defined**
-* [cite_start]**The Issue:** PNNL proved all models fail on Mondays[cite: 27, 28].
+* [cite_start]**The Issue:** PNNL proved all models fail on Mondays.
 * **The Cause:** Building mass "cold soaks" over the weekend. 48 hours off is different than 12 hours off.
 
 **Day 37 — Why Math Fails Here**
