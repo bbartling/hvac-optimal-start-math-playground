@@ -1,19 +1,18 @@
 # hvac-optimal-start-math-playground
 
+This repository teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning logic. It is written for **BAS technicians with a basic algebra background**, while remaining fully accessible to engineers, researchers, and contributors from any background.
 
-This repo teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning methods. It is intentionally written for **BAS technicians with a basic algebra background**, not necessarily for advanced academic audiences such as PhD-level engineers—**but anyone is welcome to learn, contribute, and get involved!**
+The project standardizes the **inputs, outputs, and mathematical structures** used across all models described in the PNNL publication (see the
+[pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper)).
+Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approach found in many BAS platforms, even though it is *not* part of the PNNL paper.
 
+You can also find **active Java implementations for Niagara 4** in the Vibe Coder
+[repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md),
+where Models 0 and 1 are currently being field-tested on real `ProgramObject`s.
 
-It also documents the **standardized inputs and outputs** used across all models described in the PNNL paper in the
-[pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper).
-Model 0 is not part of the PNNL publication—it is included here as a **traditional linear degrees-per-minute (DPM) optimal-start method**, commonly found in BAS platforms.
+Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
+Because Niagara `ProgramObject`s are not well-suited for manual matrix algebra, **Model 3 (multiple regression)** is omitted from the Niagara implementation — but **fully supported in Python**, where regression and matrix operations are trivial to perform.
 
-You can also see **active Java implementations** in the Vibe Coder
-[repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md).
-These versions are currently being field-tested by Ben in Niagara 4 `ProgramObject` form for Models 0 and 1.
-
-
-> **Note:** The PNNL paper identifies Model 3 as the most accurate overall, but only *slightly* more effective than Model 1. In practice, Model 1 often performs nearly as well while being much simpler to implement. Because of this, Model 1 can be the most robust and practical choice—especially in environments where Model 3’s multiple-regression tooling is not available. **Hence, in Niagara, `ProgramObject`s have practical limitations, and Model 3 (Multiple Regression) is omitted to avoid manual matrix algebra.** Model 0 and Model 1 are implemented instead, where the computation fits comfortably within Niagara’s environment. However, **Model 3 is fully supported in Python**, where regression and matrix operations are straightforward using standard math libraries.
 
 ---
 
