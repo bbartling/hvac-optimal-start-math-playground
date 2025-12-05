@@ -2,18 +2,11 @@
 
 This repo teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning methods. It is intentionally written for **BAS technicians with a basic algebra background**, not necessarily for advanced academic audiences such as PhD-level engineers—**but anyone is welcome to learn, contribute, and get involved!**
 
-> With the assumption that BAS technicians already understand HVAC physics and system behavior at a high level, the lesson plans require only intermediate math — roughly high-school–level advanced algebra — plus beginner-level Python (basic syntax and math operators).
+With the assumption that BAS technicians already understand HVAC physics and system behavior at a high level, the lesson plans require only intermediate math — roughly high-school–level advanced algebra — plus beginner-level Python (basic syntax and math operators).
 
 The project standardizes the **inputs, outputs, and mathematical structures** used across all models described in the PNNL publication (see the
 [pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper)).
 Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approach found in many BAS platforms, even though it is *not* part of the PNNL paper.
-
-You can also find **active Java implementations for Niagara 4** in the Vibe Coder
-[repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md),
-where Models 0 and 1 are currently being field-tested on real `ProgramObject`s.
-
-Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
-Because Niagara `ProgramObject`s are not well-suited for manual matrix algebra, **Model 3 (multiple regression)** is omitted from the Niagara implementation — but **fully supported in Python**, where regression and matrix operations are trivial to perform.
 
 ---
 
@@ -40,6 +33,8 @@ They are *tools* — and whichever predicts most accurately at a given site is t
 * **Model 1 & 2 (Medium):** Requires basic algebra. You can do this in most PLCs or Niagara Program objects.
 * **Model 3 (Hard):** Requires "Matrix Algebra." This is very hard to code from scratch in a standard BAS controller. It is best suited for Python or edge devices that have math libraries.
 * **Model 4 (Medium/Hard):** Uses logarithms (ln). Requires a controller that supports advanced math functions.
+
+> Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
 
 ---
 
@@ -398,7 +393,15 @@ Upload this text into your AI assistant to act as your daily math coach.
 
 ---
 
+### 👉 **See Also For Niagara Building Automation**
 
+You can also find **active Java implementations for Niagara 4** in the Vibe Coder
+[repository](https://github.com/bbartling/niagara4-vibe-code-addict/blob/develop/README_OPT_START.md),
+where Models 0 and 1 are currently being field-tested on real `ProgramObject`s.
+
+Because Niagara `ProgramObject`s are not well-suited for manual matrix algebra, **Model 3 (multiple regression)** is omitted from the Niagara implementation — but **fully supported in Python**, where regression and matrix operations are trivial to perform.
+
+---
 
 ## 📜 License
 
