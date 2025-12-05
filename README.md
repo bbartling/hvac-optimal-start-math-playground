@@ -1,6 +1,8 @@
 # hvac-optimal-start-math-playground
 
-This repository teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning logic. It is written for **BAS technicians with a basic algebra background**, while remaining fully accessible to engineers, researchers, and contributors from any background.
+This repo teaches **HVAC optimal-start mathematics** and provides a **Python learning playground** for exploring algebraic models, regression techniques, and self-tuning methods. It is intentionally written for **BAS technicians with a basic algebra background**, not necessarily for advanced academic audiences such as PhD-level engineers—**but anyone is welcome to learn, contribute, and get involved!**
+
+> With the assumption that BAS technicians already understand HVAC physics and system behavior at a high level, the lesson plans require only intermediate math — roughly high-school–level advanced algebra — plus beginner-level Python (basic syntax and math operators).
 
 The project standardizes the **inputs, outputs, and mathematical structures** used across all models described in the PNNL publication (see the
 [pdf directory](https://github.com/bbartling/hvac-optimal-start-math-playground/tree/develop/PNNL_Paper)).
@@ -12,7 +14,6 @@ where Models 0 and 1 are currently being field-tested on real `ProgramObject`s.
 
 Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
 Because Niagara `ProgramObject`s are not well-suited for manual matrix algebra, **Model 3 (multiple regression)** is omitted from the Niagara implementation — but **fully supported in Python**, where regression and matrix operations are trivial to perform.
-
 
 ---
 
@@ -32,50 +33,6 @@ They are *tools* — and whichever predicts most accurately at a given site is t
 | **Model 4 — Saturation / Coasting Model**        | Models situations where heating slows down as it nears setpoint. Useful when the last few degrees take disproportionately longer (coil approach, stratification, low airflow, etc.).   |
 
 ---
-
-# 🔍 How to Choose a Model (General Guidance)
-
-This replaces the “Best Application” column with guidance that is **non-prescriptive** and **agnostic about zone type**.
-
-### **When to use Model 0 (Linear)**
-
-* Building behaves roughly linearly on most mornings
-* ΔT range is small or moderate
-* Weather variation is mild or irrelevant
-* You want the simplest, most stable predictor
-
-This model is closest to classic BAS optimal start.
-
-### **When to use Model 1 (Quadratic)**
-
-* Warm-up time “curves,” especially for large ΔT
-* Morning warm-ups take much longer beyond ~6–10°F gap
-* You want to capture increased effort at large deltas
-
-Very common in high-mass buildings.
-
-### **When to use Model 2**
-
-* Almost never — included for research / completeness
-* Very light weather correction only
-
-### **When to use Model 3 (Weather-Enhanced Linear)**
-
-* Site has **wide temperature swings**
-* Cold mornings take *much* longer, even at similar ΔT
-* Perimeter zones vary more with OAT
-* You want the most flexible and general-purpose model
-
-This is the **recommended default** when weather varies significantly.
-
-### **When to use Model 4 (Saturation / Coasting)**
-
-* Building heats quickly at first but slows dramatically near setpoint
-* Common in: radiant systems, large coils, low airflow, stratification
-* Useful when the last 2°F take 50% of total warm-up time
-
----
-
 
 ### 🛠️ How hard are they to program?
 
