@@ -1,29 +1,36 @@
-# Day 9 — The Dead Time Intercept (b)
+# Day 9 — Compute an EMA by Hand
 
-**Goal:** Explain the intercept term b and why systems run for several minutes before sensors register a temperature change.
+**Goal:** Practise calculating exponential moving averages yourself and see how α changes the smoothing.
 
-## 1. Why Warm‑Up Appears Delayed
+On Day 8 you learned the EMA formula.  Today you’ll compute a few by hand to build intuition.
 
-When the unit first turns on, the heating coil warms up, the fan ramps, and ducts begin to heat.  The zone sensor may not see a temperature rise for 5–10 minutes.
+## Step‑by‑Step Example
 
-## 2. Intercept `b`
+Assume α = 0.3 and an initial EMA of 20.  You record these values over four days: 18, 25, 22, 17.  Compute the EMA after each value:
 
-In the quadratic model:
+1. **First value (18):**
+   
+   `EMA_1 = 20 + 0.3 * (18 − 20) = 20 − 0.6 = 19.4`
 
-```
-t = a * (DeltaT)^2 + b
-```
+2. **Second value (25):**
+   
+   `EMA_2 = 19.4 + 0.3 * (25 − 19.4) ≈ 19.4 + 1.68 = 21.08`
 
-The term `b` captures this **dead time**.  It’s the minutes of warm‑up that are independent of ΔT.  Larger `b` values indicate slower sensor or coil response.
+3. **Third value (22):**
+   
+   `EMA_3 = 21.08 + 0.3 * (22 − 21.08) ≈ 21.08 + 0.276 = 21.356`
 
-## 3. Example
+4. **Fourth value (17):**
+   
+   `EMA_4 = 21.356 + 0.3 * (17 − 21.356) ≈ 21.356 − 1.307 = 20.049`
 
-If `a = 0.5` and `b = 8`, then even a ΔT of zero would predict `t = 8` minutes.  That’s the time it takes for the system to start impacting the zone.
+Notice how the EMA reacts to changes but doesn’t jump as much as the raw values do.
 
-## 4. Exercise
+## Mini‑Exercises
 
-Measure how long your system runs before the zone temperature moves.  Use that as an initial estimate of `b`.
+1. Using α = 0.1 and an initial EMA of 15, compute the EMA after the sequence: 16, 14, 20.
+2. Using α = 0.5 (a fast learner) and an initial EMA of 30, update the EMA after the values: 35 and then 25.
 
-## 5. Key Takeaway
+## Key Takeaway
 
-The intercept term accounts for sensor lag and equipment inertia.  Ignoring `b` will underestimate the warm‑up time.
+Manually computing EMAs shows how each new value nudges the average.  The weight α decides whether the model learns quickly or slowly.

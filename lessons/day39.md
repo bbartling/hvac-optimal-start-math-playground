@@ -1,22 +1,29 @@
-# Day 39 — Experiment: The Weekend Factor
+# Day 39 — Experiment: The “Cold Soak Multiplier”
 
-**Goal:** Explore multiplying model predictions by a constant to account for weekend cold soak.
+**Goal:** Explore scaling Model 3 predictions by a factor (e.g., 1.2) to account for weekend cooling.
 
-## 1. Concept
+## 1.  The Multiplier Concept
 
-Instead of adding a fixed hour, multiply the prediction by a **cold soak factor** (e.g., 1.2–1.3).  This scales the prediction relative to ΔT.
+Rather than adding a fixed time, you can multiply the predicted minutes by a constant greater than 1.  This “cold soak multiplier” scales with the predicted time — longer warm‑ups get a larger absolute boost.
 
-## 2. Example
+For example:
 
-If Model 3 predicts 45 min and the factor is 1.25, the adjusted time is 56.25 min.
-
-## 3. Python
-
-```python
-def apply_weekend_factor(t_pred, factor=1.25):
-    return t_pred * factor
+```
+t_monday = 1.3 * t_predicted
 ```
 
-## 4. Key Takeaway
+If the model predicts 40 minutes, Monday becomes 52 minutes.  If it predicts 90 minutes, Monday becomes 117 minutes.
 
-Multipliers provide a flexible way to adjust for Mondays.  Tune the factor to your building.
+## 2.  Determining the Factor
+
+Collect several weeks of Monday data and calculate the ratio `actual / predicted` for each model.  Take the average ratio as your multiplier (e.g., 1.3).
+
+## 3.  Micro‑Exercises
+
+1. Using your data, compute the average `actual/predicted` ratio for Monday runs.  
+2. Apply a multiplier based on that ratio to the next two Mondays.  Does the error decrease?  
+3. Discuss whether a multiplier or fixed adder seems more appropriate for your building.
+
+## 4.  Key Takeaway
+
+Multiplying the prediction by a “cold soak factor” adapts the correction to the size of the problem, offering a more scalable solution than a fixed adder.

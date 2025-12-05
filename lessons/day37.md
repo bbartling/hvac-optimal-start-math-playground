@@ -1,15 +1,25 @@
 # Day 37 — Why Math Fails Here
 
-**Goal:** Dig into the limitations of purely data‑driven models when faced with weekend cold soak.
+**Goal:** Explain why standard regression and smoothing techniques can’t capture the weekend effect.
 
-## 1. Lack of Data
+## 1.  Dependence on Recent History
 
-Monday warm‑ups happen only once a week.  It may take months to gather enough data points to tune a model.  In the meantime, the model underestimates.
+All self‑tuning models rely on the last few mornings to learn the building’s behaviour.  Over the weekend, nothing happens — there are no fresh data points for 48 hours.  Monday’s run is fundamentally different from the short runs seen Tuesday through Friday.  
 
-## 2. Non‑stationarity
+## 2.  Mismatch of Conditions
 
-The building conditions after two days off differ from one day off.  The model doesn’t know this because it only sees numbers.
+* Thermal mass is colder.  
+* Humidity may have equilibrated differently.  
+* Outdoor temperatures might have varied significantly over two days.  
 
-## 3. Key Takeaway
+These factors mean Monday should be treated as its own class of problem, not just another day.
 
-Maths alone can’t capture weekend effects quickly.  You need heuristics or separate logic.
+## 3.  Micro‑Exercises
+
+1. Fit a Model 3 to your Tuesday–Friday data.  Use it to predict Monday.  Compute the percentage error.  
+2. Repeat with Models 0–2.  Which model performs “least bad” on Monday?  
+3. Write a short paragraph on why adding more history (e.g., 20 days) still doesn’t fix Monday predictions.
+
+## 4.  Key Takeaway
+
+Monday warm‑ups don’t obey the same statistical patterns.  Treating them separately avoids erroneous predictions.

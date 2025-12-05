@@ -1,25 +1,26 @@
-# Day 38 — The Technician’s Guess
+# Day 38 — The “Technician’s Guess”
 
-**Goal:** Introduce the industry practice of adding a fixed buffer to Monday start times.
+**Goal:** Introduce the simple but surprisingly effective practice of adding a fixed buffer time on Mondays.
 
-## 1. The Rule of Thumb
+## 1.  The Rule of Thumb
 
-A common strategy: **add 60 minutes** to whatever the model predicts for Monday.  It’s crude but often effective.
+Many operators simply add 60 minutes to the predicted start time on Mondays.  For example, if Model 3 says “Start 90 minutes early,” the technician will set it to 150 minutes.  This heuristic recognises that mathematical models under‑predict the weekend cold soak.
 
-## 2. Implementation
+## 2.  When It Works
 
-In code you might do:
+Fixed adders work reasonably well when the building and weather conditions are consistent week over week.  They are easy to implement on any BAS without advanced math.
 
-```python
-predicted = model3_prediction  # or whichever model
-if is_monday:
-    predicted += 60
-```
+## 3.  Limitations
 
-## 3. Discussion
+* If the weekend was unseasonably warm or cold, the fixed adder may be too high or too low.  
+* Larger buildings with variable schedules may need more sophisticated scaling.
 
-This ignores nuance but prevents occupant discomfort.  It’s a good first step until more data is available.
+## 4.  Micro‑Exercises
 
-## 4. Key Takeaway
+1. Compare the technician’s guess to actual Monday warm‑up times over 5 weeks.  How often is it within ±10 minutes?  
+2. Try different fixed adders (30, 45, 60 minutes) and compute the mean absolute error for each.  
+3. Brainstorm scenarios where a fixed adder fails badly (e.g., holiday weekends, extreme weather).
 
-Sometimes a human guess outperforms math.  Don’t be afraid to combine intuition and analytics.
+## 5.  Key Takeaway
+
+A simple fixed time adder can dramatically improve comfort on Mondays, but it is only a blunt instrument.

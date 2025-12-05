@@ -1,19 +1,38 @@
-# Day 16 — The Reference Temperature (T_ref)
+# Day 16 — PNNL Model 1 (Quadratic Algebraic Tuning)
 
-**Goal:** Define a baseline outdoor temperature used in Model 2 and explain its role.
+**Goal:** Understand the full structure of Model 1 and why squaring ΔT makes predictions safer on cold mornings.
 
-## 1. Choosing a Baseline
+Model 1 improves on Model 0 by allowing the minutes‑per‑degree to grow with ΔT.  It uses a quadratic form and solves for its coefficients using 2×2 systems.
 
-In heating season, a common choice is `T_ref = 0 °F` — the coldest reasonable outdoor temperature.  In cooling, you might use `T_ref = 100 °F`.
+## 1.  Model Formula
 
-## 2. Why It Matters
+```
+t_predicted = a * (DeltaT)^2 + b
+```
 
-Model 2 adjusts the predicted warm‑up time by comparing yesterday’s outdoor temperature to today’s.  The “reference” anchors the ratio calculation.
+Where `a` and `b` are learned from historical warm‑up data via algebraic regression.  `DeltaT` is the current temperature difference to close.
 
-## 3. Sensitivity
+## 2.  Solving for a and b
 
-Pick `T_ref` too low and you’ll overcompensate in mild weather.  Pick it too high and you won’t compensate enough on cold days.
+Collect at least two warm‑up datapoints.  For each datapoint, compute `x = (DeltaT)^2` and `t` (minutes).  Solve the 2×2 system:
 
-## 4. Key Takeaway
+```
+t1 = a*x1 + b
+t2 = a*x2 + b
+```
 
-The reference temperature is a tuning knob.  Choose a value that reflects your climate extremes.
+See Day 4 for details on solving small systems.  After solving, blend the new `a` and `b` into the existing coefficients using a smoothing factor α.
+
+## 3.  Strengths and Limitations
+
+* **Strengths:** Captures the slower warm‑up on large ΔT days; requires only two coefficients; easier to tune than Model 3.
+* **Limitations:** Cannot account for weather or other external factors; still assumes behaviour is solely a function of ΔT.
+
+## Mini‑Exercises
+
+1. Given warm‑up datapoints (ΔT = 3 °F, t = 18 min) and (ΔT = 7 °F, t = 52 min), compute `a` and `b` using `x = (DeltaT)^2`.
+2. Using your `a` and `b` from (1), predict the warm‑up time for ΔT = 5 °F.
+
+## Key Takeaway
+
+Model 1 is a simple quadratic curve fit to warm‑up data.  It adds curvature to handle large setbacks without resorting to complex statistics.  If your building warms slowly when it’s cold outside, Model 1 is a good next step beyond the linear model.

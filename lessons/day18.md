@@ -1,23 +1,44 @@
-# Day 18 — Calculating the Base Rate (α₂,a)
+# Day 18 — PNNL Model 3 Structure
 
-**Goal:** Explain how Model 2 first estimates the indoor-only rate before applying weather adjustment.
+**Goal:** Learn how Model 3 incorporates weather into the warm‑up prediction and the variables involved.
 
-## 1. Similar to Model 0
+Model 3 extends Model 1 by introducing a **weather factor (WF)** term.  It accounts for the fact that a 6 °F setback on a 50 °F day warms faster than the same setback when it’s 20 °F outside.
 
-Model 2 starts by estimating the indoor warm‑up rate using an EMA, just like Model 0.  Call this `rate_base`.
-
-## 2. Applying the Ratio
-
-After predicting `t_base = DeltaT / rate_base`, multiply it by the weather ratio:
+## 1.  Model Formula
 
 ```
-t_pred = t_base * Ratio
+t_predicted = a * (DeltaT) + b * (DeltaT * WF) + d
 ```
 
-## 3. Example
+Where:
 
-If `DeltaT = 5 °F`, `rate_base = 0.2 °F/min` → `t_base = 25 min`.  Using the ratio 1.75 from the previous day gives `t_pred = 43.75 min`.
+* `DeltaT` is the temperature difference to recover.
+* `WF` is the **weather factor**.  PNNL defines it as `(OAT_ref − OAT) / (OAT_ref − OAT_min)`, where `OAT` is the current outdoor air temperature, `OAT_ref` is a mild reference (e.g. 65 °F) and `OAT_min` is a cold reference (e.g. 0 °F).  WF ranges from 0 (mild) to 1 (very cold).
+* `a`, `b` and `d` are coefficients learned from data.
 
-## 4. Key Takeaway
+Notice there are now two inputs:
 
-Model 2 still uses a linear indoor model, but it scales the result based on outdoor swings.
+```
+x1 = DeltaT
+x2 = DeltaT * WF
+```
+
+## 2.  Solving for the Coefficients
+
+You need at least three warm‑up mornings with different ΔT and WF combinations.  Each morning gives one equation of the form `t = a*x1 + b*x2 + d`.  Solve the resulting 3×3 system (see Day 4 for the process).  Blend the new coefficients into the existing ones with a smoothing factor α.
+
+## 3.  When to Use Model 3
+
+* If your building warms significantly slower on cold mornings compared with mild mornings at the same ΔT.
+* If an outdoor air sensor is available to compute WF reliably.
+* When Model 0 and Model 1 predictions consistently under‑ or over‑shoot depending on weather.
+
+## Mini‑Exercises
+
+1. Compute WF if `OAT = 30 °F`, `OAT_ref = 65 °F` and `OAT_min = 0 °F`.
+2. For ΔT = 5 °F and your WF from (1), calculate `x1` and `x2`.
+3. Write the general equation for `t_predicted` using unknown coefficients `a`, `b` and `d`.
+
+## Key Takeaway
+
+Model 3 augments the quadratic framework with a weather factor.  It recognises that large setbacks on cold mornings take even longer to warm up.  This makes predictions more accurate across seasons.

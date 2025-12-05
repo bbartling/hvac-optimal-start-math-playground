@@ -1,37 +1,41 @@
-# Day 10 — The Slope Coefficient (a)
+# Day 10 — How Niagara’s Optimal Start Uses EMA
 
-**Goal:** Understand the meaning of the quadratic coefficient a and how it relates to a zone’s thermal “heaviness.”
+**Goal:** See exactly where the EMA appears in Model 0 and how it drives the start prediction.
 
-## 1. What Is `a`?
+In Niagara’s Optimal Start block, the **degrees‑per‑minute rate** is not fixed.  It’s an exponential moving average that updates each time a warm‑up completes.
 
-In `t = a * (DeltaT)^2 + b`, the **slope coefficient** `a` determines how quickly time grows as ΔT increases.
+## 1.  Observed Rate and EMA Update
 
-* **Small `a` (e.g., 0.3):** Warm‑up grows slowly with ΔT.
-* **Large `a` (e.g., 1.0):** Warm‑up grows quickly — the zone is “heavy.”
-
-## 2. Estimating `a`
-
-You can estimate `a` by plotting historical ΔT² against warm‑up time and fitting a line.  The slope of that line is `a`.
-
-## 3. Example
-
-Given these pairs `(DeltaT, t)`:
-
-| ΔT | t (min) |
-|---|---------|
-| 3 | 14 |
-| 5 | 30 |
-| 8 | 65 |
-
-Compute `a` using two points:
+After a warm‑up finishes, the block measures how far the zone temperature travelled and how long it took.  The **observed rate** is:
 
 ```
-x1, y1 = 3**2, 14
-x2, y2 = 5**2, 30
-a = (y2 - y1) / (x2 - x1)
-# a ≈ 16 / 16 = 1.0
+observedRate = DeltaT / actualMinutes
 ```
 
-## 4. Key Takeaway
+Then the EMA is updated:
 
-The `a` coefficient reflects thermal inertia: higher `a` → heavier zone → longer warm‑up per degree.
+```
+rateEMA = rateEMA + alpha * (observedRate − rateEMA)
+```
+
+This new `rateEMA` is stored in slots like `degreesPerMinuteHeat` or `degreesPerMinuteCool`.  It’s the learned average heating/cooling rate.
+
+## 2.  Prediction Using the EMA
+
+Each morning, before the warm‑up starts, the block computes how long it *thinks* it will take:
+
+```
+DeltaT = abs(setpoint − zoneStart)
+minutesPredicted = DeltaT / rateEMA
+```
+
+That predicted time drives the start command: the block subtracts `minutesPredicted` from the scheduled occupancy time to decide when to enable heating or cooling.
+
+## Mini‑Exercises
+
+1. Yesterday’s rateEMA is 0.25 °F/min.  Today’s warm‑up: ΔT = 5 °F, actualMinutes = 18.  With α = 0.2, compute the new rateEMA.
+2. Using your new rateEMA from (1), predict the warm‑up time for ΔT = 4 °F.
+
+## Key Takeaway
+
+Niagara’s linear Model 0 is essentially one division and one EMA update.  The block learns a heating or cooling rate by blending in each day’s observed rate and uses that average to schedule the next warm‑up.

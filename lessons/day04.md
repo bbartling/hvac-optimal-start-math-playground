@@ -1,41 +1,70 @@
-# Day 4 — Intro to Exponential Moving Average (EMA)
+# Day 4 — Systems of Equations Refresher (Foundation of Model 3)
 
-**Goal:** Introduce EMA as a simple smoothing filter and derive the update formula.
+**Goal:** Get comfortable solving for two or three unknowns using multiple equations.
 
-## 1. What Is an EMA?
+Day 4 bridges the gap between linear and weather‑adjusted models.  Both Model 1 and Model 3 rely on solving small systems of equations to determine their coefficients.  This day demystifies those steps.
 
-The **Exponential Moving Average** is a way to smooth a series of data points by giving more weight to recent measurements and less weight to older ones.
+## 1.  Why Systems Matter in Optimal Start
 
-The update formula is:
+* **Model 1** has two unknowns (`a` and `b`) in the form `t = a*(DeltaT)^2 + b`.  Two datapoints give you two equations to solve.
+* **Model 3** has three unknowns (`a`, `b`, `d`):
 
 ```
-EMA_new = EMA_old + α * (Current - EMA_old)
+t = a*(DeltaT) + b*(DeltaT * WF) + d
 ```
 
-where **α (alpha)** is the smoothing factor between 0 and 1.
+Three datapoints give you three equations to solve.  This is the classic 3×3 linear system.
 
-## 2. Python Implementation
+## 2.  Example: 2×2 System (Model 1 Style)
 
-```python
-def update_ema(old_ema, current, alpha):
-    return old_ema + alpha * (current - old_ema)
+Given two warm‑up observations:
 
-ema = 0.20  # initial rate
-alpha = 0.3
-for current_rate in [0.25, 0.12, 0.35]:
-    ema = update_ema(ema, current_rate, alpha)
-    print(ema)
+* x₁ = 9, t₁ = 16
+* x₂ = 25, t₂ = 40  (where x = (DeltaT)²)
+
+Solve for `a` and `b` in `t = a*x + b`:
+
+```
+a = (40 − 16) / (25 − 9) = 24 / 16 = 1.5
+b = 16 − 1.5 * 9 = 16 − 13.5 = 2.5
 ```
 
-## 3. Choosing α
+Thus:
 
-* **α small (e.g., 0.1):** Smooths heavily; slow to adapt.
-* **α large (e.g., 0.5):** Reacts quickly; may chase noise.
+```
+t = 1.5*x + 2.5
+```
 
-## 4. Exercise
+## 3.  Example: 3×3 System (Model 3 Style)
 
-Set `alpha = 0.2` and an initial EMA of 0.18.  Compute the EMA after the sequence [0.15, 0.22, 0.20].
+Model 3 uses two inputs per datapoint:
 
-## 5. Key Takeaway
+* x₁ = DeltaT
+* x₂ = DeltaT × WF  (WF is the weather factor)
 
-EMA balances stability with responsiveness.  It is the heart of Model 0’s self‑tuning.
+Each warm‑up morning provides one equation:
+
+```
+t_i = a * x1_i + b * x2_i + d
+```
+
+Collect three mornings → three equations → solve simultaneously for `a`, `b`, and `d`.  This can be done by hand (substitution/elimination) or with a small matrix solver.  Niagara’s ProgramObject does this under the hood.
+
+## 4.  Day 4 Micro‑Exercise
+
+Solve this 2×2 system by hand:
+
+```
+14 = 4*a + b
+26 = 8*a + b
+```
+
+Steps:
+
+1. Subtract the first equation from the second to isolate `a`.
+2. Plug `a` back into one of the equations to find `b`.
+3. Write the resulting model `t = a*(DeltaT) + b`.
+
+## 5.  Key Takeaway From Day 4
+
+Small systems of equations are the engine behind the self‑tuning models.  Model 1 solves a 2×2 system; Model 3 solves a 3×3.  Once you’re comfortable subtracting one equation from another, you’re ready to implement both models in code or on paper.

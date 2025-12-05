@@ -1,23 +1,25 @@
-# Day 14 — Week 2 Review: Model 0 vs. Model 1
+# Day 14 — Week 2 Review
 
-**Goal:** Compare the linear and quadratic models and decide when to use each.
+**Goal:** Consolidate everything you learned about exponential moving averages and smoothing over the past week.
 
-## 1. When to Use Model 0
+By the end of Week 2 you have:
 
-* Mild climates or shallow setbacks.
-* Simple RTUs with consistent capacity.
-* When simplicity and stability are paramount.
+* Defined what an EMA is and why it’s used in BAS.
+* Practised computing EMAs by hand with different α values.
+* Seen how Niagara’s Model 0 uses an EMA to track the heating or cooling rate.
+* Compared EMAs to raw averages and understood the role of the smoothing factor as a control gain.
+* Explored advanced smoothing with double EMAs.
 
-## 2. When to Use Model 1
+Take a moment to reflect on how these pieces fit together.  The EMA is the heart of Model 0 and influences the slope in Models 1 and 3.  Choosing α appropriately keeps your optimal‑start times sensible even as the building and weather change.
 
-* Thick walls and interior zones with large thermal mass.
-* Deep night setbacks (e.g., 10 °F or more).
-* Systems that heat up quickly at first but slow down.
+## Mini‑Exercise
 
-## 3. Trade‑Offs
+Write a short note (2–3 sentences) to yourself explaining:
 
-Model 1 is more accurate but requires more math.  If your controller can handle a few multiplies and adds, the gains often outweigh the complexity.
+* Why you can’t just use a raw average for degrees‑per‑minute.
+* What happens if you set α too high or too low.
+* How a double EMA differs from a single EMA.
 
-## 4. Key Takeaway
+## Key Takeaway
 
-Match the model to your building.  Don’t overcomplicate a simple problem, but don’t oversimplify a heavy zone.
+Week 2 equips you with the smoothing tools needed to make self‑tuning robust.  EMAs keep models adaptive yet stable and underpin every optimal‑start algorithm you’ll build going forward.
