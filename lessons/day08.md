@@ -1,26 +1,30 @@
-# Day 8 — What an EMA Actually Is
+# Day 8 — Why Heat Transfer Isn’t Linear
 
-**Goal:** Understand the definition of an exponential moving average (EMA) and why it’s perfect for self‑tuning.
+**Goal:** Understand why heating slows down as the zone gets closer to setpoint and introduce the quadratic form.
 
-An EMA is a running average that gives more weight to recent observations.  It updates with a simple one‑line formula:
+## 1. The Physics of Thermal Mass
+
+Real buildings don’t heat uniformly.  The first few degrees warm quickly; the last few creep slowly as the walls, furniture, and air exchange soak up heat.
+
+## 2. Introducing the Quadratic Model
+
+To capture this behavior, **Model 1** uses:
 
 ```
-EMA_new = EMA_old + alpha * (value − EMA_old)
+t = a * (DeltaT)^2 + b
 ```
 
-Where `alpha` (0 < α ≤ 1) controls how quickly the average responds.  A small α smooths out noise; a large α reacts quickly.
+* `a` controls the curvature (higher means more slowdown).  
+* `b` represents the “dead time” or baseline minutes before temperature starts to move.
 
-## Key Concepts
+## 3. Example
 
-* **Recency:** Newer datapoints influence the EMA more than older ones.
-* **Smoothing factor:** α close to 0 makes the EMA slow to change; α close to 1 makes it nearly equal to the latest value.
-* **No history needed:** You don’t store a long list of values — just the current EMA.
+Suppose `a = 0.6` and `b = 5`.
+* ΔT = 2 °F → `t = 0.6 * 4 + 5 = 7.4 min`
+* ΔT = 8 °F → `t = 0.6 * 64 + 5 = 43.4 min`
 
-## Mini‑Exercises
+Notice how time grows faster than ΔT.
 
-1. Suppose the current EMA is 10 and α = 0.2.  Compute the new EMA if the next value is 14.
-2. What happens to the EMA if α = 0.05 and the next value jumps by 10?  Does the average move a lot or a little?
+## 4. Key Takeaway
 
-## Key Takeaway
-
-An EMA is a memory‑efficient way to track trends.  It’s ideal for Model 0 because it adjusts the degrees‑per‑minute rate gradually as new mornings are observed.
+The quadratic model acknowledges that heating gets harder as the room warms.  This is more realistic than a straight line for many interior zones.

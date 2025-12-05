@@ -1,32 +1,36 @@
-# Day 30 — Final Project: Build a Mini Optimal‑Start Engine
+# Day 30 — The Logarithm (ln)
 
-**Goal:** Combine everything you’ve learned into a simple, end‑to‑end optimal‑start algorithm.
+**Goal:** Explain why natural logarithms are used in Model 4 and derive the formula for predicting time.
 
-Congratulations on making it to Day 30!  Your final task is to put the pieces together and build a working miniature of an optimal‑start system.
+## 1. Why ln?
 
-## 1.  Outline of the Engine
+The solution to a first‑order differential equation involves the natural logarithm.  If error decays exponentially (`error(t) = error0 * c^t`), then solving for `t` yields a logarithm.
 
-1. Collect or generate a series of warm‑up events (`DeltaT`, `WF`, `actualMinutes`).
-2. Choose a model (Model 0, 1, 3 or a hybrid).
-3. Initialise the coefficients (`rateEMA` for Model 0, `a`, `b`, `d` for others).
-4. For each event:
-   * **Predict:** Compute `t_predicted` using the current coefficients.
-   * **Update:** Compute observed values and update coefficients with smoothing.
-   * **Log:** Record predictions, actuals and updated coefficients for analysis.
+## 2. Model 4 Formula
 
-## 2.  Suggested Implementation Steps
+In Model 4:
 
-* Start with Model 0 for simplicity.  Use a loop to process each event and update `rateEMA`.
-* Extend to Model 1 by storing `a` and `b` and updating `a` as you go.  Optionally incorporate `b` updates when you have multiple points.
-* Add weather by incorporating WF into your data and implementing the Model 3 update.
-* Plot or print the prediction vs actual over time to see how the model improves.
+```
+t = ln(alpha_a / alpha_b) / ln(alpha_c)
+```
 
-## Mini‑Exercises
+where:
+* `alpha_a` is the deadband (acceptable error),
+* `alpha_b` is the initial error (DeltaT),
+* `alpha_c` is the decay factor (learned from history).
 
-1. Write a Python script that reads a CSV of warm‑up data and runs Model 0 with α = 0.15.  Plot predicted vs actual times.
-2. Extend your script to include Model 1 updates and compare the errors of the two models.
-3. Reflect on which model performed best and why.  Are there mornings where any model struggled?  What would you try next?
+## 3. Python Example
 
-## Key Takeaway
+```python
+import math
+alpha_a = 0.5  # deadband, °F
+alpha_b = 8.0  # current DeltaT, °F
+alpha_c = 0.9  # decay factor
 
-Building a mini optimal‑start engine cements your understanding of the mathematics and the workflow.  You now have the tools to deploy, evaluate and customise optimal‑start algorithms in your own buildings — and to continue refining them as you gather more data.
+t_pred = math.log(alpha_a / alpha_b) / math.log(alpha_c)
+print(t_pred)
+```
+
+## 4. Key Takeaway
+
+The log model comes from basic physics.  It’s most suitable for systems that “coast” into the setpoint.

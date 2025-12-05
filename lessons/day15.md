@@ -1,36 +1,15 @@
-# Day 15 — PNNL Model 0 (Pure Linear EMA Model)
+# Day 15 — Why Indoor Temp Isn’t Enough
 
-**Goal:** Formalise the simplest optimal‑start algorithm: degrees‑per‑minute divided into ΔT.
+**Goal:** Recognise why perimeter zones lose heat during warm‑up and why we need outdoor compensation.
 
-PNNL’s Model 0 (and Niagara’s default linear model) predicts warm‑up time as a straight line.  It uses an exponential moving average of degrees‑per‑minute for self‑tuning.
+## 1. Perimeter vs. Core
 
-## 1.  Model Formula
+Interior zones are surrounded by conditioned spaces and maintain their heat.  Perimeter zones exchange heat with the outside; as you warm the zone, it’s simultaneously losing heat through windows and walls.
 
-```
-t_predicted = DeltaT / rateEMA
-```
+## 2. The Need for Compensation
 
-Where:
+A zone with a 5 °F deficit on a 40 °F day behaves differently than the same deficit on a 0 °F day.  We need to account for outdoor temperature.
 
-* `DeltaT = T_setpoint − T_zone,start`
-* `rateEMA` = current exponential moving average of degrees‑per‑minute
+## 3. Key Takeaway
 
-The runtime prediction is simply the temperature difference divided by the smoothed heating or cooling rate.
-
-## 2.  EMA Update
-
-After each warm‑up, compute the observed rate and blend it into `rateEMA` as described in Days 8–10.
-
-## 3.  Strengths and Limitations
-
-* **Strengths:** Easy to implement, minimal computation, reacts to changing building performance.
-* **Limitations:** Assumes minutes per degree are constant regardless of ΔT.  May under‑predict on very cold mornings or over‑predict on very mild ones.
-
-## Mini‑Exercises
-
-1. If `rateEMA = 0.22 °F/min` and `DeltaT = 6 °F`, compute the predicted warm‑up time.
-2. After a warm‑up of ΔT = 5 °F in 24 min, update `rateEMA` using α = 0.1 and initial `rateEMA = 0.22`.
-
-## Key Takeaway
-
-Model 0 is the baseline.  It predicts warm‑up time by dividing the temperature gap by a learned rate.  For buildings with mild set‑backs or stable envelopes, Model 0 can be sufficient; for more challenging sites, you’ll need the curvature and weather adjustments provided by Models 1 and 3.
+Indoor temperature alone can’t capture the dynamic of perimeter zones.  We need to look outside as well.

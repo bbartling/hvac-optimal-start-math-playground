@@ -1,43 +1,32 @@
-# Day 11 — EMA vs. Raw Average
+# Day 11 — Simple Regression (Line Fitting)
 
-**Goal:** Compare the exponential moving average to a simple arithmetic mean and understand why EMA is preferred for optimal start.
+**Goal:** Learn how to fit a straight line through data points to estimate coefficients a and b.
 
-A raw (arithmetic) average treats all values equally.  An EMA discounts older values and emphasises recent ones.  This difference matters when your building behaviour changes.
+## 1. Regression Basics
 
-## 1.  Raw Average
+To calibrate Model 1, we need to find `a` and `b` such that `t = a * x + b` (where `x = DeltaT**2`) fits the data.  With two data points, you can solve for `a` and `b` exactly.
 
-If you have warm‑up rates 0.20, 0.18, 0.22, 0.25 (°F/min), the raw average is:
+## 2. Two‑Point Solution
 
-```
-average = (0.20 + 0.18 + 0.22 + 0.25) / 4 = 0.2125 °F/min
-```
-
-This value will change only when you drop an old observation and add a new one.
-
-## 2.  EMA
-
-Using α = 0.3 and starting with 0.20, the EMA after the same sequence becomes:
+Given (x1, t1) and (x2, t2):
 
 ```
-EMA_1 = 0.20 + 0.3 * (0.18 − 0.20) = 0.194
-EMA_2 = 0.194 + 0.3 * (0.22 − 0.194) ≈ 0.2018
-EMA_3 = 0.2018 + 0.3 * (0.25 − 0.2018) ≈ 0.2153
+a = (t2 - t1) / (x2 - x1)
+b = t1 - a * x1
 ```
 
-Notice how the EMA moves toward the higher recent values more quickly than a raw average would.  If tomorrow’s observation drops sharply, the EMA will move down accordingly.
+## 3. Python Example
 
-## 3.  Why EMA Wins in BAS
+```python
+def solve_two_point(x1, t1, x2, t2):
+    a = (t2 - t1) / (x2 - x1)
+    b = t1 - a * x1
+    return a, b
 
-* **Responsiveness:** Building performance drifts; the EMA reacts sooner.
-* **Memory efficiency:** You only store one value (the current EMA), not a list of past warm‑ups.
-* **Tuning:** The α parameter lets you decide how much weight to give new data.
+# Example: (4, 10) and (25, 40)
+print(solve_two_point(4,10,25,40))  # (1.0, 6.0)
+```
 
-## Mini‑Exercises
+## 4. Key Takeaway
 
-1. Compute the raw average of the rates 0.16, 0.19, 0.23, 0.21.
-2. Starting with an EMA of 0.16 and α = 0.25, update the EMA with 0.19, then 0.23, then 0.21.
-3. Compare the final EMA to the raw average.  Which reflects the latest trend more?
-
-## Key Takeaway
-
-The EMA is better suited to adaptive HVAC control because it adjusts more quickly to changes.  A raw average can lag behind when your building performance improves or degrades.
+You don’t need fancy tools to estimate a quadratic model.  Basic algebra and two points will get you there.
