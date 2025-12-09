@@ -18,27 +18,24 @@ Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approac
 
 ## 📝 Model Summary — The Plain-English Version
 
-Different mathematical shapes capture different building behaviors. None of these models are “for interior zones” or “for RTUs only.”
-They are *tools* — and whichever predicts most accurately at a given site is the right one.
-
-### **📘 Optimal Start Models (0–4)**
-
-| Model                                            | What It Does (Plain English)                                                                                                                                                           |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Model 0 — Linear (Classic BAS Optimal Start)** | Assumes the building warms at a **constant rate** (e.g., 0.5°F per minute). Learns that rate via EMA. Simple, stable, and similar to how most legacy BAS systems estimate start times. |
-| **Model 1 — Quadratic (Curved Relationship)**    | Models warm-up time as increasing **non-linearly** as ΔT grows. Useful when large deltas take disproportionately longer than small deltas — a very common real-world behavior.         |
-| **Model 2 — Linear + Weather Bump**              | Same as Model 0 but adds a small correction when today's weather is colder than reference conditions. Rarely used; mathematically limited, but included for completeness.              |
-| **Model 3 — Weather-Enhanced Linear Model**      | Models warm-up as a combination of **ΔT** *and* a **weather factor (WF)**. Much more expressive than Model 2. Handles weather swings well and is the most general-purpose model.       |
-| **Model 4 — Saturation / Coasting Model**        | Models situations where heating slows down as it nears setpoint. Useful when the last few degrees take disproportionately longer (coil approach, stratification, low airflow, etc.).   |
+| Model | What It Does (Plain English) |
+| :--- | :--- |
+| **Model 0 — Linear (Tridium kitControl)** | Assumes the building warms at a **constant rate** (e.g., 0.5°F per minute). This is the standard logic found inside the default Tridium Niagara `kitControl` optimal start block. Simple, stable, and widely used. |
+| **Model 1 — Quadratic (Curved Relationship)** | Models warm-up time as increasing **non-linearly** as ΔT grows. Useful when large deltas take disproportionately longer than small deltas — a very common real-world behavior. |
+| **Model 2 — Linear + Weather Bump** | Same as Model 0 but adds a small correction when today's weather is colder than reference conditions. Rarely used; mathematically limited, but included for completeness. |
+| **Model 3 — Weather-Enhanced Linear Model** | Models warm-up as a combination of **ΔT** *and* a **weather factor (WF)**. Much more expressive than Model 2. Handles weather swings well and is the most general-purpose model. |
+| **Model 4 — Saturation / Coasting Model** | Models situations where heating slows down as it nears setpoint. Useful when the last few degrees take disproportionately longer (coil approach, stratification, low airflow, etc.). |
+| **Model 5 — Gradient Descent (Future Research)** | For learning purposes, a custom Machine Learning engine built from scratch. Instead of using algebra, it "learns" weights for complex features (like the "Monday Morning" cold soak) by iteratively minimizing error over thousands of training epochs. |
 
 ---
 
 ### 🛠️ How hard are they to program?
 
-* **Model 0 (Easy):** Just simple division. Any BAS controller can do this easily.
+* **Model 0 (Easy):** Just simple division. This logic is pre-built into most standard BAS blocks (like Tridium's `kitControl`).
 * **Model 1 & 2 (Medium):** Requires basic algebra. You can do this in most PLCs or Niagara Program objects.
 * **Model 3 (Hard):** Requires "Matrix Algebra." This is very hard to code from scratch in a standard BAS controller. It is best suited for Python or edge devices that have math libraries.
 * **Model 4 (Medium/Hard):** Uses logarithms (ln). Requires a controller that supports advanced math functions.
+* **Model 5 (Advanced):** Requires implementing an iterative training loop (Gradient Descent) and feature engineering (Normalization, One-Hot Encoding). Best suited for Python, Edge Compute, or Cloud-based analytics overlays.
 
 > Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
 
@@ -182,6 +179,10 @@ denominator = math.log(alpha_c)
 
 predicted_minutes = numerator / denominator
 ```
+
+### Model 5: Gradient Descent (Future Research)
+
+* TODO
 
 ---
 
