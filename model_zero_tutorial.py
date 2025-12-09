@@ -1,91 +1,73 @@
-"""
-Ultra-dumb linear model with EMA learning.
-Identical to what the Niagara optimal start ProgramObject does,
-but shown with the simplest Python possible.
-
-Niagara logic:
-    minutesPredicted = deltaT / rateEMA
-
-After a real warmup run:
-    observedRate = deltaT / actualMinutes
-    rateEMA = rateEMA + emaStep * (observedRate - rateEMA)
-"""
-
-# ---------------------------------------------
-# 1. Initial "learned" rate (°F per minute)
-# ---------------------------------------------
-rateEMA = 0.10       # same as Niagara default starting estimate
-emaStep = 0.30       # how fast the rate learns (0.0–1.0)
-
-print("Starting rateEMA =", round(rateEMA, 3), "°F/min\n")
-
-# ---------------------------------------------
-# 2. Fake data for several days of warmup runs
-#    Format: (zoneTempAtStart, setpoint, actualMinutes)
-# ---------------------------------------------
-runs = [
-    (65, 72, 40),     # Day 1
-    (68, 72, 25),     # Day 2
-    (70, 72, 18),     # Day 3
+# ---------------------------------------------------------
+# 1. MADE UP DATA (15 Days of History)
+# Format: [Temp_Diff_Degrees, Actual_Minutes_To_Recover]
+# ---------------------------------------------------------
+history = [
+    [2.0, 10.0],  # Day 1: 2 degrees took 10 mins (Rate = 0.2 deg/min)
+    [5.0, 25.0],  # Day 2: 5 degrees took 25 mins (Rate = 0.2 deg/min)
+    [8.0, 40.0],  # Day 3: Rate = 0.2
+    [3.0, 15.0],  # Day 4: Rate = 0.2
+    [6.0, 29.0],  # Day 5: Rate = 0.206 (A little faster)
+    [10.0, 50.0], # Day 6: Rate = 0.2
+    [4.0, 19.0],  # Day 7: Rate = 0.21
+    [5.5, 27.0],  # Day 8: Rate = 0.203
+    [9.0, 45.0],  # Day 9: Rate = 0.2
+    [2.5, 12.0],  # Day 10: Rate = 0.208
+    [7.0, 36.0],  # Day 11: Rate = 0.194 (A little slower)
+    [6.5, 32.0],  # Day 12: Rate = 0.203
+    [3.5, 17.0],  # Day 13: Rate = 0.205
+    [8.5, 42.0],  # Day 14: Rate = 0.202
+    [4.5, 22.0]   # Day 15: Rate = 0.204
 ]
 
-# ---------------------------------------------
-# 3. Predict function (same math as Niagara)
-# ---------------------------------------------
-def predictWarmup(zoneTemp, setpointTemp, rate):
-    deltaT = abs(setpointTemp - zoneTemp)
+# ---------------------------------------------------------
+# 2. INITIALIZE THE "BRAIN"
+# ---------------------------------------------------------
+# We start with a default guess, just like the Java code
+current_learned_rate = 0.1 # Default: 0.1 degrees per minute
+ema_weight = 0.2           # The "Smoothing Factor" (Alpha)
 
-    # Avoid divide by zero (Niagara also protects here)
-    if rate <= 0.000001:
-        return 0.0
+print(f"--- STARTING ---")
+print(f"Initial Learned Rate: {current_learned_rate:.3f} deg/min")
+print("-" * 30)
 
-    return deltaT / rate
+# ---------------------------------------------------------
+# 3. THE "LEARNING LOOP" (EMA Logic)
+# ---------------------------------------------------------
+day_count = 1
 
+for day in history:
+    delta_t = day[0]
+    actual_minutes = day[1]
 
-# ---------------------------------------------
-# 4. Run through each fake historical day
-# ---------------------------------------------
-for (zoneStart, sp, actualMin) in runs:
+    # Step A: Calculate today's raw performance
+    # Formula: Rate = Degrees / Minutes
+    today_rate = delta_t / actual_minutes
 
-    print("==============================")
-    print("Starting zoneTemp =", zoneStart, "°F")
-    print("Setpoint =", sp, "°F")
-    print("Actual warmup time =", actualMin, "minutes")
+    # Step B: Update the Running Average (EMA)
+    # Formula: New = Old + Weight * (Today - Old)
+    # This is exactly how the Java code updates 'degreesPerMinuteHeat'
+    previous_rate = current_learned_rate
+    current_learned_rate = previous_rate + ema_weight * (today_rate - previous_rate)
 
-    # ------ Predict BEFORE learning ------
-    predicted = predictWarmup(zoneStart, sp, rateEMA)
-    print("Predicted warmup =", round(predicted, 1), "minutes")
+    print(f"Day {day_count}: dT={delta_t}, Time={actual_minutes}m")
+    print(f"   -> Today's Raw Rate: {today_rate:.3f}")
+    print(f"   -> UPDATED Learned Rate: {current_learned_rate:.3f}")
+    
+    day_count += 1
 
-    # ------ Compute actual observed rate ------
-    deltaT = abs(sp - zoneStart)
+print("-" * 30)
+print(f"FINAL LEARNED RATE: {current_learned_rate:.4f} deg/min")
+print("-" * 30)
 
-    # If actualMin is zero or deltaT is zero → cannot learn
-    if actualMin > 0 and deltaT > 0:
-        observedRate = deltaT / actualMin
-    else:
-        observedRate = rateEMA     # fallback: no learning
+# ---------------------------------------------------------
+# 4. PREDICTION (Using the Linear Brain)
+# ---------------------------------------------------------
+print("\n--- STEP 3: PREDICTING TOMORROW ---")
+tomorrow_delta_t = 10.0 # Cold morning!
 
-    print("ObservedRate =", round(observedRate, 3), "°F/min")
+# Formula: Minutes = Degrees / Rate
+pred_minutes = tomorrow_delta_t / current_learned_rate
 
-    # ------ EMA update (Niagara does exactly this) ------
-    oldRate = rateEMA
-    rateEMA = oldRate + emaStep * (observedRate - oldRate)
-
-    print("Old rateEMA =", round(oldRate, 3))
-    print("New rateEMA =", round(rateEMA, 3), "\n")
-
-
-# ---------------------------------------------
-# 5. Predict tomorrow after learning
-# ---------------------------------------------
-print("==============================")
-print("Tomorrow prediction:")
-
-tomorrowZone = 66
-tomorrowSetpoint = 72
-
-minutesTomorrow = predictWarmup(tomorrowZone, tomorrowSetpoint, rateEMA)
-
-print("Tomorrow zoneTemp =", tomorrowZone, "°F")
-print("Final learned rateEMA =", round(rateEMA, 3), "°F/min")
-print("Predicted warmup =", round(minutesTomorrow, 1), "minutes")
+print(f"Scenario: Tomorrow the zone is {tomorrow_delta_t} degrees from setpoint.")
+print(f"Prediction: Start the unit {pred_minutes:.1f} minutes early.")

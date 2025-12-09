@@ -185,7 +185,7 @@ predicted_minutes = numerator / denominator
 
 ---
 
-## 🧑‍🏫 42-Day Crash Course: Master All 5 Models + The "Monday Problem"
+## 🧑‍🏫 50-Day Crash Course: Master All 5 Models + The "Monday Problem"
 
 > **Note:** This expanded course dedicates a full week to each PNNL model. Perfect for BAS professionals who want to master the math one step at a time.
 
@@ -396,6 +396,49 @@ Upload this text into your AI assistant to act as your daily math coach.
 * Compare to actual runtime.
 * **Verdict:** Did the math beat the gut instinct?
 
+---
+
+### WEEK 7 — The Future: Building an AI Engine from Scratch
+*Focus: Gradient Descent, Normalization, & Custom Weights*
+
+**Day 43 — Algebra vs. Iteration**
+* The difference between "solving" (Algebra) and "guessing" (Machine Learning).
+* The "Hot or Cold" game: How computers find answers without formulas.
+
+**Day 44 — The Cost Function (MSE)**
+* Quantifying "Wrongness."
+* Why we square the error (punishing big mistakes).
+* The goal: Make this one number zero.
+
+**Day 45 — The Gradient (The "Nudge")**
+* Standing on a mountain in the fog.
+* How the error tells us which direction to step.
+* Calculating the slope: $\text{Gradient} = \text{Error} \times \text{Input}$.
+
+**Day 46 — The Learning Rate ($\eta$)**
+* The "Throttle" of your AI engine.
+* The Update Rule: $\text{Weight}_{new} = \text{Weight}_{old} - (\text{Rate} \times \text{Gradient})$.
+* What happens if you learn too fast (Explosion) vs. too slow (Stall).
+
+**Day 47 — Feature Engineering (Data Prep)**
+* Why math hates big numbers (Normalization).
+* **One-Hot Encoding:** Converting "Monday" into `1.0` and `0.0`.
+* Creating the Input Vector: `[Scaled_DeltaT, Is_Monday]`.
+
+**Day 48 — The Epoch Loop**
+* What is an Epoch? (Seeing the whole history once).
+* Writing the training loop that runs 2,000 times.
+* Watching the Loss curve drop.
+
+**Day 49 — The "Monday Neuron" (Interpreting Weights)**
+* Reading the mind of the machine.
+* If Weight #2 is `45.0`, the AI *learned* that Mondays need 45 extra minutes.
+* No IF statements, just math.
+
+**Day 50 — The Final Boss: Full Custom Engine**
+* Build "Model 5" from scratch using only `numpy`.
+* Train it on 20 days of data (including cold Mondays).
+* **Victory:** Watch it automatically predict longer runtimes for Monday without being told to.
 
 ---
 
