@@ -2,13 +2,25 @@
 
 **Goal:** Combine the base time and weather ratio into the final runtime
 
+## 1. Concept and Definitions
+
 Model 2 performs two steps: (1) predict a base time using yesterday’s
 indoor rate, and (2) multiply by the weather ratio to account for
 outdoor differences.  The final optimal start time is t_opt = t_base ×
 ratio.  This structure keeps the indoor and outdoor effects separate and
 makes the logic easy to implement in a BAS.
 
-## Python Mini‑Lesson
+## 2. How to Use It
+
+Apply the concepts above using the formula or algorithm provided. Refer to the mini examples below for a demonstration.
+
+## 3. Why This Matters
+
+Understanding this concept allows you to build more accurate and efficient optimal‑start models, improving comfort and energy savings.
+
+## 4. Mini‑Examples
+
+Here's a simple Python demonstration:
 
 ```python
 # Full Model 2 prediction
@@ -23,12 +35,15 @@ t_opt = t_base * ratio
 print(f'Base time={t_base:.1f} min, Ratio={ratio:.2f}, Final={t_opt:.1f} min')
 ```
 
-## Exercises
+## 5. Micro‑Exercises
 
 1. Use your own ΔT and outdoor temperatures to compute Model 2’s t_opt.
 2. Explain why the two‑step calculation is easier to tune than a single combined formula.
 3. Under what conditions does Model 2 reduce to Model 0?
+4. Create a simple Python file that performs the calculations from this lesson.
+   Use only basic variables, arithmetic, print statements and at most a `for` loop over a list. Avoid defining functions or using `zip`.
+   Hint: replicate the structure of the examples above but use your own numbers or dataset.
 
-## Key Takeaway
+## 6. Key Takeaway
 
 Separating the indoor rate from the weather correction makes Model 2 intuitive and modular.  It also highlights when outdoor conditions significantly affect runtime.

@@ -2,6 +2,8 @@
 
 **Goal:** Get comfortable with matrix notation used in regression
 
+## 1. Concept and Definitions
+
 A matrix is simply a grid of numbers.  In regression we stack our input
 vectors into a matrix X and our outputs into a column vector y.  The
 normal equation (XᵀX)⁻¹Xᵀy computes the least‑squares coefficients.  You
@@ -9,7 +11,17 @@ don’t need to memorise the algebra; it’s more important to recognise
 what the shapes mean.  Modern languages (Python, R, MATLAB) perform
 these operations with built‑in functions.
 
-## Python Mini‑Lesson
+## 2. How to Use It
+
+Apply the concepts above using the formula or algorithm provided. Refer to the mini examples below for a demonstration.
+
+## 3. Why This Matters
+
+Understanding this concept allows you to build more accurate and efficient optimal‑start models, improving comfort and energy savings.
+
+## 4. Mini‑Examples
+
+Here's a simple Python demonstration:
 
 ```python
 # Demonstrate basic matrix multiplication
@@ -25,12 +37,15 @@ print('A @ B =
 ', product)
 ```
 
-## Exercises
+## 5. Micro‑Exercises
 
 1. Create two 2×2 matrices and compute their product using @.
 2. Why do we use matrix multiplication (XᵀX and Xᵀy) in regression?
 3. How does adding a column of ones change the shape of X?
+4. Create a simple Python file that performs the calculations from this lesson.
+   Use only basic variables, arithmetic, print statements and at most a `for` loop over a list. Avoid defining functions or using `zip`.
+   Hint: replicate the structure of the examples above but use your own numbers or dataset.
 
-## Key Takeaway
+## 6. Key Takeaway
 
 Matrices provide a compact way to represent and solve linear systems.  Understanding the shapes helps you implement multiple regression.
