@@ -1,34 +1,32 @@
-# Day 45 — The Gradient (The "Nudge")
+# Day 45 — The Gradient (The Nudge)
 
-**Goal:** Understand the logic of **Gradient Descent**—how the computer knows which direction to change the weights.
+**Goal:** Compute gradients to update weights
 
-## 1. The Mountain in the Fog
+The gradient of the cost function tells us how to adjust each weight to
+reduce error.  For a simple linear model y = w·x, the gradient of the
+MSE with respect to w is proportional to Σ (prediction − actual) × x.
+We then update w ← w − η × gradient, where η is the learning rate【485764260655805†L152-L160】.
 
-Imagine you are standing on a mountain (the Cost Function) in total fog. You want to get to the bottom (Zero Error). You can't see the bottom, but you can feel the slope under your feet.
+## Python Mini‑Lesson
 
-* If the slope goes **up** to the right, you step **left**.
-* If the slope goes **down** to the right, you step **right**.
+```python
+# Perform one gradient descent step for a single weight
+x_data = [1, 2, 3]
+y_actual = [2, 4, 6]
+w = 0.0  # initial weight
+learning_rate = 0.1
+# Compute gradient of MSE w.r.t w
+grad = sum((w * x - y) * x for x, y in zip(x_data, y_actual)) * 2 / len(x_data)
+w = w - learning_rate * grad
+print(f'Updated weight w={w:.2f}')
+```
 
-## 2. The Derivative (Slope)
+## Exercises
 
-In our simple prediction $y = w \cdot x$:
-* If we guess too high, the "slope" of the error is positive. We must **decrease** $w$.
-* If we guess too low, the "slope" is negative. We must **increase** $w$.
+1. Repeat the update step 10 times and observe how w approaches the true value.
+2. What happens if the learning rate η is too large?
+3. Derive the gradient formula for a model with two weights.
 
-The formula for this slope (Gradient) with respect to the weight is:
+## Key Takeaway
 
-$$
-\text{Gradient} = \text{Error} \times \text{Input}
-$$
-
-## 3. Micro‑Exercises
-
-1.  Scenario: Input $\Delta T = 10$. Actual = 60.
-2.  Current Weight guess = 8. Prediction = $8 \times 10 = 80$.
-3.  Error = $80 - 60 = +20$ (Too High).
-4.  Gradient = $20 \times 10 = 200$.
-5.  Since the gradient is positive, we must subtract from our weight. New weight might be 7.9.
-
-## 4. Key Takeaway
-
-The "Gradient" tells the model two things: which direction to move (sign), and how big a step to take (magnitude).
+Gradients point in the direction of steepest error increase.  Updating weights opposite to the gradient reduces error over time.

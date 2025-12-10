@@ -1,35 +1,39 @@
-# Day 13 — Double EMA (EMA of EMA)
+# Day 13 — Self‑Tuning Model 1
 
-**Goal:** Learn how applying an EMA twice can produce extra smoothing and why it’s sometimes used.
+**Goal:** Combine regression and EMA to adapt coefficients over time
 
-In some control applications, especially when data are noisy, a **double EMA** — taking an EMA of an EMA — can provide a smoother trend without losing too much responsiveness.
+Instead of recomputing α₁,a and α₁,b from scratch each day, you can
+apply an EMA to these coefficients, blending yesterday’s estimate with
+today’s regression result.  This yields a slowly drifting quadratic model
+that adapts to seasonal changes without overreacting to outliers.
+The update rule is analogous to the rate EMA from Day 4:
 
-## 1.  Why Double EMA?
+    new_coeff = old_coeff + α × (observed_coeff − old_coeff)
 
-If a single EMA is still too noisy or you have sporadic bad data, a second layer of smoothing dampens fluctuations.  The first EMA filters out high‑frequency noise; the second EMA smooths the filtered series.
+where observed_coeff is the coefficient computed from the latest day’s
+data.  Use small α values (e.g., 0.1) to obtain gradual tuning.
 
-## 2.  How It Works
+## Python Mini‑Lesson
 
-Assume you have a series of observed values `x_t`.  Define:
-
+```python
+# Self‑tuning quadratic coefficients
+alpha = 0.1
+# initial estimates
+a_est, b_est = 1.0, 4.0
+# new regression estimates from today
+a_new, b_new = 1.4, 3.5
+# update using EMA
+a_est = a_est + alpha * (a_new - a_est)
+b_est = b_est + alpha * (b_new - b_est)
+print(f'Updated α₁,a={a_est:.2f}, α₁,b={b_est:.2f}')
 ```
-EMA1_t = EMA1_{t−1} + alpha1 * (x_t − EMA1_{t−1})
-EMA2_t = EMA2_{t−1} + alpha2 * (EMA1_t − EMA2_{t−1})
-```
 
-The second EMA (`EMA2`) reacts even more slowly than the first.  In practice, α values are often the same for both layers.
+## Exercises
 
-## 3.  Practical Considerations
-
-* A double EMA can help when sensors are noisy or when you see occasional outliers.
-* It delays the response further, so use it only when necessary.
-* Niagara’s Optimal Start typically uses a single EMA for degrees‑per‑minute, but understanding the double EMA concept builds intuition for smoothing techniques.
-
-## Mini‑Exercises
-
-1. Start with `EMA1_0 = 10` and `EMA2_0 = 10`, α = 0.2.  The next two observed values are 14 and 9.  Compute `EMA1_1`, `EMA2_1`, `EMA1_2` and `EMA2_2`.
-2. Compare `EMA1_2` and `EMA2_2`.  Which is smoother (closer to the initial value)?
+1. Simulate 5 days of α₁,a estimates and apply α=0.2 to see how the coefficient evolves.
+2. Why might you tune α differently for α₁,a and α₁,b?
+3. Discuss the trade‑offs between fitting a fresh regression each day and using an EMA.
 
 ## Key Takeaway
 
-A double EMA adds a second layer of smoothing by averaging an average.  It’s rarely required for optimal start, but knowing it helps you understand other smoothing techniques used in controls and data science.
+Applying an EMA to regression coefficients yields a model that gradually adapts to new data, blending stability with responsiveness.

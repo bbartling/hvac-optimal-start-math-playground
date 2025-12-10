@@ -1,36 +1,32 @@
-# Day 9 — Compute an EMA by Hand
+# Day 9 — The Dead‑Time Intercept (b)
 
-**Goal:** Practise calculating exponential moving averages yourself and see how α changes the smoothing.
+**Goal:** Understand the overhead time in the quadratic model
 
-On Day 8 you learned the EMA formula.  Today you’ll compute a few by hand to build intuition.
+In Model 1 the intercept α₁,b accounts for fixed delays such as coil warm‑up,
+valve stroking and sensor lag.  Even if ΔT were zero you still need a
+few minutes to circulate water or air before any temperature change is
+measurable.  The PNNL paper defines α₁,b as the minutes required to
+change the indoor temperature by one degree【913477360246089†L448-L476】.
+Choosing α₁,b appropriately prevents the model from predicting zero
+runtime when ΔT is small.
 
-## Step‑by‑Step Example
+## Python Mini‑Lesson
 
-Assume α = 0.3 and an initial EMA of 20.  You record these values over four days: 18, 25, 22, 17.  Compute the EMA after each value:
+```python
+# Illustrate the impact of the intercept
+alpha_a = 1.5
+alpha_b = 5.0
+for delta_t in [1, 4, 8]:
+    t_pred = alpha_a * (delta_t ** 2) + alpha_b
+    print(f'ΔT={delta_t}°F → time={t_pred:.1f} min')
+```
 
-1. **First value (18):**
-   
-   `EMA_1 = 20 + 0.3 * (18 − 20) = 20 − 0.6 = 19.4`
+## Exercises
 
-2. **Second value (25):**
-   
-   `EMA_2 = 19.4 + 0.3 * (25 − 19.4) ≈ 19.4 + 1.68 = 21.08`
-
-3. **Third value (22):**
-   
-   `EMA_3 = 21.08 + 0.3 * (22 − 21.08) ≈ 21.08 + 0.276 = 21.356`
-
-4. **Fourth value (17):**
-   
-   `EMA_4 = 21.356 + 0.3 * (17 − 21.356) ≈ 21.356 − 1.307 = 20.049`
-
-Notice how the EMA reacts to changes but doesn’t jump as much as the raw values do.
-
-## Mini‑Exercises
-
-1. Using α = 0.1 and an initial EMA of 15, compute the EMA after the sequence: 16, 14, 20.
-2. Using α = 0.5 (a fast learner) and an initial EMA of 30, update the EMA after the values: 35 and then 25.
+1. Explain why the predicted time is never less than α₁,b.
+2. How would you estimate α₁,b from historical data?
+3. What building components contribute to dead‑time during warm‑up?
 
 ## Key Takeaway
 
-Manually computing EMAs shows how each new value nudges the average.  The weight α decides whether the model learns quickly or slowly.
+The intercept captures fixed delays in the system.  Without it, the model would unrealistically predict zero runtime for small temperature differences.

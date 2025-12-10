@@ -1,26 +1,31 @@
-# Day 8 — What an EMA Actually Is
+# Day 8 — Why Heat Transfer isn’t Linear
 
-**Goal:** Understand the definition of an exponential moving average (EMA) and why it’s perfect for self‑tuning.
+**Goal:** Recognise that warm‑up time grows faster than ΔT
 
-An EMA is a running average that gives more weight to recent observations.  It updates with a simple one‑line formula:
+In many buildings the last few degrees take longer than the first.  This
+non‑linear behaviour occurs because heat transfer slows as the zone
+approaches set point; the walls, furniture and air must all warm up.
+PNNL’s Model 1 captures this by squaring the temperature difference:
+t = α₁,a × (ΔT)² + α₁,b 【913477360246089†L448-L476】.  The square term
+makes the runtime grow rapidly with large ΔT, better matching reality.
 
+## Python Mini‑Lesson
+
+```python
+# Compute warm‑up time using a quadratic model
+delta_t = 6.0
+alpha_a = 1.5  # minutes per (degree)^2
+alpha_b = 2.5  # minutes
+t_pred = alpha_a * (delta_t ** 2) + alpha_b
+print(f'Predicted time = {t_pred:.1f} minutes')
 ```
-EMA_new = EMA_old + alpha * (value − EMA_old)
-```
 
-Where `alpha` (0 < α ≤ 1) controls how quickly the average responds.  A small α smooths out noise; a large α reacts quickly.
+## Exercises
 
-## Key Concepts
-
-* **Recency:** Newer datapoints influence the EMA more than older ones.
-* **Smoothing factor:** α close to 0 makes the EMA slow to change; α close to 1 makes it nearly equal to the latest value.
-* **No history needed:** You don’t store a long list of values — just the current EMA.
-
-## Mini‑Exercises
-
-1. Suppose the current EMA is 10 and α = 0.2.  Compute the new EMA if the next value is 14.
-2. What happens to the EMA if α = 0.05 and the next value jumps by 10?  Does the average move a lot or a little?
+1. Using α₁,a=1.0 and α₁,b=3.0, compute predicted times for ΔT=4 °F and ΔT=8 °F.
+2. Explain why squaring ΔT exaggerates large temperature differences.
+3. Give an example of a high‑mass zone where Model 1 would outperform Model 0.
 
 ## Key Takeaway
 
-An EMA is a memory‑efficient way to track trends.  It’s ideal for Model 0 because it adjusts the degrees‑per‑minute rate gradually as new mornings are observed.
+Quadratic models reflect the slowing heat transfer near set point.  The (ΔT)² term makes large setbacks require disproportionately longer preheat times.

@@ -1,23 +1,34 @@
-# Day 36 — The “Monday Morning” Problem Defined
+# Day 36 — The Monday Morning Problem Defined
 
-**Goal:** Describe why all models tend to underpredict runtime on Mondays and what causes the discrepancy.
+**Goal:** Understand why models struggle on Mondays
 
-## 1.  What Happens Over the Weekend
+The PNNL paper observed that all models performed poorly on Mondays
+【913477360246089†L40-L46】.  After a weekend shutdown the building is
+much colder than during the week; the thermal mass loses more heat.
+Using recent history (Tuesday–Friday) under‑predicts the warm‑up time,
+leading to comfort complaints.  This lesson defines the problem and
+prepares you to address it.
 
-During a typical work week, buildings cool down for only 12–16 hours overnight.  On Monday morning, however, the building has been off for 48+ hours.  Walls, floors and furnishings have “cold soaked” far beyond the normal nightly setback.  
+## Python Mini‑Lesson
 
-When you plug Monday’s ΔT into any of the previous models, they see only the temperature difference — they don’t know the building mass is colder **inside**.  As a result, the predicted warm‑up time is too short.
+```python
+# Illustrate the Monday effect with sample data
+week_rates = {'Tue':0.20, 'Wed':0.22, 'Thu':0.21, 'Fri':0.19}
+monday_rate = 0.12  # much slower after weekend
+avg_week_rate = sum(week_rates.values()) / len(week_rates)
+delta_t = 6.0
+t_week = delta_t / avg_week_rate
+t_mon = delta_t / monday_rate
+print(f'Using weekday rate → time={t_week:.1f} min')
+print(f'Actual Monday rate → time={t_mon:.1f} min')
+```
 
-## 2.  The Evidence from PNNL
+## Exercises
 
-Researchers at PNNL observed that all four models underestimated Monday warm‑up time by 20–60 minutes【508931384575534†L420-L456】.  They recommended either adding a fixed time adder or scaling the prediction by a “cold soak” factor on Mondays.
+1. Compare Monday warm‑up times to those during the rest of the week in your own data.
+2. Why do buildings cool down more over the weekend?
+3. List factors that could exacerbate the Monday effect (e.g., heavy mass, cold weather).
 
-## 3.  Micro‑Exercises
+## Key Takeaway
 
-1. Look at a week of your own data.  Compare Monday’s actual warm‑up time to Tuesday’s for the same ΔT.  
-2. Compute the ratio `actual_monday / predicted_monday` for each model and see how big the error is.  
-3. Discuss in a few sentences why the models fail to capture the weekend effect.
-
-## 4.  Key Takeaway
-
-The Monday problem is real and must be addressed separately; ignoring it leads to cold occupants and wasted energy.
+Weekday history underestimates Monday warm‑up because the building cools for a longer period.  Recognising this issue is the first step toward fixing it.

@@ -1,30 +1,34 @@
-# Day 49 — The "Monday Neuron" (Interpreting Weights)
+# Day 49 — The Monday Neuron
 
-**Goal:** Understand how the weights you trained actually solve the Monday Cold Soak problem automatically.
+**Goal:** Interpret the weight for the Monday feature
 
-## 1. The Final Formula
+After training a model that includes a "Monday" indicator feature,
+you can interpret the associated weight as the additional minutes needed
+on Mondays.  A positive weight means the model learned that Mondays
+require extra time.  Reading weights helps you validate that the model
+captured the Monday effect correctly.
 
-After training, your model is no longer a "black box." It is just a math formula with specific numbers plugged in.
+## Python Mini‑Lesson
 
-$$
-\text{Time} = (w_1 \cdot \Delta T) + (w_2 \cdot \text{IsMonday}) + \text{Bias}
-$$
+```python
+# Train a linear model with a Monday feature
+import numpy as np
+# Features: [scaled_ΔT, is_monday]
+X = np.array([[0.3, 0], [0.6, 1], [0.8, 0], [0.4, 1]])
+y = np.array([0.4, 0.9, 0.7, 0.6])
+# Add bias column
+X_design = np.column_stack([X, np.ones(len(X))])
+weights = np.linalg.lstsq(X_design, y, rcond=None)[0]
+delta_weight, monday_weight, bias = weights
+print(f'Monday weight = {monday_weight:.2f}')
+```
 
-## 2. Reading the Mind of the Machine
+## Exercises
 
-We can inspect the final values of $w_1$ and $w_2$ to understand what the AI "learned."
+1. Use your own dataset with a Monday indicator and interpret the Monday weight.
+2. What does a negative Monday weight imply?
+3. How could you incorporate a weekend length (e.g., holiday) into the features?
 
-* **$w_1$ (Temp Weight):** This is your standard "Minutes per Degree" (just like Model 0). If $w_1 = 5.0$, it means every degree of warm-up takes 5 minutes.
-* **$w_2$ (Monday Weight):** This value is the **AI-discovered Cold Soak Adder**.
+## Key Takeaway
 
-If your trained model outputs $w_2 = 45.0$, it means the math *automatically* decided that Mondays need exactly 45 extra minutes to reach the setpoint. You didn't code an `IF` statement; the Gradient Descent process found the correlation between the "Monday Flag" and the "Higher Error" and assigned a weight to fix it.
-
-## 3. Micro‑Exercises
-
-1.  Train a model on the dataset from Day 47 (yesterday's lesson).
-2.  Print the final weights using `print(weights)`.
-3.  Compare the learned $w_2$ to the "Technician's Guess" from Day 38. Did the AI find a similar buffer (e.g., 60 minutes), or did it find something more precise (e.g., 42 minutes)?
-
-## 4. Key Takeaway
-
-In AI, the weights *are* the logic. $w_2$ isn't just a random number; it is the encoded physical reality of the weekend cold soak.
+The weight on the Monday feature quantifies the additional minutes needed after a long weekend.  Inspecting weights gives insight into the model’s behaviour.

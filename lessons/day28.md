@@ -1,37 +1,35 @@
-# Day 28 — Identify Pathological Cases
+# Day 28 — Week 4 Review: Is It Worth It?
 
-**Goal:** Recognise situations where optimal‑start models break down and how to handle them.
+**Goal:** Weigh the benefits of Model 3 against its complexity
 
-Not every morning is a clean warm‑up.  Some days yield misleading datapoints that can corrupt your model if you don’t detect them.
+Model 3 is more accurate on average than Model 1 but requires more
+computation, data and careful tuning.  In many cases the simpler
+quadratic model performs nearly as well【913477360246089†L448-L476】.  Use
+this review to decide when the extra effort of multiple regression is
+justified.  Consider zone type, available sensors and technical
+support.
 
-## 1.  Zero or Negative ΔT
+## Python Mini‑Lesson
 
-If the zone starts at or above setpoint, there’s nothing to learn.  Skip updating your model when:
-
+```python
+# Compare Model 1 and Model 3 predictions on a sample day
+delta_t = 6.0
+WF = 0.7
+# Model 1 coefficients
+a1, b1 = 1.2, 3.0
+t1 = a1 * (delta_t ** 2) + b1
+# Model 3 coefficients
+a3, b3, d3 = 1.8, 1.2, 2.5
+t3 = a3 * delta_t + b3 * (delta_t * WF) + d3
+print(f'Model1: {t1:.1f} min, Model3: {t3:.1f} min')
 ```
-DeltaT <= 0
-```
 
-Updating on tiny ΔT values (e.g. < 1 °F) can also introduce noise; consider ignoring them.
+## Exercises
 
-## 2.  Zero Runtime
-
-If the warm‑up time is zero or very short, perhaps because the system was already running or the setpoint changed mid‑day, computing `observedRate` will give an infinite or unrealistic value.  Detect and discard these cases.
-
-## 3.  Staging and Lockouts
-
-Multi‑stage equipment may run in low stage for the first part of warm‑up then ramp to high stage.  Lockout conditions (e.g. economiser lockout) can cause unusual warm‑up behaviour.  These datapoints may not represent normal operation.
-
-## 4.  Sensor Errors and Overrides
-
-Bad sensors, manual overrides or sudden setpoint changes mid‑run distort warm‑up data.  Cross‑check against alarms and override logs before using a datapoint.
-
-## Mini‑Exercises
-
-1. Make a list of at least five reasons to skip learning from a warm‑up event.
-2. Write pseudo‑code to detect and discard events where `DeltaT` is less than 1 °F or `actualMinutes` is less than 5.
-3. How might you detect an economiser lockout affecting warm‑up in your logs?
+1. For which ΔT values does Model 3 improve significantly over Model 1?
+2. What additional sensors are required to implement Model 3?
+3. How would you justify deploying Model 3 to a facilities manager?
 
 ## Key Takeaway
 
-Robust self‑tuning isn’t just about the math — it’s about data hygiene.  Recognise and skip pathological cases (zero ΔT, zero runtime, sensor errors, unusual modes) so your model learns from meaningful data.
+Model 3 can offer marginal gains but at the cost of complexity.  Evaluate the trade‑offs before choosing a model.

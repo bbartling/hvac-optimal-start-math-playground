@@ -1,53 +1,33 @@
-# Day 34 — Coding Model 4 (First‑Order Response)
+# Day 34 — Coding Model 4
 
-**Goal:** Write a reusable Python function to compute optimal start time using the logarithmic decay model.
+**Goal:** Implement the logarithmic formula safely
 
-## 1.  The Formula Revisited
+Implementing Model 4 requires careful handling of logs.  You must avoid
+taking the logarithm of zero or negative numbers.  Ensure ΔT > 0 and
+decay_rate < 1.  If ΔT is within the deadband, you can return zero
+runtime (already at set point).
 
-Model 4 predicts warm‑up time using:
-
-```
-t = ln(alpha_a / DeltaT) / ln(alpha_c)
-```
-
-where:
-
-* `alpha_a` is the acceptable error or deadband (e.g., 0.5°F).  
-* `DeltaT` is the initial temperature difference.  
-* `alpha_c` is the decay factor from Day 31.
-
-## 2.  Python Implementation
+## Python Mini‑Lesson
 
 ```python
+# Safe computation of Model 4
 import math
-
-def predict_model4(delta_t, alpha_a, alpha_c):
-    """Predict warm‑up minutes using the first‑order model."""
-    if delta_t <= 0:
+def model4_time(delta_t, deadband, decay_rate):
+    if delta_t <= deadband:
         return 0.0
-    # Avoid math domain errors by clamping values
-    delta_t = max(delta_t, 1e-6)
-    if alpha_c <= 0 or alpha_c >= 1:
-        raise ValueError("alpha_c must be between 0 and 1")
-    return math.log(alpha_a / delta_t) / math.log(alpha_c)
+    if not (0 < decay_rate < 1):
+        raise ValueError('decay_rate must be between 0 and 1')
+    return math.log(deadband / delta_t) / math.log(decay_rate)
 
-# Example usage
-print(predict_model4(6.0, 0.5, 0.74))
+print(model4_time(5.0, 0.5, 0.8))
 ```
 
-You can incorporate smoothing on `alpha_c` as described previously to update your model with new data.
+## Exercises
 
-## 3.  Handling Edge Cases
+1. Modify the function to handle heating and cooling modes separately with different deadbands.
+2. What happens if you pass decay_rate=1?  Why is this invalid?
+3. Integrate this function into a control loop that stops heating when t=0.
 
-* If `delta_t < alpha_a`, the numerator becomes `ln(alpha_a / delta_t)` which is positive — this yields a *negative* time, meaning you’re already within the deadband.  Clamp your result to zero.  
-* If `alpha_c` is very close to 1, the denominator becomes small and the predicted time grows huge.  Limit `alpha_c` to a reasonable range (e.g., 0.5–0.95).
+## Key Takeaway
 
-## 4.  Micro‑Exercises
-
-1. Write unit tests for `predict_model4` that verify correct behaviour when `DeltaT` is below deadband, when `alpha_c` is out of bounds, and when typical values are used.  
-2. Extend the function to accept a list of past `alpha_c` values and compute an EMA before prediction.  
-3. Compare Model 4 predictions against real warm‑up data from your building.
-
-## 5.  Key Takeaway
-
-Implementing Model 4 requires careful handling of logarithms and edge cases, but it can give more realistic predictions for systems with exponential behaviour.
+Robust code for Model 4 checks inputs and handles edge cases.  Careful implementation prevents mathematical errors.

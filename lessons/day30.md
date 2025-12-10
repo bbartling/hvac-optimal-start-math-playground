@@ -1,32 +1,35 @@
-# Day 30 — Final Project: Build a Mini Optimal‑Start Engine
+# Day 30 — The Logarithm (ln)
 
-**Goal:** Combine everything you’ve learned into a simple, end‑to‑end optimal‑start algorithm.
+**Goal:** Use natural logarithms to compute time in Model 4
 
-Congratulations on making it to Day 30!  Your final task is to put the pieces together and build a working miniature of an optimal‑start system.
+Model 4 predicts the time to reach set point using a logarithmic decay
+formula:
 
-## 1.  Outline of the Engine
+    t = ln(Deadband/ΔT) / ln(DecayRate)
 
-1. Collect or generate a series of warm‑up events (`DeltaT`, `WF`, `actualMinutes`).
-2. Choose a model (Model 0, 1, 3 or a hybrid).
-3. Initialise the coefficients (`rateEMA` for Model 0, `a`, `b`, `d` for others).
-4. For each event:
-   * **Predict:** Compute `t_predicted` using the current coefficients.
-   * **Update:** Compute observed values and update coefficients with smoothing.
-   * **Log:** Record predictions, actuals and updated coefficients for analysis.
+where Deadband is an acceptable error band (e.g., 0.5 °F), ΔT is the
+current temperature difference, and DecayRate (α₄,c) describes how
+quickly the error shrinks from one minute to the next.  As ΔT gets small
+the numerator ln(Deadband/ΔT) grows, lengthening the predicted time.
 
-## 2.  Suggested Implementation Steps
+## Python Mini‑Lesson
 
-* Start with Model 0 for simplicity.  Use a loop to process each event and update `rateEMA`.
-* Extend to Model 1 by storing `a` and `b` and updating `a` as you go.  Optionally incorporate `b` updates when you have multiple points.
-* Add weather by incorporating WF into your data and implementing the Model 3 update.
-* Plot or print the prediction vs actual over time to see how the model improves.
+```python
+# Compute Model 4 prediction
+import math
+deadband = 0.5
+delta_t = 4.0
+decay_rate = 0.8
+t_pred = math.log(deadband / delta_t) / math.log(decay_rate)
+print(f'Predicted time = {t_pred:.1f} minutes')
+```
 
-## Mini‑Exercises
+## Exercises
 
-1. Write a Python script that reads a CSV of warm‑up data and runs Model 0 with α = 0.15.  Plot predicted vs actual times.
-2. Extend your script to include Model 1 updates and compare the errors of the two models.
-3. Reflect on which model performed best and why.  Are there mornings where any model struggled?  What would you try next?
+1. Using decay_rate=0.85 and Deadband=0.5°F, compute t for ΔT=6°F.
+2. Why does the time grow large as ΔT approaches the deadband?
+3. Explain what happens if decay_rate≥1.
 
 ## Key Takeaway
 
-Building a mini optimal‑start engine cements your understanding of the mathematics and the workflow.  You now have the tools to deploy, evaluate and customise optimal‑start algorithms in your own buildings — and to continue refining them as you gather more data.
+The logarithmic formula captures slowing heat transfer as the zone approaches set point.  It differs fundamentally from linear or quadratic models.

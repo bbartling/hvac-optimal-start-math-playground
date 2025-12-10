@@ -1,38 +1,32 @@
-# Day 46 — The Learning Rate ($\eta$)
+# Day 46 — The Learning Rate (η)
 
-**Goal:** Write the Python line that actually updates the brain of the model.
+**Goal:** Tune how fast gradient descent moves
 
-## 1. The Learning Rate ($\eta$)
+The learning rate η controls the size of each update.  Too small and the
+algorithm converges slowly; too large and it overshoots or diverges.
+Choosing η often requires experimentation.  Some algorithms adjust η
+during training to improve convergence.
 
-If the gradient says "Move Left," we don't want to jump 1,000 feet. We might overshoot the bottom of the valley. We take a tiny step. This step size is called the **Learning Rate** (usually 0.01 or 0.001).
-
-## 2. The Update Rule
-
-This is the most famous line of code in Machine Learning:
+## Python Mini‑Lesson
 
 ```python
-weight = weight - (learning_rate * gradient)
+# Demonstrate different learning rates
+x_data = [1, 2, 3]
+y_actual = [2, 4, 6]
+for eta in [0.01, 0.1, 0.5]:
+    w = 0.0
+    for _ in range(20):
+        grad = sum((w * x - y) * x for x, y in zip(x_data, y_actual)) * 2 / len(x_data)
+        w = w - eta * grad
+    print(f'η={eta} → final w≈{w:.2f}')
 ```
 
-  * **Minus sign:** We always move *opposite* the slope (downhill).
-  * **Learning Rate:** Controls stability. Too big = unstable. Too small = takes forever to learn.
+## Exercises
 
-## 3. Micro‑Exercises
+1. Why does a very large η cause the training to diverge?
+2. How can you adapt η over epochs?
+3. Name two optimisation algorithms that adjust η automatically.
 
-1.  Python Playground:
-    ```python
-    weight = 5.0
-    gradient = 200.0  # From Day 45
-    lr = 0.01         # Learning Rate
+## Key Takeaway
 
-    # Perform one update
-    weight = weight - (lr * gradient)
-    print(weight)
-    ```
-2.  Did the weight move in the correct direction (closer to the true answer)?
-3.  Try changing `lr` to 1.0. What happens? (Explosion\!).
-
-## 4. Key Takeaway
-
-The Learning Rate is the "throttle" of your AI. It requires tuning—just like a PID loop\!
-
+The learning rate determines the convergence speed and stability of gradient descent.  Proper tuning is essential for successful training.

@@ -1,51 +1,39 @@
 # Day 48 — The Epoch Loop
 
-**Goal:** Build the outer loop that repeats the learning process until the model is "smart."
+**Goal:** Iterate through data multiple times to train weights
 
-## 1. What is an Epoch?
+An epoch is one complete pass through the training dataset.  Gradient
+descent often requires many epochs to minimise the cost.  At each
+epoch the algorithm updates the weights based on all examples.  You
+track the loss (e.g., MSE) to see if it is decreasing.
 
-One **Epoch** means looking at the entire history dataset once, checking errors, and updating weights.
-Real models need hundreds or thousands of epochs to converge on the perfect weights.
-
-* **Epoch 1:** The model is guessing randomly. Error is huge.
-* **Epoch 100:** The model has learned the general direction. Error is dropping.
-* **Epoch 2,000:** The model has fine-tuned the decimal places. Error is minimal.
-
-## 2. The Loop Structure
-
-To make the AI learn, we wrap the update rule from Day 46 inside a loop.
+## Python Mini‑Lesson
 
 ```python
-# The "Brain" Training Loop
-for epoch in range(2000):
-    
-    # 1. Prediction (Forward Pass)
-    guess = input * weight
-    
-    # 2. Error Calculation
-    error = guess - actual
-    
-    # 3. Gradient Calculation (Backward Pass)
-    gradient = error * input
-    
-    # 4. Weight Update (The Learning)
-    weight = weight - (learning_rate * gradient)
+# Train a simple model for several epochs
+import numpy as np
+X = np.array([[0.2, 0], [0.5, 1], [0.8, 0]])
+y = np.array([0.3, 0.8, 0.6])
+weights = np.zeros(3)  # two features + bias
+eta = 0.1
+for epoch in range(50):
+    preds = X @ weights[:2] + weights[2]  # linear model
+    errors = preds - y
+    grad_w = (X.T @ errors) * 2 / len(X)
+    grad_b = 2 * errors.mean()
+    weights[:2] -= eta * grad_w
+    weights[2] -= eta * grad_b
+    if (epoch + 1) % 10 == 0:
+        mse = (errors ** 2).mean()
+        print(f'Epoch {epoch+1}: MSE={mse:.4f}')
 ```
 
-## 3. Watching the Loss Drop
+## Exercises
 
-If your code is correct, the "Cost" (MSE) should decrease rapidly at first, then level off. This curve is called the **Learning Curve**.
+1. Implement the epoch loop above and observe how the MSE decreases.
+2. Try different learning rates and record how they affect convergence.
+3. What happens if you shuffle the data between epochs?
 
-  * If Loss goes UP: Your Learning Rate is too high (explosion).
-  * If Loss doesn't move: Your Learning Rate is too low (stalled).
+## Key Takeaway
 
-## 4. Micro‑Exercises
-
-1.  Wrap your code from Day 46 in a loop that runs 100 times.
-2.  Print the `weight` and `error` every 10 loops using `if epoch % 10 == 0:`.
-3.  Watch the weight "walk" from its starting random guess toward the correct physical value.
-
-## 5. Key Takeaway
-
-Intelligence is just iteration. The computer isn't smart; it's just persistent.
-
+Training requires multiple epochs.  Monitoring the loss during the loop tells you whether the model is learning effectively.

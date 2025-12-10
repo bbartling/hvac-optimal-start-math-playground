@@ -1,26 +1,32 @@
-# Day 38 — The “Technician’s Guess”
+# Day 38 — The Technician’s Guess
 
-**Goal:** Introduce the simple but surprisingly effective practice of adding a fixed buffer time on Mondays.
+**Goal:** Add a fixed buffer to Monday predictions
 
-## 1.  The Rule of Thumb
+Many technicians handle Mondays by simply adding a fixed number of
+minutes (e.g., 60 min) to the predicted start time.  This crude
+adjustment acknowledges the extra cold mass without changing the
+underlying model.  While not mathematically elegant, it often works.
+You can implement this by adding a constant to your computed t_opt on
+Mondays.
 
-Many operators simply add 60 minutes to the predicted start time on Mondays.  For example, if Model 3 says “Start 90 minutes early,” the technician will set it to 150 minutes.  This heuristic recognises that mathematical models under‑predict the weekend cold soak.
+## Python Mini‑Lesson
 
-## 2.  When It Works
+```python
+# Technician’s Monday adjustment
+delta_t = 6.0
+rate = 0.20
+t_model = delta_t / rate
+t_monday = t_model + 60  # add 60 minute buffer
+print(f'Model prediction: {t_model:.1f} min')
+print(f'Monday prediction with buffer: {t_monday:.1f} min')
+```
 
-Fixed adders work reasonably well when the building and weather conditions are consistent week over week.  They are easy to implement on any BAS without advanced math.
+## Exercises
 
-## 3.  Limitations
+1. Pick a buffer (e.g., 30 min) and see how well it matches Monday data.
+2. Why might a fixed buffer be more robust than a ratio multiplier?
+3. Describe a scenario where adding a constant buffer could cause overshoot.
 
-* If the weekend was unseasonably warm or cold, the fixed adder may be too high or too low.  
-* Larger buildings with variable schedules may need more sophisticated scaling.
+## Key Takeaway
 
-## 4.  Micro‑Exercises
-
-1. Compare the technician’s guess to actual Monday warm‑up times over 5 weeks.  How often is it within ±10 minutes?  
-2. Try different fixed adders (30, 45, 60 minutes) and compute the mean absolute error for each.  
-3. Brainstorm scenarios where a fixed adder fails badly (e.g., holiday weekends, extreme weather).
-
-## 5.  Key Takeaway
-
-A simple fixed time adder can dramatically improve comfort on Mondays, but it is only a blunt instrument.
+A simple constant added to Monday run times often outperforms purely data‑driven models on the first day of the week.

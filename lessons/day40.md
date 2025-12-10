@@ -1,26 +1,32 @@
 # Day 40 — Experiment: Separate Histories
 
-**Goal:** Consider keeping a dedicated dataset for Monday runs and training a model specifically for that day.
+**Goal:** Maintain a distinct model just for Mondays
 
-## 1.  The Idea
+Another approach is to treat Mondays as a separate class and train a
+dedicated model using only Monday data.  This avoids contaminating the
+weekday model with cold‑soaked data.  The downside is that you need
+many weeks of data to populate the Monday history.
 
-Instead of forcing one model to fit both weekday and Monday data, you can maintain two histories: one for Tuesday–Friday, another for Monday.  You learn separate coefficients (or EMA rates) for each.  On Mondays you use the “Monday model,” on other days you use the normal model.
+## Python Mini‑Lesson
 
-## 2.  Challenges
+```python
+# Maintain separate EMA rates for weekdays and Mondays
+alpha = 0.2
+weekday_rate, monday_rate = 0.20, 0.15
+# new observations
+obs_weekday, obs_monday = 0.22, 0.13
+weekday_rate = weekday_rate + alpha * (obs_weekday - weekday_rate)
+monday_rate = monday_rate + alpha * (obs_monday - monday_rate)
+print(f'Updated weekday rate = {weekday_rate:.3f}')
+print(f'Updated Monday rate  = {monday_rate:.3f}')
+```
 
-* You only get one Monday per week, so it takes 10 weeks to collect 10 data points.  
-* Weather conditions can change dramatically week to week, making it hard to learn stable coefficients.
+## Exercises
 
-## 3.  Hybrid Approaches
+1. How many weeks of data would you need for a reliable Monday model?
+2. What are the pros and cons of maintaining two separate models?
+3. Could you use a one‑hot encoded feature for Monday instead of two models?
 
-Some practitioners use a small Monday dataset but still blend it with normal weekday data using a higher α value on Mondays.  Others maintain separate models but fall back to normal models when Monday data are scarce.
+## Key Takeaway
 
-## 4.  Micro‑Exercises
-
-1. Create two EMAs: one that updates on Tuesday–Friday, and one that updates only on Monday.  Compare their values after 12 weeks.  
-2. Try fitting a simple linear regression to Monday data after 10 weeks.  How does it perform compared to using a cold soak multiplier?  
-3. Describe the pros and cons of maintaining separate histories.
-
-## 5.  Key Takeaway
-
-Separate histories acknowledge the unique physics of Mondays but require patience and careful handling of sparse data.
+Separating Monday data allows each model to capture its own dynamics, but it requires more data and management.

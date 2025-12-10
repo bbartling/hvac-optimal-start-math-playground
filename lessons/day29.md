@@ -1,39 +1,31 @@
-# Day 29 — Build Your Own Hybrid Model
+# Day 29 — Thinking Like a Capacitor
 
-**Goal:** Design a custom optimal‑start model that combines elements of Models 0, 1 and 3 to suit your specific site.
+**Goal:** Conceptualise buildings as thermal capacitors
 
-The PNNL models provide great starting points, but real buildings vary.  Today you think creatively about combining linear, quadratic and weather terms to build a hybrid model.
+In electrical engineering a capacitor charges and discharges exponentially.
+Buildings behave similarly: they warm quickly at first and then slow as
+they approach set point.  This analogy leads to logarithmic models
+where the time to reduce the error follows t ∝ ln(E0/E).  Recognising
+this behaviour prepares you for Model 4.
 
-## 1.  Identify Your Building’s Behaviour
+## Python Mini‑Lesson
 
-* Does it warm nearly linearly up to a certain ΔT and then slow down?  You might blend Model 0 and Model 1.
-* Does outdoor temperature matter only when it’s below 40 °F?  You could weight the weather factor term only when WF exceeds a threshold.
-* Are there different heating stages (e.g. heat pump vs resistance heat)?  Consider separate coefficients for each stage.
-
-## 2.  Example Hybrid Form
-
-Here’s one possible hybrid:
-
+```python
+# Simulate exponential charging (analogous to heating)
+import math
+tau = 10.0  # time constant
+time_values = [0, 5, 10, 20]
+for t in time_values:
+    fraction = 1 - math.exp(-t / tau)
+    print(f't={t} min → fraction charged={fraction:.3f}')
 ```
-t_predicted = (DeltaT / rateEMA)                     # linear part
-             + c1 * max(0, (DeltaT − DeltaT_threshold))
-             + c2 * (DeltaT * WF)
-```
 
-Where `c1` adds extra minutes once ΔT exceeds a chosen threshold and `c2` accounts for weather.  You can tune `rateEMA`, `c1` and `c2` separately.
+## Exercises
 
-## 3.  Training and Tuning
-
-* Use the EMA update for `rateEMA` as usual.
-* Fit `c1` and `c2` using regression on the subset of datapoints where their terms are active.
-* Blend updates with α to smooth them.
-
-## Mini‑Exercises
-
-1. Sketch a hybrid formula that is linear when ΔT < 5 °F and quadratic when ΔT ≥ 5 °F.
-2. Propose how you would detect a threshold for when weather becomes significant and incorporate that into your model.
-3. Write pseudo‑code for updating your custom coefficients alongside the EMA.
+1. What physical properties of a building correspond to a large time constant?
+2. If the time constant is small, how does the system behave?
+3. Give another real‑world system that follows exponential behaviour.
 
 ## Key Takeaway
 
-Optimal‑start modelling is not one‑size‑fits‑all.  Once you understand the building blocks — EMA, linear slopes, quadratics, weather factors — you can mix them to build a model tailored to your site.  Just remember to keep it interpretable and to validate it with data.
+Thermal processes often mirror exponential charging and discharging.  This insight motivates the logarithmic formula in Model 4.

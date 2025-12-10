@@ -1,30 +1,30 @@
 # Day 44 — The Cost Function (MSE)
 
-**Goal:** Learn how to mathematically quantify "how bad" a model is so the computer can fix it.
+**Goal:** Quantify error using mean squared error
 
-## 1. Defining "Wrongness"
+Gradient descent minimises a cost function.  For regression the most
+common choice is mean squared error (MSE), defined as the average of
+(predicted − actual)² over all samples.  Squaring emphasises large
+errors【485764260655805†L145-L161】.  The goal of training is to adjust the
+weights so that MSE approaches zero.
 
-To teach a computer, we need a single number that represents error. We can't just say "it looks off." We use the **Mean Squared Error (MSE)**.
+## Python Mini‑Lesson
 
-$$
-MSE = \frac{1}{n} \sum (\text{Actual} - \text{Predicted})^2
-$$
+```python
+# Compute MSE for a set of predictions
+pred = [30, 35, 28]
+actual = [32, 34, 30]
+errors = [(p - a) ** 2 for p, a in zip(pred, actual)]
+mse = sum(errors) / len(errors)
+print(f'MSE = {mse:.2f}')
+```
 
-## 2. Why Square the Error?
+## Exercises
 
-1.  **Removes Negatives:** An error of $-5$ minutes and $+5$ minutes are both equally bad. Squaring them makes both positive ($25$).
-2.  **Punishes Big Mistakes:**
-    * Being off by 2 minutes $\rightarrow$ Cost = 4.
-    * Being off by 10 minutes $\rightarrow$ Cost = 100.
-    * The model will fight much harder to fix a 10-minute error than a 2-minute error.
+1. Create your own predicted and actual lists and compute MSE.
+2. Why do we square the errors instead of taking absolute values?
+3. What would be the effect of using mean absolute error instead?
 
-## 3. Micro‑Exercises
+## Key Takeaway
 
-1.  Given three predictions: `[Predicted: 50, Actual: 60]`, `[Predicted: 40, Actual: 40]`, `[Predicted: 30, Actual: 25]`.
-2.  Calculate the raw errors: `+10`, `0`, `-5`.
-3.  Calculate the squares: `100`, `0`, `25`.
-4.  Compute the average (MSE). This number is your "Cost."
-
-## 4. Key Takeaway
-
-The "Cost Function" is the scoreboard. The goal of the entire AI engine is simply to make this one number as small as possible.
+The mean squared error provides a single number that summarises prediction accuracy.  Minimising this cost drives the gradient descent algorithm.

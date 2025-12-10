@@ -1,32 +1,41 @@
-# Day 42 — Final Project: Monday Showdown
+# Day 42 — Final Project: The Monday Showdown
 
-**Goal:** Put all the theory into practice by comparing model predictions to actual Monday warm‑up data.
+**Goal:** Compare hybrid, technician and regression predictions on real data
 
-## 1.  Gather Data
+For a final challenge gather five real Monday warm‑up cases.  For each
+case compute the prediction from Model 3, the technician’s guess (+60
+min) and the hybrid controller from Day 41.  Compare them to the
+actual runtime and decide which method performs best.  This exercise
+solidifies your understanding of the Monday problem.
 
-Collect at least five Monday warm‑up events from your building.  For each, record:
+## Python Mini‑Lesson
 
-* Start zone temperature (`T_zone,start`)
-* Setpoint temperature (`T_sp`)
-* Outdoor air temperature (`T_oat`)
-* Actual minutes to setpoint
+```python
+# Placeholder code for the Monday showdown (fill in with your data)
+cases = [
+    {'delta_t': 7, 'actual': 95},
+    {'delta_t': 5, 'actual': 70},
+    {'delta_t': 6, 'actual': 80},
+    {'delta_t': 4, 'actual': 65},
+    {'delta_t': 8, 'actual': 100},
+]
+def model3_pred(delta_t):
+    WF = 0.6
+    a3, b3, d3 = 1.7, 1.2, 3.5
+    return a3 * delta_t + b3 * (delta_t * WF) + d3
+for case in cases:
+    m3 = model3_pred(case['delta_t'])
+    tech = case['delta_t'] / 0.22 + 60
+    hybrid = model3_pred(case['delta_t']) + 45
+    print("DeltaT={}F -> actual={} min, Model3={:.1f}, Tech={:.1f}, Hybrid={:.1f}".format(case['delta_t'], case['actual'], m3, tech, hybrid))
+```
 
-## 2.  Compare Predictions
+## Exercises
 
-For each event, compute predictions using:
+1. Replace the placeholder data with your own Monday cases and record the results.
+2. Which method had the smallest error on average?
+3. How could you further improve predictions for extremely cold Mondays?
 
-1. **Model 3 only** — use the coefficients learned from weekday data.  
-2. **Technician’s guess** — add a fixed buffer (e.g., +60 minutes).  
-3. **Cold soak multiplier** — multiply the Model 3 prediction by your `alpha_factor` (e.g., 1.3).
+## Key Takeaway
 
-## 3.  Analyse the Results
-
-Compute the error for each method (predicted – actual).  Which method gives the smallest average error?  Which one has the biggest worst‑case error?  Plot the results if possible.
-
-## 4.  Write a Short Report
-
-Summarise your findings in 1–2 paragraphs.  Discuss whether the extra complexity of Model 3 plus a multiplier is justified compared to the simplicity of a fixed adder.
-
-## 5.  Key Takeaway
-
-Real data will tell you which Monday strategy works best.  Testing and tuning are essential to delivering both comfort and energy savings.
+Comparing predictions across methods on real data highlights the strengths and weaknesses of each approach and prepares you for real‑world deployment.

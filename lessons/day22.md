@@ -1,42 +1,34 @@
-# Day 22 — Building an Optimal‑Start Dataset
+# Day 22 — The Missing Link: Weather Factor (WF)
 
-**Goal:** Learn what data you need to collect to train and tune your models effectively.
+**Goal:** Define the weather factor used in Model 3
 
-Models are only as good as the data you feed them.  Day 22 focuses on assembling a clean, representative warm‑up dataset.
+Model 3 introduces a weather factor (WF) to capture the combined effect
+of indoor temperature difference and outdoor temperature.  A common
+definition is WF = (T_sp − OAT) / 60, which scales the outdoor influence
+to minutes.  Multiplying ΔT by WF yields a feature that grows when the
+outdoor air is far from set point.  This additional feature allows
+multiple regression to learn how weather amplifies or reduces warm‑up
+time.
 
-## 1.  Required Data Points
+## Python Mini‑Lesson
 
-For each morning warm‑up you should capture:
+```python
+# Compute the weather factor
+T_sp = 70.0
+oat = 30.0
+WF = (T_sp - oat) / 60.0
+delta_t = 8.0
+feature = delta_t * WF
+print(f'Weather factor WF = {WF:.2f}')
+print(f'ΔT × WF        = {feature:.2f}')
+```
 
-* **Start time:** When the warm‑up begins.
-* **Start zone temperature:** `T_zone,start`.
-* **Occupied setpoint:** `T_setpoint`.
-* **Warm‑up end time:** When the zone hits setpoint.
-* **Outdoor air temperature (OAT):** For Model 3 weather factor.
+## Exercises
 
-From these you can compute:
-
-* `DeltaT = T_setpoint − T_zone,start`
-* `Warm‑Up Time = End time − Start time` (minutes)
-* `WF` if using Model 3.
-
-## 2.  Data Cleaning
-
-* **Remove holidays:** Occupancy may be different and schedules may be off.
-* **Discard sensor faults:** If a temperature sensor fails or reads obviously wrong, skip that day.
-* **Consistent setpoints:** Ensure the occupied setpoint hasn’t been changed mid‑run.
-* **Exclude partial warm‑ups:** Days when the building was already at setpoint or when warm‑up was interrupted by alarms or operator intervention.
-
-## 3.  Ideal Sample Size
-
-For Model 0 an EMA updates continuously, so you don’t need to batch data.  For Models 1 and 3, aim for at least 5–10 representative mornings to compute initial coefficients.  More data helps average out noise.
-
-## Mini‑Exercises
-
-1. List three reasons you might discard a morning’s warm‑up from your dataset.
-2. How could you automate data collection in Niagara (e.g. using histories or wire sheet blocks)?
-3. If a building’s setpoint changes from 72 °F to 74 °F mid‑winter, how should you adjust your dataset and model?
+1. Calculate WF for T_sp=75°F and OAT=50°F.
+2. If WF is zero, what does that imply about the outdoor temperature?
+3. Why do we divide by 60 in the definition of WF?
 
 ## Key Takeaway
 
-Good data is the foundation of accurate predictions.  Record zone start temperature, setpoint, run time and OAT consistently.  Clean outliers and special days.  With a solid dataset, the math from earlier lessons will pay off in reliable model coefficients.
+The weather factor combines indoor and outdoor information into a single number.  It forms one of the inputs for Model 3.

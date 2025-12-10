@@ -1,74 +1,36 @@
-# Day 24 — Reinforce Solving Small Linear Systems
+# Day 24 — Multiple Regression Concept
 
-**Goal:** Become fluent in solving 2×2 and 3×3 linear systems by hand or with simple code.
+**Goal:** Understand fitting a plane instead of a line
 
-Small systems of equations appear throughout optimal‑start tuning.  Today is pure practise — no new concepts, just drills.
+Unlike simple regression, multiple regression fits a plane in a higher
+dimensional space.  Each data point has two inputs (ΔT and ΔT×WF) and
+one output (t).  The goal is to find coefficients that minimise the
+sum of squared errors across all points.  You can solve this using
+matrix operations or a library like scikit‑learn.  This lesson
+introduces the concept without delving into full linear algebra.
 
-## 1.  2×2 Systems (Model 1)
+## Python Mini‑Lesson
 
-The general form is:
-
-```
-t1 = a*x1 + b
-t2 = a*x2 + b
-```
-
-Subtract the first equation from the second to isolate `a`, then solve for `b`.
-
-### Example Drill
-
-Solve for `a` and `b`:
-
-```
-18 = a*9 + b
-34 = a*25 + b
-```
-
-## 2.  3×3 Systems (Model 3)
-
-General form:
-
-```
-t1 = a*x11 + b*x12 + d
-t2 = a*x21 + b*x22 + d
-t3 = a*x31 + b*x32 + d
+```python
+# Fit a simple multiple regression using NumPy
+import numpy as np
+# Sample data: each row is [ΔT, ΔT×WF]
+X = np.array([[4, 4*0.7], [6, 6*0.6], [8, 8*0.8]])
+y = np.array([30, 42, 70])
+# Add a column of ones for the intercept
+X_design = np.column_stack([X, np.ones(len(X))])
+# Compute coefficients using the normal equation
+coeffs = np.linalg.lstsq(X_design, y, rcond=None)[0]
+alpha_a, alpha_b, alpha_d = coeffs
+print(f'Coefficients: α₃,a={alpha_a:.2f}, α₃,b={alpha_b:.2f}, α₃,d={alpha_d:.2f}')
 ```
 
-Subtract one equation from the others to eliminate `d`, then solve the resulting 2×2 system for `a` and `b`, finally back‑solve for `d`.
+## Exercises
 
-### Example Drill
-
-Solve for `a`, `b`, `d`:
-
-```
-30 = 5*a + 1.0*b + d
-48 = 7*a + 2.0*b + d
-70 = 9*a + 4.5*b + d
-```
-
-## 3.  Tools and Tips
-
-* Use subtraction to eliminate variables one at a time.
-* Keep track of decimals; consider multiplying both sides to clear fractions.
-* If you write scripts, `numpy.linalg.solve` can solve systems quickly, but try it by hand to build intuition.
-
-## Mini‑Exercises
-
-1. Solve the 2×2 system:
-
-   `12 = a*4 + b`  and `28 = a*9 + b`
-
-2. Solve the 3×3 system:
-
-   `22 = 3*a + 1.2*b + d`,
-   `38 = 5*a + 2.5*b + d`,
-   `55 = 7*a + 4.2*b + d`
-
-3. Write a small Python function to solve any 2×2 linear system of the form:
-
-   `t1 = a*x1 + b`,
-   `t2 = a*x2 + b`
+1. Explain why we add a column of ones to the design matrix.
+2. Generate your own dataset and fit α₃,a, α₃,b and α₃,d using the code above.
+3. Why might fitting Model 3 be difficult directly in a BAS controller without matrix support?
 
 ## Key Takeaway
 
-Solving linear systems is a basic skill you’ll use repeatedly.  Practise until subtracting equations and back‑solving becomes automatic.  The faster you can solve these systems, the quicker you can diagnose and tune optimal‑start models.
+Multiple regression handles several inputs simultaneously.  The fitted coefficients define a plane that best approximates the observed warm‑up data.

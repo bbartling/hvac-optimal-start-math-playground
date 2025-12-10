@@ -1,45 +1,31 @@
-# Day 20 — How Niagara Stores the Coefficients
+# Day 20 — Sensitivity Check
 
-**Goal:** See where the learned parameters live inside Niagara and how they persist across warm‑ups.
+**Goal:** Explore how changes in outdoor temperature impact the ratio
 
-After you solve Model 1 or Model 3, you need to store the coefficients so they can be used the next morning.  Niagara’s ProgramObject has slots for this purpose.
+The weather ratio magnifies or reduces the predicted time depending on
+how much colder or warmer today is relative to yesterday.  A sensitivity
+check evaluates how big the effect is.  For example, a 10 °F colder day
+might lengthen the runtime by 20 %, while a 10 °F warmer day might
+shorten it.  Understanding this sensitivity helps set realistic limits on
+the model’s output.
 
-## 1.  Slots for Model 0
+## Python Mini‑Lesson
 
-Model 0 stores its single learned value in `degreesPerMinuteHeat` or `degreesPerMinuteCool` (depending on whether you’re heating or cooling).  Each time the EMA is updated, this slot changes.
+```python
+# Evaluate ratio sensitivity for heating mode
+T_ref = 32.0
+oat_prev = 25.0
+for oat_curr in [15.0, 20.0, 25.0, 30.0]:
+    ratio = (T_ref - oat_prev) / (T_ref - oat_curr)
+    print(f'Today OAT={oat_curr}°F → Ratio={ratio:.2f}')
+```
 
-## 2.  Slots for Model 1
+## Exercises
 
-The quadratic model needs two values:
-
-* `model1CoeffA` — corresponds to `a` in `t = a*(DeltaT)^2 + b`
-* `model1CoeffB` — corresponds to `b` (the intercept)
-
-Each time new values are computed from the latest datapoints, these slots are blended with α just like the EMA.
-
-## 3.  Slots for Model 3
-
-Model 3 requires three slots:
-
-* `model3CoeffA` — the `a` coefficient on ΔT
-* `model3CoeffB` — the `b` coefficient on ΔT·WF
-* `model3CoeffD` — the intercept `d`
-
-Additionally you need to calculate and store the **weather factor** (WF) each morning, typically computed in a separate slot using outdoor air temperature.
-
-## 4.  Updating the Slots
-
-After each warm‑up, your code (or the Niagara block) should:
-
-1. Compute new coefficients from today’s datapoints.
-2. Blend them into the stored slots using `alpha` to avoid jumps.
-3. Use the updated slots for tomorrow’s prediction.
-
-## Mini‑Exercises
-
-1. Imagine your current `model1CoeffA` is 0.85 and `model1CoeffB` is 8.0.  Today’s solved `a_today` and `b_today` are 1.1 and 6.0, with α = 0.2.  Compute the new stored coefficients.
-2. In Model 3, why must you recompute WF every morning instead of storing it?
+1. Plot the ratio as a function of today’s OAT for fixed oat_prev and T_ref.
+2. At what temperature difference does the ratio become extremely large?
+3. How could you modify Model 2 to cap the ratio when the difference is extreme?
 
 ## Key Takeaway
 
-Niagara persists the learned coefficients in dedicated slots.  Updating these slots with a smoothing factor makes the model adaptive but not erratic.  Understanding where these values live will help you troubleshoot and tune your optimal‑start ProgramObject.
+Sensitivity checks reveal how weather swings translate into runtime changes.  They also expose cases where the ratio might need clamping.

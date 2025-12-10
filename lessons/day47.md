@@ -1,37 +1,33 @@
 # Day 47 — Feature Engineering (Data Prep)
 
-**Goal:** Prepare your HVAC data so a simple math engine can solve complex logic like "Mondays."
+**Goal:** Prepare input data for gradient descent
 
-## 1. Normalization
+Machine learning models are sensitive to the scale and format of input
+features.  Scaling (normalising) ΔT values and encoding categorical
+variables like "Monday" as 0/1 improves training.  A typical input
+vector might be [scaled_ΔT, is_monday].  Scaling prevents large
+numbers from dominating the gradient and helps weights learn at the
+same pace【485764260655805†L152-L160】.
 
-Math engines hate big numbers (like 5,000) mixed with small numbers (like 1). They get confused because the weights for the big numbers have to be tiny, while weights for small numbers have to be huge.
-* **Rule:** Scale your inputs to be between 0 and 1.
-* **Action:** Divide your $\Delta T$ by the maximum expected $\Delta T$ (e.g., 20°F).
+## Python Mini‑Lesson
 
-## 2. One-Hot Encoding (The Monday Flag)
+```python
+# Prepare features for a small dataset
+delta_ts = [2, 5, 8]
+is_monday = [0, 1, 0]
+# Scale ΔT by dividing by the maximum
+max_delta = max(delta_ts)
+scaled_delta = [d / max_delta for d in delta_ts]
+features = list(zip(scaled_delta, is_monday))
+print('Features:', features)
+```
 
-How do we tell math about "Monday"? We can't multiply the word "Monday" by a weight.
-We create a **Binary Flag**:
-* Is_Monday = 1.0
-* Is_Monday = 0.0 (Tuesday–Sunday)
+## Exercises
 
-## 3. The Input Vector
+1. Scale your own ΔT values and encode whether each day is Monday.
+2. Why is one‑hot encoding necessary for categorical variables?
+3. What might happen if you fail to scale features before training?
 
-Our input `X` is no longer just one number. It is a list (vector):
-`Input = [Scaled_DeltaT, Is_Monday_Flag]`
+## Key Takeaway
 
-The model will learn a separate weight for each item in this list.
-* Weight 1 learns "How much time per degree?"
-* Weight 2 learns "How much EXTRA time for Monday?"
-
-## 4. Micro‑Exercises
-
-1.  Take a raw dataset: `[Monday, 10°F diff], [Tuesday, 5°F diff]`.
-2.  Convert it to a numerical matrix assuming max $\Delta T = 20$.
-    * Row 1: `[0.5, 1.0]`
-    * Row 2: `[0.25, 0.0]`
-3.  Write a small Python list-comprehension to automate this scaling.
-
-## 5. Key Takeaway
-
-Garbage In, Garbage Out. Good AI is 80% data preparation and 20% math.
+Good feature engineering ensures that all inputs contribute appropriately during training.  Scaling and encoding are simple but powerful steps.

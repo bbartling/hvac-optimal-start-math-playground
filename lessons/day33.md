@@ -1,51 +1,34 @@
-# Day 33 — Comparing Logarithmic vs Quadratic Models
+# Day 33 — Comparing Log vs. Quadratic
 
-**Goal:** Contrast Model 4 (logarithmic decay) with Model 1 (quadratic) and show how to choose between them.
+**Goal:** Evaluate which model fits your building better
 
-## 1.  Conceptual Differences
+Both Model 1 and Model 4 address non‑linear warm‑up, but they differ
+mathematically.  The quadratic model grows with (ΔT)², while the
+logarithmic model slows dramatically near set point.  Compare the
+predictions of both models on the same dataset to see which aligns
+better with measured times.
 
-* **Model 1** fits a quadratic curve of the form `t = a*(DeltaT)**2 + b`.  It assumes the warm‑up gets *harder* as ΔT increases — each extra degree costs more time.  
-* **Model 4** assumes the error decays exponentially, leading to a logarithmic formula for time: `t = ln(alpha_a / DeltaT) / ln(alpha_c)`.  It implies the system heats quickly at first but slows as it approaches setpoint.
-
-## 2.  Choosing a Model
-
-* Use **Model 1** when the system has high thermal mass and the heating power stays constant.  
-* Use **Model 4** when the system output throttles down naturally (e.g., variable‑speed compressors) or when sensors show a clear exponential approach to setpoint.
-
-## 3.  Quick Comparison with Python
-
-The following script computes predicted warm‑up times from both models for a range of ΔT values:
+## Python Mini‑Lesson
 
 ```python
+# Compare Model 1 and Model 4 predictions
 import math
-
-# Quadratic coefficients (example)
-a_quad = 0.6
-b_quad = 8.0
-# Logarithmic coefficients
-alpha_a = 0.5  # deadband
-alpha_c = 0.75  # decay factor
-
-def model1_time(delta_t):
-    return a_quad * (delta_t**2) + b_quad
-
-def model4_time(delta_t):
-    if delta_t <= 0:
-        return 0
-    return math.log(alpha_a / delta_t) / math.log(alpha_c)
-
-for dt in [2, 4, 6, 8, 10]:
-    print(f"ΔT={dt}: M1={model1_time(dt):.1f} min, M4={model4_time(dt):.1f} min")
+delta_ts = [2, 5, 8]
+alpha1_a, alpha1_b = 1.0, 3.0
+decay_rate = 0.8
+deadband = 0.5
+for delta in delta_ts:
+    t_quad = alpha1_a * (delta ** 2) + alpha1_b
+    t_log = math.log(deadband / delta) / math.log(decay_rate)
+    print(f'ΔT={delta}°F → Quadratic={t_quad:.1f} min, Logarithmic={t_log:.1f} min')
 ```
 
-When ΔT is small, both models may predict similar times.  For large ΔT, Model 1 can blow up (quadratic growth), whereas Model 4 plateaus more gently.
+## Exercises
 
-## 4.  Micro‑Exercises
+1. For your building, measure warm‑up times at multiple ΔT values and compare which model fits better.
+2. Why might Model 4 under‑predict time for large ΔT?
+3. Can you combine aspects of both models into a hybrid?
 
-1. Plug in your own coefficients for Model 1 and Model 4 from real building data.  Compare the predictions for ΔT = 2–10°F.  
-2. Create a simple bar chart (using `matplotlib`) to visualise the differences.  
-3. Discuss in 2–3 sentences which model better represents the warm‑up behaviour at your site.
+## Key Takeaway
 
-## 5.  Key Takeaway
-
-Quadratic and logarithmic models capture different physics.  Comparing them helps you decide which assumptions match your equipment.
+Different buildings may favour different non‑linear models.  Comparing predictions to real data reveals which model suits your situation.

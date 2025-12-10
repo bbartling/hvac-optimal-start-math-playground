@@ -1,36 +1,33 @@
-# Day 15 — PNNL Model 0 (Pure Linear EMA Model)
+# Day 15 — Why Indoor Temp isn’t Enough
 
-**Goal:** Formalise the simplest optimal‑start algorithm: degrees‑per‑minute divided into ΔT.
+**Goal:** Recognise that outdoor conditions affect warm‑up
 
-PNNL’s Model 0 (and Niagara’s default linear model) predicts warm‑up time as a straight line.  It uses an exponential moving average of degrees‑per‑minute for self‑tuning.
+For perimeter zones exposed to the weather, indoor temperature alone
+doesn’t capture how quickly a space will warm.  Cold outdoor air can
+continue to steal heat during warm‑up, slowing the response.  Model 2
+introduces an outdoor temperature adjustment to compensate for this
+effect【913477360246089†L514-L554】.
 
-## 1.  Model Formula
+## Python Mini‑Lesson
 
+```python
+# Demonstrate how colder outdoor air increases predicted time
+delta_t = 6.0
+base_rate = 0.20  # °F/min
+t_base = delta_t / base_rate
+for diff in [0, -10, -20]:
+    # diff is the drop in outdoor temperature compared to yesterday (°F)
+    ratio = (100 - (70 + diff)) / (100 - 70)  # using T_ref=100°F as in cooling mode
+    t_adj = t_base * ratio
+    print(f'Outdoor drop={diff:+}°F → ratio={ratio:.2f}, time={t_adj:.1f} min')
 ```
-t_predicted = DeltaT / rateEMA
-```
 
-Where:
+## Exercises
 
-* `DeltaT = T_setpoint − T_zone,start`
-* `rateEMA` = current exponential moving average of degrees‑per‑minute
-
-The runtime prediction is simply the temperature difference divided by the smoothed heating or cooling rate.
-
-## 2.  EMA Update
-
-After each warm‑up, compute the observed rate and blend it into `rateEMA` as described in Days 8–10.
-
-## 3.  Strengths and Limitations
-
-* **Strengths:** Easy to implement, minimal computation, reacts to changing building performance.
-* **Limitations:** Assumes minutes per degree are constant regardless of ΔT.  May under‑predict on very cold mornings or over‑predict on very mild ones.
-
-## Mini‑Exercises
-
-1. If `rateEMA = 0.22 °F/min` and `DeltaT = 6 °F`, compute the predicted warm‑up time.
-2. After a warm‑up of ΔT = 5 °F in 24 min, update `rateEMA` using α = 0.1 and initial `rateEMA = 0.22`.
+1. Explain why colder outdoor conditions result in a ratio greater than 1.
+2. What happens if today is warmer than yesterday?
+3. Which zones (interior or perimeter) benefit most from Model 2?
 
 ## Key Takeaway
 
-Model 0 is the baseline.  It predicts warm‑up time by dividing the temperature gap by a learned rate.  For buildings with mild set‑backs or stable envelopes, Model 0 can be sufficient; for more challenging sites, you’ll need the curvature and weather adjustments provided by Models 1 and 3.
+Outdoor air temperature can significantly alter warm‑up time.  Model 2 corrects the base runtime using a weather‑dependent ratio.

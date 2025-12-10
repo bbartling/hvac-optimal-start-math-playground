@@ -1,36 +1,36 @@
-# Day 25 — Implement Full Model Evaluation Logic
+# Day 25 — Intro to Matrices (For Technicians)
 
-**Goal:** Bring together the prediction equations, coefficient storage and smoothing into a coherent workflow.
+**Goal:** Get comfortable with matrix notation used in regression
 
-Today you’ll outline the entire sequence that an optimal‑start block performs each morning and after each warm‑up.  This “glue logic” is as important as the equations themselves.
+A matrix is simply a grid of numbers.  In regression we stack our input
+vectors into a matrix X and our outputs into a column vector y.  The
+normal equation (XᵀX)⁻¹Xᵀy computes the least‑squares coefficients.  You
+don’t need to memorise the algebra; it’s more important to recognise
+what the shapes mean.  Modern languages (Python, R, MATLAB) perform
+these operations with built‑in functions.
 
-## 1.  Before Warm‑Up (Prediction Phase)
+## Python Mini‑Lesson
 
-1. Read current zone temperature (`T_zone,start`) and occupied setpoint (`T_setpoint`).
-2. Compute `DeltaT = T_setpoint − T_zone,start`.
-3. If using Model 3, read outdoor air temperature and compute `WF`.
-4. Use the appropriate model equation:
-   * **Model 0:** `minutesPredicted = DeltaT / rateEMA`
-   * **Model 1:** `minutesPredicted = a * (DeltaT)^2 + b`
-   * **Model 3:** `minutesPredicted = a*DeltaT + b*(DeltaT*WF) + d`
-5. Subtract `minutesPredicted` from the scheduled occupancy start time to determine the optimal start time.
+```python
+# Demonstrate basic matrix multiplication
+import numpy as np
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5], [6]])
+product = A @ B
+print('Matrix A:
+', A)
+print('Vector B:
+', B)
+print('A @ B =
+', product)
+```
 
-## 2.  After Warm‑Up (Learning Phase)
+## Exercises
 
-1. Measure actual warm‑up time (`actualMinutes`).  If the zone was already at setpoint, skip learning.
-2. Compute the observed rate or observed coefficients:
-   * **Model 0:** `observedRate = DeltaT / actualMinutes`
-   * **Model 1:** derive `a_today` from `actualMinutes / (DeltaT)^2`
-   * **Model 3:** derive `a_today`, `b_today` and `d_today` using the 3×3 system if enough datapoints exist
-3. Update stored coefficients with smoothing factor α.
-4. Store any new history record (for plotting or further analysis).
-
-## Mini‑Exercises
-
-1. Write pseudo‑code or a flowchart for a warm‑up sequence using Model 1, including prediction and update phases.
-2. How would you modify the logic if the zone never drops below setpoint (e.g. in summer when cooling isn’t needed)?
-3. In Model 3, if you detect the outdoor air sensor is faulty, how should your logic fall back?
+1. Create two 2×2 matrices and compute their product using @.
+2. Why do we use matrix multiplication (XᵀX and Xᵀy) in regression?
+3. How does adding a column of ones change the shape of X?
 
 ## Key Takeaway
 
-Optimal‑start isn’t just a formula; it’s a loop.  Each morning you compute a prediction, start the warm‑up at the right time, observe what happens, update your coefficients and repeat.  A clear implementation of this loop makes your system robust and maintainable.
+Matrices provide a compact way to represent and solve linear systems.  Understanding the shapes helps you implement multiple regression.

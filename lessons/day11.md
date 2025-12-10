@@ -1,43 +1,40 @@
-# Day 11 — EMA vs. Raw Average
+# Day 11 — Simple Regression (Line Fitting)
 
-**Goal:** Compare the exponential moving average to a simple arithmetic mean and understand why EMA is preferred for optimal start.
+**Goal:** Fit a straight line through noisy data without statistics
 
-A raw (arithmetic) average treats all values equally.  An EMA discounts older values and emphasises recent ones.  This difference matters when your building behaviour changes.
+Regression finds the line that minimises the squared vertical distance
+between your data points and the model.  For a simple linear relationship
+(y = α + βx), the ordinary least squares solution has closed‑form
+expressions for the intercept and slope.  Wikipedia gives the formulas
+for α̂ and β̂ in terms of sums of x and y【722350863221826†L331-L338】.
+You can implement these formulas directly in Python to fit Model 0 or
+Model 1 on historical data.
 
-## 1.  Raw Average
+## Python Mini‑Lesson
 
-If you have warm‑up rates 0.20, 0.18, 0.22, 0.25 (°F/min), the raw average is:
+```python
+# Fit a line to (x, y) data using the closed‑form OLS solution
+xs = [1, 3, 5, 7]
+ys = [10, 18, 27, 40]
+n = len(xs)
+sum_x = sum(xs)
+sum_y = sum(ys)
+sum_xy = sum(x * y for x, y in zip(xs, ys))
+sum_x2 = sum(x * x for x in xs)
 
+# Compute slope β and intercept α
+beta = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2)
+alpha = (sum_y - beta * sum_x) / n
+
+print(f'Fitted line: y = {alpha:.2f} + {beta:.2f} x')
 ```
-average = (0.20 + 0.18 + 0.22 + 0.25) / 4 = 0.2125 °F/min
-```
 
-This value will change only when you drop an old observation and add a new one.
+## Exercises
 
-## 2.  EMA
-
-Using α = 0.3 and starting with 0.20, the EMA after the same sequence becomes:
-
-```
-EMA_1 = 0.20 + 0.3 * (0.18 − 0.20) = 0.194
-EMA_2 = 0.194 + 0.3 * (0.22 − 0.194) ≈ 0.2018
-EMA_3 = 0.2018 + 0.3 * (0.25 − 0.2018) ≈ 0.2153
-```
-
-Notice how the EMA moves toward the higher recent values more quickly than a raw average would.  If tomorrow’s observation drops sharply, the EMA will move down accordingly.
-
-## 3.  Why EMA Wins in BAS
-
-* **Responsiveness:** Building performance drifts; the EMA reacts sooner.
-* **Memory efficiency:** You only store one value (the current EMA), not a list of past warm‑ups.
-* **Tuning:** The α parameter lets you decide how much weight to give new data.
-
-## Mini‑Exercises
-
-1. Compute the raw average of the rates 0.16, 0.19, 0.23, 0.21.
-2. Starting with an EMA of 0.16 and α = 0.25, update the EMA with 0.19, then 0.23, then 0.21.
-3. Compare the final EMA to the raw average.  Which reflects the latest trend more?
+1. Use the code above to fit a line through the points (2,15), (4,22) and (6,32).
+2. Explain why minimising squared error is preferred over minimising absolute error.
+3. How would adding more noisy points affect the fitted slope and intercept?
 
 ## Key Takeaway
 
-The EMA is better suited to adaptive HVAC control because it adjusts more quickly to changes.  A raw average can lag behind when your building performance improves or degrades.
+Closed‑form regression formulas let you compute slope and intercept without any external libraries.  This is the foundation of self‑tuning models.

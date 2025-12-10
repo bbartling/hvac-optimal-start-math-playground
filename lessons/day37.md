@@ -1,25 +1,33 @@
 # Day 37 — Why Math Fails Here
 
-**Goal:** Explain why standard regression and smoothing techniques can’t capture the weekend effect.
+**Goal:** Explain the limitations of data‑driven models on Mondays
 
-## 1.  Dependence on Recent History
+Data‑driven models rely on recent history to predict warm‑up.  Mondays
+behave like a different system because the building has been unheated for
+48 hours.  The thermal mass is colder and takes longer to warm.
+Mathematically, the parameters learned from weekdays don’t apply.  This
+lesson explores why the assumptions of self‑tuning models break down.
 
-All self‑tuning models rely on the last few mornings to learn the building’s behaviour.  Over the weekend, nothing happens — there are no fresh data points for 48 hours.  Monday’s run is fundamentally different from the short runs seen Tuesday through Friday.  
+## Python Mini‑Lesson
 
-## 2.  Mismatch of Conditions
+```python
+# Compare residuals on Monday vs other days
+predicted_times = [30, 32, 31, 29]  # Tue–Fri predicted
+actual_times = [31, 33, 32, 30]
+week_error = [a - p for p, a in zip(predicted_times, actual_times)]
+mon_pred = 30
+mon_actual = 50
+mon_error = mon_actual - mon_pred
+print('Week errors:', week_error)
+print('Monday error:', mon_error)
+```
 
-* Thermal mass is colder.  
-* Humidity may have equilibrated differently.  
-* Outdoor temperatures might have varied significantly over two days.  
+## Exercises
 
-These factors mean Monday should be treated as its own class of problem, not just another day.
+1. Look at your historical data.  How much larger are Monday errors than weekday errors?
+2. Why can’t you simply include Monday data in the same training set?
+3. Suggest reasons why the building cools more over a long weekend.
 
-## 3.  Micro‑Exercises
+## Key Takeaway
 
-1. Fit a Model 3 to your Tuesday–Friday data.  Use it to predict Monday.  Compute the percentage error.  
-2. Repeat with Models 0–2.  Which model performs “least bad” on Monday?  
-3. Write a short paragraph on why adding more history (e.g., 20 days) still doesn’t fix Monday predictions.
-
-## 4.  Key Takeaway
-
-Monday warm‑ups don’t obey the same statistical patterns.  Treating them separately avoids erroneous predictions.
+Mondays violate the assumption that the system behaves consistently day‑to‑day.  Recognising this limitation guides you toward hybrid or rule‑based fixes.

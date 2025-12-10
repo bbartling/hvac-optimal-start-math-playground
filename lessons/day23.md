@@ -1,101 +1,31 @@
-# Day 23 — Implement Model 0, 1 and 3 in Basic Python
+# Day 23 — The Big Equation
 
-**Goal:** Write simple scripts that embody the equations and updates you’ve learned, using only Python’s built‑in operators.
+**Goal:** Write down Model 3’s multiple regression formula
 
-This lesson isn’t about production‑ready code — it’s about translating formulas into runnable scripts so you can experiment and build intuition.
+Model 3 predicts warm‑up time using three terms: (1) a coefficient α₃,a
+for ΔT, (2) a coefficient α₃,b for ΔT×WF, and (3) a constant α₃,d.  The
+PNNL paper expresses the model as t = α₃,a(ΔT) + α₃,b(ΔT·WF) + α₃,d
+【913477360246089†L575-L590】.  This structure captures both the direct
+effect of indoor temperature difference and the combined effect of indoor
+and outdoor conditions.
 
-## 1.  Model 0 Implementation
-
-```python
-# Initial guess and smoothing factor
-rate_ema = 0.20  # degrees per minute
-alpha = 0.1
-
-def predict_model0(deltaT, rate):
-    return deltaT / rate
-
-def update_model0(deltaT, actual_minutes, rate, alpha):
-    if actual_minutes <= 0:
-        return rate
-    observed_rate = deltaT / actual_minutes
-    return rate + alpha * (observed_rate - rate)
-
-# Example usage
-deltaT = 6
-minutes_predicted = predict_model0(deltaT, rate_ema)
-minutes_actual = 30
-rate_ema = update_model0(deltaT, minutes_actual, rate_ema, alpha)
-```
-
-## 2.  Model 1 Implementation
+## Python Mini‑Lesson
 
 ```python
-# Coefficients and smoothing factor
-a = 0.8
-b = 8
-alpha = 0.2
-
-def predict_model1(deltaT, a, b):
-    return a * (deltaT ** 2) + b
-
-def update_model1(deltaT, actual_minutes, a, b, alpha):
-    # Compute a temporary slope from a single point
-    if deltaT <= 0:
-        return a, b
-    x = deltaT ** 2
-    a_today = actual_minutes / x
-    a_new = (1 - alpha) * a + alpha * a_today
-    # b can be updated only if you have more than one point; keep it for now
-    return a_new, b
-
-# Example usage
-deltaT = 5
-minutes_predicted = predict_model1(deltaT, a, b)
-minutes_actual = 26
-a, b = update_model1(deltaT, minutes_actual, a, b, alpha)
+# Compute Model 3 prediction with sample coefficients
+delta_t = 5.0
+WF = 0.8
+alpha_a, alpha_b, alpha_d = 2.0, 1.5, 3.0
+t_pred = alpha_a * delta_t + alpha_b * (delta_t * WF) + alpha_d
+print(f'Predicted time = {t_pred:.1f} minutes')
 ```
 
-## 3.  Model 3 Implementation
+## Exercises
 
-```python
-# Coefficients and smoothing factor
-a = 3.0
-b = 6.0
-d = 2.0
-alpha = 0.15
-
-def weather_factor(oat, oat_ref=65, oat_min=0):
-    return max(0.0, min(1.0, (oat_ref - oat) / (oat_ref - oat_min)))
-
-def predict_model3(deltaT, wf, a, b, d):
-    return a * deltaT + b * (deltaT * wf) + d
-
-def update_model3(deltaT, wf, actual_minutes, a, b, d, alpha):
-    # For a single point, derive temporary coefficients assuming b and d constant
-    x1 = deltaT
-    x2 = deltaT * wf
-    if x1 == 0:
-        return a, b, d
-    # Solve for a_today assuming d stays the same
-    # a_today = (actual_minutes - d) / x1 - (b * x2 / x1)  # simplified case
-    a_today = (actual_minutes - d) / x1 - b * wf  # simplified
-    a_new = (1 - alpha) * a + alpha * a_today
-    return a_new, b, d
-
-# Example usage
-deltaT = 7
-wf = weather_factor(oat=30)
-minutes_predicted = predict_model3(deltaT, wf, a, b, d)
-minutes_actual = 60
-a, b, d = update_model3(deltaT, wf, minutes_actual, a, b, d, alpha)
-```
-
-## Mini‑Exercises
-
-1. Run the Model 0 script with a series of warm‑up events to see how `rate_ema` changes over time.  Does it stabilise?
-2. Modify the Model 1 update function to also update `b` when you provide two points at once.
-3. Extend the Model 3 update function to solve for all three coefficients when you accumulate three datapoints.
+1. Given α₃,a=1.8, α₃,b=2.2 and α₃,d=4.0, compute t for ΔT=6°F and WF=0.5.
+2. Explain why adding the ΔT×WF term allows the model to react differently to cold versus mild weather.
+3. Why is a constant term (α₃,d) needed even when ΔT=0?
 
 ## Key Takeaway
 
-Implementing the models yourself helps solidify the math.  Even with just lists and loops, you can simulate warm‑up mornings, update coefficients and see how predictions evolve.
+Model 3 combines multiple features to capture more complex dynamics.  It generalises Model 1 by including a weather interaction term.

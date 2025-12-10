@@ -1,30 +1,39 @@
 # Day 41 — Designing the Ultimate Hybrid
 
-**Goal:** Sketch a decision tree that selects the best model based on ΔT, day of week, and other factors.
+**Goal:** Combine models and rules for robust performance
 
-## 1.  A Simple Decision Tree
+A practical controller may use a hybrid strategy: if ΔT is small use
+Model 0 (linear), if ΔT is moderate use Model 3 (regression), and if
+Monday apply a buffer or multiplier on top of Model 3【913477360246089†L40-L46】.
+This rule‑based logic captures the strengths of each approach.  You can
+encode the logic as simple IF statements.
 
-Here is one possible logic:
+## Python Mini‑Lesson
 
-1. **Is it Monday?**  
-   *Yes* → Use Model 3 and multiply by your cold soak factor (e.g., 1.3) or add a fixed buffer (e.g., +60 min).  
-   *No* → Go to step 2.
-2. **Check ΔT:**  
-   If ΔT < 2°F → Use Model 0 (linear EMA).  
-   If 2°F ≤ ΔT ≤ 8°F → Use Model 3 (multiple regression).  
-   If ΔT > 8°F → Use Model 1 or Model 4, whichever has lower error historically.
+```python
+# Hybrid controller example
+def hybrid_prediction(delta_t, is_monday=False):
+    if delta_t < 2.0:  # small ΔT
+        rate = 0.22
+        return delta_t / rate
+    # moderate to large ΔT: use Model 3
+    WF = 0.6
+    a3, b3, d3 = 1.5, 1.0, 3.0
+    t_pred = a3 * delta_t + b3 * (delta_t * WF) + d3
+    if is_monday:
+        t_pred += 45  # technician buffer
+    return t_pred
+print(hybrid_prediction(1.5))
+print(hybrid_prediction(6.0))
+print(hybrid_prediction(6.0, is_monday=True))
+```
 
-## 2.  Fine Tuning
+## Exercises
 
-* You could also check the weather factor (WF) before switching models.  
-* Some implementations test Model 1 and Model 3 simultaneously and pick the larger predicted time as a conservative choice.
+1. Modify the hybrid logic to use a multiplier instead of an adder on Monday.
+2. What criteria would you use to switch between Model 0 and Model 3?
+3. How could you test the hybrid approach before deploying it live?
 
-## 3.  Micro‑Exercises
+## Key Takeaway
 
-1. Implement the decision tree above in pseudocode or a simple Python function.  
-2. Using your last 30 mornings of data, apply the decision logic and record the predicted and actual times.  Calculate the mean absolute error.  
-3. Adjust the thresholds (e.g., ΔT = 3°F) or multipliers and see if the error improves.
-
-## 4.  Key Takeaway
-
-No single model can handle every scenario.  A hybrid approach that intelligently switches between models can provide robust performance across all days.
+Hybrid strategies blend simple models with conditional logic to handle special cases like Mondays.  They often outperform any single model.

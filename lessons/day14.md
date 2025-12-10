@@ -1,25 +1,32 @@
-# Day 14 — Week 2 Review
+# Day 14 — Week 2 Review: Model 0 vs. Model 1
 
-**Goal:** Consolidate everything you learned about exponential moving averages and smoothing over the past week.
+**Goal:** Compare linear and quadratic predictions for typical scenarios
 
-By the end of Week 2 you have:
+Model 0 predicts time as t = ΔT / rate; Model 1 uses t = α₁,a·(ΔT)² + α₁,b.
+For small temperature differences the two models often agree, but for
+large ΔT the quadratic term dominates.  Use this review to compare
+predictions on the same dataset and decide which model is more
+appropriate.
 
-* Defined what an EMA is and why it’s used in BAS.
-* Practised computing EMAs by hand with different α values.
-* Seen how Niagara’s Model 0 uses an EMA to track the heating or cooling rate.
-* Compared EMAs to raw averages and understood the role of the smoothing factor as a control gain.
-* Explored advanced smoothing with double EMAs.
+## Python Mini‑Lesson
 
-Take a moment to reflect on how these pieces fit together.  The EMA is the heart of Model 0 and influences the slope in Models 1 and 3.  Choosing α appropriately keeps your optimal‑start times sensible even as the building and weather change.
+```python
+# Compare Model 0 and Model 1 predictions
+delta_ts = [2, 5, 8]
+rate = 0.20
+alpha_a, alpha_b = 1.2, 3.0
+for delta in delta_ts:
+    t0 = delta / rate
+    t1 = alpha_a * (delta ** 2) + alpha_b
+    print(f'ΔT={delta}°F → Model0={t0:.1f} min, Model1={t1:.1f} min')
+```
 
-## Mini‑Exercise
+## Exercises
 
-Write a short note (2–3 sentences) to yourself explaining:
-
-* Why you can’t just use a raw average for degrees‑per‑minute.
-* What happens if you set α too high or too low.
-* How a double EMA differs from a single EMA.
+1. At what ΔT do the two models begin to diverge significantly?
+2. Which model would you trust for an interior zone with small setbacks?
+3. Suggest a hybrid approach for zones that occasionally experience large ΔT.
 
 ## Key Takeaway
 
-Week 2 equips you with the smoothing tools needed to make self‑tuning robust.  EMAs keep models adaptive yet stable and underpin every optimal‑start algorithm you’ll build going forward.
+Linear and quadratic models can both be useful.  The best choice depends on the magnitude of ΔT and the thermal characteristics of the zone.

@@ -1,32 +1,39 @@
-# Day 12 — EMA as a Control Loop Gain
+# Day 12 — Solving for a and b (Manual Math)
 
-**Goal:** Understand the role of the smoothing factor α in the EMA and how it parallels control system gain.
+**Goal:** Apply the OLS formulas to compute Model 1 parameters
 
-In PID control loops, gain determines how aggressively the controller responds to error.  In an EMA, the **α parameter** plays a similar role: it sets the “learning rate” of the moving average.
+Given a series of (ΔT², t) pairs, you can compute the optimal α₁,a and
+α₁,b using the same regression formulas from Day 11.  Here x = (ΔT)² and
+y = t.  The resulting coefficients minimise the sum of squared errors
+between the quadratic model and the data.  Writing out the sums by hand
+reinforces the algebraic process.
 
-## 1.  Interpreting α
+## Python Mini‑Lesson
 
-* **Small α (e.g. 0.05):** Each new observation moves the average only a little.  The EMA is stable but slow to adapt.
-* **Medium α (e.g. 0.2):** New observations have moderate influence.  A good compromise for most buildings.
-* **Large α (e.g. 0.7):** The EMA follows each new observation closely.  It adapts quickly but may become noisy or unstable if the data are erratic.
+```python
+# Example data: (ΔT, time) pairs
+deltas = [3, 5, 7]
+times = [20, 38, 60]
+xs = [d ** 2 for d in deltas]
+ys = times
+n = len(xs)
+sum_x = sum(xs)
+sum_y = sum(ys)
+sum_xy = sum(x * y for x, y in zip(xs, ys))
+sum_x2 = sum(x * x for x in xs)
 
-Choosing α is like tuning a loop gain.  Too low and the model lags; too high and predictions jump around.
+alpha_a = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2)
+alpha_b = (sum_y - alpha_a * sum_x) / n
+print(f'α₁,a={alpha_a:.2f} min/°F², α₁,b={alpha_b:.2f} min')
+```
 
-## 2.  Example Sensitivity
+## Exercises
 
-Suppose the current EMA is 0.20 °F/min and the next observed rate is 0.30 °F/min.
-
-* With α = 0.05: `EMA_new = 0.20 + 0.05 * (0.30 − 0.20) = 0.205` (barely changes).
-* With α = 0.50: `EMA_new = 0.20 + 0.50 * (0.30 − 0.20) = 0.25` (big jump).
-
-You can see how α changes the sensitivity.
-
-## Mini‑Exercises
-
-1. The EMA is 0.15 °F/min.  The next observed rate is 0.12 °F/min.  Compute `EMA_new` for α = 0.1, 0.3 and 0.8.  Compare how much the average moves.
-2. If your optimal‑start model is too jumpy from day to day, what should you do with α?
-3. If the model always seems slow to respond to weather changes, what should you do with α?
+1. Choose your own (ΔT, t) pairs and compute α₁,a and α₁,b.
+2. Verify that substituting the computed coefficients into t=α₁,a·(ΔT)²+α₁,b
+reduces the error for your dataset.
+3. Why is it important to use several days of data rather than a single observation?
 
 ## Key Takeaway
 
-The smoothing factor α is the “gain” of the EMA.  Tune it carefully: low α values provide stability; high α values increase responsiveness.  Most BAS implementations choose α between 0.05 and 0.30 for optimal start.
+Manually calculating α₁,a and α₁,b gives you insight into how quadratic models are fitted.  With more data the estimates become more reliable.

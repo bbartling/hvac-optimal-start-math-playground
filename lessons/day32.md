@@ -1,43 +1,32 @@
-# Day 32 — The “Coast to Stop” Effect
+# Day 32 — The Coast‑to‑Stop Effect
 
-**Goal:** Explain why Model 4 is useful for systems that slow down as they approach setpoint and illustrate the concept with examples and code.
+**Goal:** Explain why heating slows as set point nears
 
-## 1.  Why Heating Slows Down
+As the zone temperature approaches the set point, the driving force for
+heat transfer diminishes.  The coil may also modulate or cycle off
+to prevent overshoot.  This leads to the ‘coast‑to‑stop’ effect
+captured by Model 4.  The logarithmic formula accounts for this
+slowing by predicting longer times near the end of the warm‑up.
 
-Many HVAC systems warm up quickly at first when the temperature difference is large, but as they get close to the setpoint the rate of change slows dramatically.  This is similar to a car coasting into a parking spot.  Fans and coils have less “driving force” as the zone temperature rises.
-
-Models 0–3 don’t explicitly capture this slowdown.  **Model 4** does by assuming the error decays exponentially:
-
-```
-error(t) = error(0) * (alpha_c)**t
-```
-
-where `0 < alpha_c < 1` is the decay factor from Day 31.
-
-## 2.  Visualising the Coast
-
-Let’s compute how the error shrinks over 10 minutes for two different decay factors:
+## Python Mini‑Lesson
 
 ```python
-import math
-
-def simulate_error(initial_error, alpha_c, minutes):
-    return [initial_error * (alpha_c**t) for t in range(minutes+1)]
-
-err_fast = simulate_error(10, 0.5, 10)  # faster decay
-err_slow = simulate_error(10, 0.8, 10)  # slower decay
-for t, (e1, e2) in enumerate(zip(err_fast, err_slow)):
-    print(f"minute {t}: fast={e1:.2f}, slow={e2:.2f}")
+# Simulate temperature approach using a simple decay model
+T_sp = 70.0
+T = 60.0
+alpha_c = 0.85
+for minute in range(1, 11):
+    error = T_sp - T
+    T += error * (1 - alpha_c)  # fractional approach
+    print(f'min {minute}: T={T:.2f}°F, error={T_sp - T:.2f}°F')
 ```
 
-You’ll see the “fast” system drops error quickly at first but still slows down near zero.  The “slow” system maintains a noticeable error much longer.
+## Exercises
 
-## 3.  Micro‑Exercises
+1. What would happen if the coil delivered constant power until set point?
+2. Describe two physical reasons why heating slows near set point.
+3. How does Model 4 prevent overshooting the target temperature?
 
-1. Run the code above with your own `alpha_c` values (e.g., 0.6, 0.9) and plot the error over time.  
-2. Compare the shape of the exponential decay to a quadratic warm‑up model for the same initial ΔT.  Which one spends more time close to the setpoint?  
-3. Describe in words why a “coasting” effect can actually save energy in buildings with oversized equipment.
+## Key Takeaway
 
-## 4.  Key Takeaway
-
-Exponential models naturally account for the slowing rate of change near setpoint.  They are powerful when your building “coasts” the last few degrees.
+The coast‑to‑stop behaviour reflects reduced temperature difference and modulation near set point.  Model 4’s logarithmic form captures this effect.

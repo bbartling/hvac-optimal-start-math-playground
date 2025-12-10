@@ -1,30 +1,34 @@
 # Day 43 — Algebra vs. Iteration
 
-**Goal:** Understand the fundamental difference between "solving" an equation (Model 3) and "learning" an equation (Machine Learning).
+**Goal:** Distinguish closed‑form solutions from iterative learning
 
-## 1. The Closed Form vs. The Learning Loop
+Earlier models used algebraic formulas to solve for coefficients directly.
+Machine learning methods like gradient descent instead start with
+guesses and iteratively nudge the parameters to reduce error.  This
+lesson outlines the conceptual difference between analytical solutions
+and iterative optimisation.
 
-Up until now (Models 0–3), we used algebra to find the exact answer immediately. For Model 3, we used matrix inversion to snap directly to the best coefficients.
+## Python Mini‑Lesson
 
-**Machine Learning (ML)** works differently. It doesn't know the algebra formula to solve the problem. Instead, it plays a game of "Hot or Cold":
-1.  Make a random guess.
-2.  Check how wrong the guess is.
-3.  Nudge the numbers slightly to be less wrong.
-4.  Repeat 1,000 times.
+```python
+# Simple illustration: solve 2x + 1 = 0
+# Algebraic solution
+x_exact = -1/2
+# Iterative solution using gradient descent on f(x)=2x+1
+x = 0.0
+learning_rate = 0.1
+for _ in range(10):
+    grad = 2  # derivative of 2x+1 w.r.t x
+    x = x - learning_rate * grad
+print(f'Algebraic x={x_exact}, Gradient‑descent x≈{x:.3f}')
+```
 
-## 2. Why bother?
+## Exercises
 
-If Algebra is faster, why use ML?
-* **Flexibility:** Algebra requires a rigid formula shape. ML can adapt to shapes we haven't defined yet.
-* **The Monday Problem:** We can feed "Monday" into the engine as a raw input and let the math figure out the penalty, rather than coding `IF Monday THEN +60`.
+1. Solve 3x+9=0 algebraically and with gradient descent.
+2. Why might you choose an iterative method when a closed‑form exists?
+3. Give an example of a problem where an algebraic solution is impossible.
 
-## 3. Micro‑Exercises
+## Key Takeaway
 
-1.  Take a simple equation: $y = 2x$. Pretend you don't know the "2".
-2.  Guess that $y = 5x$. Test with $x=10$. (Target=20, Guess=50).
-3.  You are too high. Lower your guess to $y=3x$. Test again.
-4.  This process of manually adjusting your guess based on the error is exactly what the Python code will do.
-
-## 4. Key Takeaway
-
-Traditional control logic "calculates" the answer. AI "searches" for the answer by making mistakes and correcting them.
+Analytical formulas are exact and fast but may not exist for complex models.  Iterative algorithms approximate solutions when closed forms are unavailable.
