@@ -1,25 +1,27 @@
 
 
+import matplotlib.pyplot as plt
 
 
-'''
-Micro-Exercise Example (You Solve This)
 
-You have these warm-up datapoints:
+# t = 0.7 * x**2 + 6
 
-| ΔT | x = ΔT² | t  |
-| -- | ------- | -- |
-| 4  | 16      | 26 |
-| 6  | 36      | 44 |
-
-Solve: t=ax+b
-'''
-
-a = (82 - 40) / (64 - 25)
-print(a)
+def compute_times(deltaTemp):
+    minutes = 0.7 * deltaTemp**2 + 6
+    return round(minutes,2)
 
 
-# Solve for b | b = t1 ​− ax1​
+DeltaTemps = [3, 5, 7]
+dataForPlot = []
 
-b = 40 - a * 25
-print(b)
+for DeltaT in DeltaTemps:
+    #print(DeltaT)
+    data = compute_times(DeltaT)
+    dataForPlot.append(data)
+    print("Minutes ",data)
+
+
+print(dataForPlot)
+
+plt.plot(dataForPlot)
+plt.show()
