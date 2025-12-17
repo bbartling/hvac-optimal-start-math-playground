@@ -29,160 +29,82 @@ Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approac
 
 ---
 
-### 🛠️ How hard are they to program?
+---
 
-* **Model 0 (Easy):** Just simple division. This logic is pre-built into most standard BAS blocks (like Tridium's `kitControl`).
-* **Model 1 & 2 (Medium):** Requires basic algebra. You can do this in most PLCs or Niagara Program objects.
-* **Model 3 (Hard):** Requires "Matrix Algebra." This is very hard to code from scratch in a standard BAS controller. It is best suited for Python or edge devices that have math libraries.
-* **Model 4 (Medium/Hard):** Uses logarithms (ln). Requires a controller that supports advanced math functions.
-* **Model 5 (Advanced):** Requires implementing an iterative training loop (Gradient Descent) and feature engineering (Normalization, One-Hot Encoding). Best suited for Python, Edge Compute, or Cloud-based analytics overlays.
+## Model Overview
 
-> Although the PNNL study identifies **Model 3** as the most accurate overall, it only outperforms **Model 1** by a small margin. In practice, **Model 1 often delivers nearly identical results with far less computational complexity**, making it an excellent real-world choice when tooling is limited.
+### Model 0 — Linear Rate Model (EMA-Based)
+Model 0 estimates warm-up or cool-down time using a smoothed rate of temperature
+change:
+
+```
+minutes = ΔT / rate
+```
+
+The rate is updated using an **Exponential Moving Average (EMA)**, making Model 0
+inherently self-tuning and stable.
+
+> ✅ EMA is explicitly part of Model 0 behavior.
 
 ---
 
+### Model 1 — Quadratic-in-ΔT Model
+Model 1 captures non-linear behavior between temperature difference and run time:
 
-## 4. Model Details
-
-### Model 0: Linear EMA
-
-$$
-t = \frac{\Delta T}{\text{rate}_{EMA}}
-$$
-
-This model assumes a linear relationship where the building warms up at a specific rate ($^\circ F/\text{min}$). It does not use regression (least squares); instead, it "learns" by averaging yesterday's performance into a running average:
-
-$$
-\text{rate}_{EMA,new} = \text{rate}_{EMA,old} + \alpha \cdot (\text{rate}_{observed} - \text{rate}_{EMA,old})
-$$
-
-**Python Implementation:**
-```python
-# 1. Calculate observed rate from today's run
-observed_rate = delta_t / actual_minutes
-
-# 2. Update EMA (Learn)
-# alpha is typically 0.1 to 0.3
-rate_ema = rate_ema + alpha * (observed_rate - rate_ema)
+```
+t = α₁,a · (ΔT²) + α₁,b
 ```
 
-### Model 1: Manual Simple Regression
+Coefficients are learned via **ordinary least squares (OLS)** regression using
+historical run data.
 
-$$
-t = \alpha_{1,a} \cdot (\Delta T^2) + \alpha_{1,b}
-$$
+#### 🔎 Implementation Note (Not in the PNNL Paper)
 
-In this formula, the duration ($t$) is the dependent variable ($y$), and the squared temperature difference ($\Delta T^2$) is the single independent variable ($x$).
+The original PNNL paper recomputes Model 1 coefficients using a rolling historical
+window (e.g., the last N days).
 
-  * **Implementation:** Model 1 implements the core tuning logic in `_compute_regression_for_mode` by manually calculating the sums needed for the **ordinary least squares (OLS)** solution.
-  * **Why Manual?** Simple Linear Regression has basic, closed-form equations (the familiar $\frac{n \Sigma xy - \Sigma x \Sigma y}{n \Sigma x^2 - (\Sigma x)^2}$ formula) that are short and reliable enough to code directly without needing external libraries.
+In this repository, an **optional EMA smoothing layer** is applied to the learned
+coefficients (α₁,a and α₁,b):
 
-**Python Implementation:**
-
-```python
-# x = deltaT^2, y = actual_minutes
-n = len(xs)
-sum_x = sum(xs)
-sum_y = sum(ys)
-sum_xy = sum(x*y for x, y in zip(xs, ys))
-sum_x2 = sum(x*x for x in xs)
-
-# Solve for slope (a) and intercept (b) manually
-a = (n*sum_xy - sum_x*sum_y) / (n*sum_x2 - sum_x**2)
-b = (sum_y - a*sum_x) / n
+```
+α_est ← α_prev + λ · (α_new − α_prev)
 ```
 
-### Model 2: Weather-Adjusted Rate
+This enhancement:
+- Reduces day-to-day jitter
+- Improves numerical stability
+- Makes the model safer for noisy or sparse BAS data
 
-$$
-t_{opt} = \frac{(T_{sp} - T_{z,0})}{\alpha_{2,a}} \cdot \left( \frac{T_{o,r} - T_{o,prev}}{T_{o,r} - T_{o,curr}} \right)
-$$
+> ⚠️ EMA smoothing for Model 1 is a **practical field enhancement**, not a
+> requirement of the original PNNL formulation.
 
-This model adds an **outdoor air temperature adjustment** to the simple linear rate. It compares today's outdoor temperature ($T_{o,curr}$) to yesterday's ($T_{o,prev}$) relative to a reference temperature ($T_{o,r}$, typically $0^\circ C$ for heating or $100^\circ F$ for cooling).
+---
 
-  * $\alpha_{2,a}$: The learned rate of temperature change (similar to Model 0).
-  * [cite_start]**Adjustment Factor:** If it is colder today than yesterday, the ratio increases, extending the predicted start time.
+### Models 2–4 (Future)
+Higher-order PNNL models introduce:
+- Outdoor air temperature terms
+- Occupancy effects
+- Multi-variable regressions
 
-**Python Implementation:**
+Like Model 1, these models are defined in the PNNL paper as **batch regression
+models**. EMA smoothing may optionally be layered on top to improve robustness
+in real BAS deployments.
 
-```python
-# 1. Learn the base rate (alpha_2a) from yesterday
-# rate = delta_T / minutes
-alpha_2a = (setpoint - zone_start_prev) / actual_minutes_prev
+---
 
-# 2. Predict today using outdoor temp correction
-# T_ref = 0 (heating) or 100 (cooling)
-correction = (T_ref - oat_prev) / (T_ref - oat_curr)
-predicted_minutes = ((setpoint - zone_start_curr) / alpha_2a) * correction
-```
+## Why EMA is Used Here
 
-### Model 3: Scikit-learn for Multiple Regression
+PNNL models assume:
+- Clean data
+- Offline computation
+- Controlled experimental conditions
 
-$$
-t = \alpha_{3,a} \cdot \Delta T + \alpha_{3,b} \cdot \Delta T \cdot \text{WF} + \alpha_{3,d}
-$$
+Real BAS environments require:
+- Stability over perfection
+- Protection against bad data days
+- Predictable controller behavior
 
-In this formula, the model has **two distinct features** used for prediction:
-
-1.  **Feature $x_1$:** The temperature difference ($\Delta T$).
-2.  **Feature $x_2$:** The weather-compensated term ($\Delta T \cdot \text{WF}$), where $\text{WF} = \frac{T_{sp} - T_{o}}{60.0}$.
-
-This is a classic **Multiple Linear Regression** problem, essentially fitting $y \approx \alpha_{3,a} \cdot x_1 + \alpha_{3,b} \cdot x_2 + \alpha_{3,d}$.
-
-  * **Implementation:** Model 3 uses the `sklearn.linear_model.LinearRegression` class in its `_compute_regression_for_mode` method.
-  * **Why Scikit-learn?** Implementing Multiple Linear Regression requires **matrix algebra** (specifically, solving $\mathbf{w} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$). Using `scikit-learn` handles the necessary matrix computations (like inverting the feature matrix) and ensures better numerical stability and optimization.
-
-**Python Implementation (Matrix Math):**
-
-```python
-import numpy as np
-from sklearn.linear_model import LinearRegression
-
-# X = [[deltaT, deltaT * WF], ...]
-# y = [minutes, ...]
-
-model = LinearRegression()
-model.fit(X, y)
-
-a = model.coef_[0]
-b = model.coef_[1]
-d = model.intercept_
-```
-
-### Model 4: First-Order Response (Logarithmic)
-
-$$
-t = \frac{\ln(\alpha_{4,a} / \alpha_{4,b})}{\ln(\alpha_{4,c})}
-$$
-
-This model assumes the zone temperature behaves like a **first-order differential equation** (exponential decay towards setpoint). [cite_start]It fits the "decay rate" ($\alpha_{4,c}$) based on how quickly the error ($T_{sp} - T_z$) reduced during the previous run.
-
-  * $\alpha_{4,a}$: The acceptable temperature deadband (e.g., $0.5^\circ F$).
-  * $\alpha_{4,b}$: The initial temperature difference ($T_{sp} - T_{z,0}$).
-  * $\alpha_{4,c}$: The learned system time constant/decay factor.
-
-**Python Implementation:**
-
-```python
-import math
-
-# 1. Estimate decay factor (alpha_c) from history
-# This is simplified; usually requires least-squares on the error log
-error_ratio_sum = sum(error_t / error_t_minus_1 for error in history)
-alpha_c = error_ratio_sum / len(history)
-
-# 2. Predict time
-# alpha_a = deadband (e.g., 0.5)
-# alpha_b = current delta T
-numerator = math.log(alpha_a / current_delta_t)
-denominator = math.log(alpha_c)
-
-predicted_minutes = numerator / denominator
-```
-
-### Model 5: Gradient Descent (Future Research)
-
-* TODO
+EMA smoothing provides these benefits without changing the underlying math.
 
 ---
 

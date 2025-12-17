@@ -1,9 +1,58 @@
 # -----------------------------------------
-# Day 12 — Model 1 (Quadratic-in-DeltaT) via OLS
-# t = alpha_a * (DeltaT^2) + alpha_b
+# Day 13 — EMA smoothing of Model 1 coefficients
+# Uses Day 12 regression outputs as "today's estimate"
+# then applies EMA to produce stable coefficients.
 # -----------------------------------------
 
-data = [
+def fit_model1_ols(data):
+    """
+    Fit Model 1: t = a*(ΔT²) + b using closed-form OLS.
+    data: list of [deltaT, minutes]
+    returns: (a, b, sse_fit, sse_mean)
+    """
+    n = float(len(data))
+    if n < 2:
+        raise Exception("Need at least 2 points")
+
+    sum_x = 0.0       # x = ΔT²
+    sum_y = 0.0
+    sum_xy = 0.0
+    sum_x2 = 0.0      # x²
+
+    for deltaT, t in data:
+        x = float(deltaT) ** 2
+        y = float(t)
+        sum_x += x
+        sum_y += y
+        sum_xy += x * y
+        sum_x2 += x * x
+
+    den = n * sum_x2 - (sum_x * sum_x)
+    if abs(den) < 1e-9:
+        raise Exception("Not enough variation in ΔT² (den ~ 0)")
+
+    a = (n * sum_xy - sum_x * sum_y) / den
+    b = (sum_y - a * sum_x) / n
+
+    # SSE check (fitted vs baseline mean)
+    mean_y = sum_y / n
+    sse_fit = 0.0
+    sse_mean = 0.0
+
+    for deltaT, t in data:
+        x = float(deltaT) ** 2
+        actual = float(t)
+        pred_fit = a * x + b
+        sse_fit += (actual - pred_fit) ** 2
+        sse_mean += (actual - mean_y) ** 2
+
+    return a, b, sse_fit, sse_mean
+
+
+# -----------------------------
+# Day 12 demo dataset (single day)
+# -----------------------------
+data_day = [
     [1, 10],
     [3, 18],
     [5, 27],
@@ -11,76 +60,42 @@ data = [
     [12, 65],
 ]
 
-# 1) Build regression sums using x = (DeltaT^2)
-n = float(len(data))
+a_today, b_today, sse_fit, sse_mean = fit_model1_ols(data_day)
 
-sum_x = 0.0         # Σx  where x = ΔT²
-sum_y = 0.0         # Σy
-sum_xy = 0.0        # Σxy
-sum_x2 = 0.0        # Σx²  where x² = (ΔT²)² = ΔT⁴
+print("\n--- Day 12 Regression (Today) ---")
+print(f"Today a_new = {a_today:.6f}  [min/°F²]")
+print(f"Today b_new = {b_today:.6f}  [min]")
+print(f"SSE fitted = {sse_fit:.2f}, SSE mean = {sse_mean:.2f}")
+print("✅ beats baseline" if sse_fit < sse_mean else "⚠️ does NOT beat baseline")
 
-print("ΔT  time(min)  x=ΔT²")
-for deltaT, t in data:
-    x = float(deltaT) * float(deltaT)  # ΔT²
-    y = float(t)
-    print(f"{deltaT:>2}  {t:>8}  {x:>5.1f}")
 
-    sum_x += x
-    sum_y += y
-    sum_xy += x * y
-    sum_x2 += x * x
+# -----------------------------------------
+# Day 13 Micro-Exercise A:
+# Simulate 5 days of (a_new, b_new) estimates
+# and apply EMA with alpha = 0.2
+# -----------------------------------------
 
-# 2) Closed-form OLS coefficients for y = a*x + b
-den = n * sum_x2 - (sum_x * sum_x)
-if abs(den) < 1e-9:
-    raise Exception("Not enough variation in ΔT² to fit Model 1 (denominator ~ 0).")
+alpha = 0.2
 
-alpha_a = (n * sum_xy - sum_x * sum_y) / den
-alpha_b = (sum_y - alpha_a * sum_x) / n
+# Pretend these came from running regression each day
+daily_estimates = [
+    (1.10, 4.20),
+    (1.35, 3.90),
+    (1.05, 4.60),
+    (1.50, 3.40),
+    (1.25, 3.80),
+]
 
-print("\n--- Learned Model 1 Coefficients ---")
-print(f"alpha_1,a (slope on ΔT²) = {alpha_a:.6f}  [min / °F²]")
-print(f"alpha_1,b (intercept)    = {alpha_b:.6f}  [min]")
-print(f"Model: t = {alpha_a:.6f}*(ΔT²) + {alpha_b:.6f}")
+# Initial EMA estimates (yesterday's tuned values)
+a_est = 1.00
+b_est = 4.00
 
-# 3) Verify: compute SSE for fitted model and baseline mean model
-mean_y = sum_y / n
+print("\n--- Day 13 EMA Smoothing Over 5 Days ---")
+print(f"EMA alpha = {alpha}")
+print("day   a_new    a_est     b_new    b_est")
+for i, (a_new, b_new) in enumerate(daily_estimates, start=1):
+    a_est = a_est + alpha * (a_new - a_est)
+    b_est = b_est + alpha * (b_new - b_est)
+    print(f"{i:>3}  {a_new:>6.2f}  {a_est:>7.3f}   {b_new:>6.2f}  {b_est:>7.3f}")
 
-sse_fit = 0.0
-sse_mean = 0.0
 
-print("\n--- Per-point Predictions & Errors ---")
-print("ΔT   actual  pred_fit  err_fit   pred_mean  err_mean")
-for deltaT, t in data:
-    x = float(deltaT) * float(deltaT)
-    actual = float(t)
-
-    pred_fit = alpha_a * x + alpha_b
-    err_fit = actual - pred_fit
-    sse_fit += err_fit * err_fit
-
-    pred_mean = mean_y
-    err_mean = actual - pred_mean
-    sse_mean += err_mean * err_mean
-
-    print(f"{deltaT:>2}  {actual:>6.1f}  {pred_fit:>8.2f}  {err_fit:>7.2f}   {pred_mean:>8.2f}  {err_mean:>8.2f}")
-
-print("\n--- SSE Comparison ---")
-print(f"SSE (fitted Model 1) = {sse_fit:.2f}")
-print(f"SSE (baseline mean)  = {sse_mean:.2f}")
-
-if sse_fit < sse_mean:
-    print("✅ Learned model beats the baseline mean (good).")
-else:
-    print("⚠️ Learned model does NOT beat the baseline mean (check data or model form).")
-
-# 4) Tomorrow prediction using Model 1
-tomorrows_space_temp = 60
-occ_heat_stp = 72
-deltaT_tomorrow = occ_heat_stp - tomorrows_space_temp
-
-minutes_tomorrow = alpha_a * (deltaT_tomorrow ** 2) + alpha_b
-
-print("\n--- Tomorrow Prediction ---")
-print(f"Tomorrow ΔT = {deltaT_tomorrow:.2f} °F")
-print(f"Predicted minutes = {minutes_tomorrow:.2f} min")
