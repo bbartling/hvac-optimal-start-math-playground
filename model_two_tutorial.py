@@ -1,62 +1,17 @@
-# ---------------------------------------------------------
-# MODEL 2: RATIO ADJUSTMENT
-# ---------------------------------------------------------
-
-# 1. MADE UP DATA (History of the last 5 days)
-# We need to know what the Outdoor Air Temp (OAT) was during those runs.
-# Format: [Temp_Diff, Actual_Minutes, OAT_During_Run]
 history = [
-    [5.0, 25.0, 50.0],  # Day 1: 5 deg diff, took 25 min, 50F outside
-    [3.0, 15.0, 55.0],  # Day 2: Warmer outside
-    [8.0, 42.0, 30.0],  # Day 3: Cold! Long run.
-    [4.0, 21.0, 48.0],  # Day 4
-    [6.0, 30.0, 45.0]   # Day 5 (Yesterday)
+    [2.0, 10.0],  # Day 1: 2 degrees took 10 mins (Rate = 0.2 deg/min)
+    [5.0, 25.0],  # Day 2: 5 degrees took 25 mins (Rate = 0.2 deg/min)
+    [8.0, 40.0],  # Day 3: Rate = 0.2
+    [3.0, 15.0],  # Day 4: Rate = 0.2
+    [6.0, 29.0],  # Day 5: Rate = 0.206 (A little faster)
+    [10.0, 50.0], # Day 6: Rate = 0.2
+    [4.0, 19.0],  # Day 7: Rate = 0.21
+    [5.5, 27.0],  # Day 8: Rate = 0.203
+    [9.0, 45.0],  # Day 9: Rate = 0.2
+    [2.5, 12.0],  # Day 10: Rate = 0.208
+    [7.0, 36.0],  # Day 11: Rate = 0.194 (A little slower)
+    [6.5, 32.0],  # Day 12: Rate = 0.203
+    [3.5, 17.0],  # Day 13: Rate = 0.205
+    [8.5, 42.0],  # Day 14: Rate = 0.202
+    [4.5, 22.0]   # Day 15: Rate = 0.204
 ]
-
-# 2. SETTINGS
-# Reference Temp: 100F for Cooling, 0F for Heating (We assume Heating here)
-# This acts as an "anchor" for the ratio math.
-T_ref = 0.0 
-
-# We need to learn the "Base Rate" just like Model 0
-learned_rate_sum = 0.0
-
-print("--- STEP 1: LEARN BASE RATE ---")
-for day in history:
-    delta_t = day[0]
-    minutes = day[1]
-    
-    # Simple Rate = Degrees / Minutes
-    day_rate = delta_t / minutes
-    learned_rate_sum += day_rate
-    print(f"Day Rate: {day_rate:.3f} deg/min")
-
-# Average the rates (Simple "Learning")
-avg_base_rate = learned_rate_sum / len(history)
-print(f"AVERAGE BASE RATE: {avg_base_rate:.3f} deg/min")
-
-
-# 3. PREDICTION WITH WEATHER BUMP
-print("\n--- STEP 2: PREDICT TOMORROW ---")
-
-# Scenario: Tomorrow is 10 degrees from setpoint
-tomorrow_delta_t = 10.0
-# Scenario: Tomorrow is VERY COLD (20F) compared to Yesterday (45F)
-tomorrow_oat = 20.0
-yesterday_oat = history[-1][2] # Get the last item from history
-
-# A. Normal Prediction (Model 0 style)
-# Time = Degrees / Rate
-base_minutes = tomorrow_delta_t / avg_base_rate
-print(f"Base Prediction (No Weather): {base_minutes:.1f} minutes")
-
-# B. Calculate the "Bump" Ratio
-# PNNL Formula concept: (Ref - Yesterday) / (Ref - Today)
-# If today is colder (closer to 0), the bottom number gets smaller, Ratio gets bigger.
-ratio = (yesterday_oat - T_ref) / (tomorrow_oat - T_ref)
-print(f"Weather Ratio: {ratio:.2f} (Because 20F is colder than 45F)")
-
-# C. Apply Correction
-final_minutes = base_minutes * ratio
-
-print(f"FINAL PREDICTION: {final_minutes:.1f} minutes")

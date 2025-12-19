@@ -1,135 +1,79 @@
-# ---------------------------------------------------------
-# 1) MADE UP DATA (15 Days of History)
-# Format: [Temp_Diff_Degrees, Actual_Minutes_To_Recover]
-# ---------------------------------------------------------
 history = [
-    [2.0, 6.0],   # Day 1: Small diff, short run
-    [5.0, 8.5],   # Day 2: Medium diff
-    [8.0, 12.0],  # Day 3: Big diff, longer run
-    [3.0, 6.5],
-    [6.0, 9.0],
-    [10.0, 16.0], # Day 6: Very cold morning!
-    [4.0, 7.0],
-    [5.5, 8.8],
-    [9.0, 14.0],
-    [2.5, 6.2],
-    [7.0, 10.5],
-    [6.5, 9.8],
-    [3.5, 6.8],
-    [8.5, 13.0],
-    [4.5, 7.5]    # Day 15
+    [2.0, 10.0],  # Day 1: 2 degrees took 10 mins (Rate = 0.2 deg/min)
+    [5.0, 25.0],  # Day 2: 5 degrees took 25 mins (Rate = 0.2 deg/min)
+    [8.0, 40.0],  # Day 3: Rate = 0.2
+    [3.0, 15.0],  # Day 4: Rate = 0.2
+    [6.0, 29.0],  # Day 5: Rate = 0.206 (A little faster)
+    [10.0, 50.0], # Day 6: Rate = 0.2
+    [4.0, 19.0],  # Day 7: Rate = 0.21
+    [5.5, 27.0],  # Day 8: Rate = 0.203
+    [9.0, 45.0],  # Day 9: Rate = 0.2
+    [2.5, 12.0],  # Day 10: Rate = 0.208
+    [7.0, 36.0],  # Day 11: Rate = 0.194 (A little slower)
+    [6.5, 32.0],  # Day 12: Rate = 0.203
+    [3.5, 17.0],  # Day 13: Rate = 0.205
+    [8.5, 42.0],  # Day 14: Rate = 0.202
+    [4.5, 22.0]   # Day 15: Rate = 0.204
 ]
+# -----------------------------
+# Regression step (physics)
+# Model 1: t = a * (ΔT²) + b
+# -----------------------------
 
-# Defaults (same spirit as your Niagara block)
-DEFAULT_A = 0.10
-DEFAULT_B = 5.00
+n = len(history)
 
-# EMA smoothing factor for coefficient updates (Day 13 behavior)
-EMA_ALPHA = 0.2
+sum_x = 0.0        # Σ(ΔT²)
+sum_y = 0.0        # Σ(t)
+sum_xy = 0.0       # Σ(ΔT² · t)
+sum_x2 = 0.0       # Σ((ΔT²)²) = Σ(ΔT⁴)
 
+for record in history:
+    deltaT = record[0]
+    time = record[1]
 
-# ---------------------------------------------------------
-# Helper: compute regression for Model 1 on a window of history
-# Returns (a, b) for: minutes = a*(ΔT^2) + b
-# ---------------------------------------------------------
-def compute_model1_regression(window):
-    """
-    Ordinary Least Squares for y = a*x + b with:
-      x = (ΔT^2)
-      y = minutes
+    x = deltaT * deltaT   # ΔT²
+    y = time
 
-    Returns:
-      (a, b)
-    """
-    n = len(window)
-    if n < 2:
-        return DEFAULT_A, DEFAULT_B
+    sum_x += x
+    sum_y += y
+    sum_xy += x * y
+    sum_x2 += x * x
 
-    sum_x = 0.0
-    sum_y = 0.0
-    sum_xy = 0.0
-    sum_x2 = 0.0
+# ---- THE IMPORTANT PART ----
+denominator = n * sum_x2 - (sum_x * sum_x)
 
-    for delta_t, minutes in window:
-        x = delta_t * delta_t
-        y = minutes
-        sum_x += x
-        sum_y += y
-        sum_xy += x * y
-        sum_x2 += x * x
+if abs(denominator) < 1e-9:
+    raise Exception("Not enough variation in ΔT² to fit Model 1")
 
-    denom = (n * sum_x2) - (sum_x * sum_x)
-    if abs(denom) < 1e-9:
-        return DEFAULT_A, DEFAULT_B
+# Solve for regression coefficients
+a_new = (n * sum_xy - sum_x * sum_y) / denominator
+b_new = (sum_y - a_new * sum_x) / n
 
-    a = ((n * sum_xy) - (sum_x * sum_y)) / denom
-    b = (sum_y - (a * sum_x)) / n
+print(f"Regression result: t = {a_new:.3f}*(ΔT²) + {b_new:.3f}")
 
-    # Basic safety clamps (match your Java philosophy)
-    if a < 0:
-        a = DEFAULT_A
-    if b < 0:
-        b = 0.0
+# -----------------------------
+# EMA step (trust)
+# -----------------------------
 
-    return a, b
+alpha = 0.2
+
+# Yesterday’s trusted values
+a_est = 1.0
+b_est = 4.0
+
+# Blend today’s regression into trust
+a_est = a_est + alpha * (a_new - a_est)
+b_est = b_est + alpha * (b_new - b_est)
+
+print(f"EMA-smoothed: a={a_est:.3f}, b={b_est:.3f}")
 
 
-# ---------------------------------------------------------
-# 2) REGRESSION on the full dataset (the "learned brain")
-# ---------------------------------------------------------
-print("--- STEP 1/2: LEARN MODEL 1 FROM HISTORY ---")
-a_full, b_full = compute_model1_regression(history)
-print(f"Learned a (slope):     {a_full:.4f}")
-print(f"Learned b (intercept): {b_full:.2f}")
-print(f"FINAL FORMULA: Minutes = {a_full:.4f} * (DeltaT^2) + {b_full:.2f}")
+print("\n PREDICTING TOMORROW ---")
+tomorrow_delta_t = 10.0 # Cold morning!
+
+# alpha a = minutes / °F² and alpha b = minutes
+pred_minutes = a_new * (tomorrow_delta_t ** 2) + b_new
+print(f"Scenario: Tomorrow the zone is {tomorrow_delta_t} degrees from setpoint.")
+print(f"Prediction: Start the unit {pred_minutes:.1f} minutes early.")
 
 
-# ---------------------------------------------------------
-# 3) PREDICT TOMORROW (using the learned brain)
-# ---------------------------------------------------------
-print("\n--- STEP 3: PREDICTING TOMORROW ---")
-tomorrow_delta_t = 10.0  # example: 10°F away from setpoint
-pred_minutes = a_full * (tomorrow_delta_t * tomorrow_delta_t) + b_full
-print(f"Scenario: Tomorrow ΔT = {tomorrow_delta_t:.1f}°F")
-print(f"Prediction: Start {pred_minutes:.1f} minutes early.")
-
-
-# ---------------------------------------------------------
-# 4) SELF-TUNING (EMA on coefficients)  <-- key addition
-# ---------------------------------------------------------
-print("\n--- STEP 4: SELF-TUNING WITH EMA (COEFFICIENTS) ---")
-a_est = DEFAULT_A
-b_est = DEFAULT_B
-print(f"Starting estimates: a_est={a_est:.4f}, b_est={b_est:.2f}, EMA_ALPHA={EMA_ALPHA}")
-
-# "Daily" updates by expanding history:
-# Day 2 uses history[0:2], Day 3 uses history[0:3], ...
-for day_end in range(2, len(history) + 1):
-    window = history[:day_end]
-    a_new, b_new = compute_model1_regression(window)
-
-    # EMA blend (matches your Java block approach)
-    a_est = a_est + EMA_ALPHA * (a_new - a_est)
-    b_est = b_est + EMA_ALPHA * (b_new - b_est)
-
-    print(
-        f"Day {day_end:>2}: a_new={a_new:.4f}, b_new={b_new:.2f}"
-        f"  -->  a_est={a_est:.4f}, b_est={b_est:.2f}"
-    )
-
-print("\nFINAL TUNED MODEL (after EMA):")
-print(f"Minutes = {a_est:.4f} * (DeltaT^2) + {b_est:.2f}")
-
-pred_minutes_ema = a_est * (tomorrow_delta_t * tomorrow_delta_t) + b_est
-print(f"For ΔT={tomorrow_delta_t:.1f}°F, EMA-tuned predicts: {pred_minutes_ema:.1f} minutes")
-
-
-# ---------------------------------------------------------
-# 5) OPTIONAL: show error on the *last* day like your Niagara slots
-# ---------------------------------------------------------
-print("\n--- STEP 5 (OPTIONAL): LAST-RUN ERROR DEMO ---")
-last_day_delta_t, last_day_actual = history[-1]
-last_day_pred = a_est * (last_day_delta_t * last_day_delta_t) + b_est
-last_day_error = last_day_pred - last_day_actual  # positive = overpredicted
-print(f"Last day: ΔT={last_day_delta_t:.1f}, actual={last_day_actual:.1f}")
-print(f"Predicted={last_day_pred:.1f}  Error(pred-actual)={last_day_error:+.1f} minutes")
