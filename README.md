@@ -80,31 +80,75 @@ This enhancement:
 
 ---
 
-### Models 2–4 (Future)
-Higher-order PNNL models introduce:
-- Outdoor air temperature terms
-- Occupancy effects
-- Multi-variable regressions
+### **Model 3 — Multi-Factor Weather-Compensated Model**
 
-Like Model 1, these models are defined in the PNNL paper as **batch regression
-models**. EMA smoothing may optionally be layered on top to improve robustness
-in real BAS deployments.
+Model 3 blends **indoor temperature**, **outdoor air temperature**, and **historical learning** to estimate optimal start time.
+It extends Model 1 by explicitly accounting for the interaction between indoor temperature deficit and outdoor conditions.
+
+The model predicts start time as:
+
+$$
+t_{\text{pred}} = a_1(\Delta T) + a_2(\Delta T)(T_z - T_o) + a_3
+$$
+
+where:
+
+* $\Delta T = (T_{\text{setpoint}} - T_{\text{zone,current}})$
+* $T_o$ is outdoor air temperature
+* $(a_1, a_2, a_3)$ are continuously self-tuned parameters learned from past day performance
+
+Meaning:
+
+* Larger zone deficit → longer start time
+* Greater difference between zone temperature and outdoor temperature → adjusts runtime based on weather exposure
+* The algorithm **self-biases** each day based on how accurate yesterday’s prediction was
+
+This model is best for zones where both:
+
+* Thermal mass matters, **and**
+* Outdoor temperature strongly influences warm-up / cool-down behavior
 
 ---
 
-## Why EMA is Used Here
+### **Model 4 — First-Order Response / Physics-Driven Model**
 
-PNNL models assume:
-- Clean data
-- Offline computation
-- Controlled experimental conditions
+Model 4 uses a **first-order thermal response model** derived from building physics instead of pure curve-fit regression.
 
-Real BAS environments require:
-- Stability over perfection
-- Protection against bad data days
-- Predictable controller behavior
+It assumes the zone behaves like a **first-order system** and estimates the time needed to reach setpoint based on how temperature actually responds after unit startup.
 
-EMA smoothing provides these benefits without changing the underlying math.
+Optimal start time is computed using:
+
+$$
+t_{\text{pred}} =
+\frac{\ln\left(\frac{\alpha_{a}}{\alpha_{b}}\right)}
+{\ln(\alpha_{c})}
+$$
+
+where:
+
+* $\alpha_a$ – acceptable temperature tolerance band (deadband)
+* $\alpha_b$ – **initial temperature difference** between zone and setpoint
+* $\alpha_c$ – **dynamic system response factor**, continuously updated using least-squares learning from historical recovery curves
+
+Interpretation:
+
+* **Larger initial temperature gap → longer runtime**
+* **Stronger system response → shorter runtime**
+* Updates continuously as equipment and weather change
+
+Model 4 is powerful because it:
+
+* Adapts automatically to aging equipment
+* Learns real thermal behavior
+* Handles changing load patterns
+* Requires less hand-tuning than pure regression
+
+---
+
+### **Model 5 — Machine Learning**
+
+* TODO 
+
 
 ---
 
