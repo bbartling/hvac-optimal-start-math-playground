@@ -29,8 +29,6 @@ Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approac
 
 ---
 
----
-
 ## Model Overview
 
 ### Model 0 — Linear Rate Model (EMA-Based)
