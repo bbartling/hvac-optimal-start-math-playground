@@ -24,18 +24,65 @@ Understanding this concept allows you to build more accurate and efficient optim
 Here's a simple Python demonstration:
 
 ```python
-# Demonstrate basic matrix multiplication
+# Day 25 - First look at a matrix (just a table of numbers)
 import numpy as np
-A = np.array([[1, 2], [3, 4]])
-B = np.array([[5], [6]])
-product = A @ B
-print('Matrix A:
-', A)
-print('Vector B:
-', B)
-print('A @ B =
-', product)
+
+# A is a 2x2 "table"
+# Row 0: [1, 2]
+# Row 1: [3, 4]
+A = np.array([
+    [1, 2],
+    [3, 4],
+])
+
+# B is a 2x1 "column"
+# Row 0: [5]
+# Row 1: [6]
+B = np.array([
+    [5],
+    [6],
+])
+
+# The @ operator means "matrix multiply"
+C = A @ B
+
+print("A shape:", A.shape)    # (2, 2)
+print("B shape:", B.shape)    # (2, 1)
+print("C shape:", C.shape)    # (2, 1)
+print()
+
+print("A =")
+print(A)
+print()
+
+print("B =")
+print(B)
+print()
+
+print("C = A @ B =")
+print(C)
+
 ```
+
+
+**What this does (in words you could put right under the code):**
+
+* Think of `A` as a **2-row by 2-column table**.
+* Think of `B` as a **2-row by 1-column table**.
+* `C = A @ B` is just “mix these numbers together in a standard way”:
+
+  * Top of `C` = `1*5 + 2*6 = 17`
+  * Bottom of `C` = `3*5 + 4*6 = 39`
+
+So you end up with:
+
+```text
+C = [[17]
+     [39]]
+```
+
+That’s all “matrix multiplication” is here: a rule for combining rows of A with the column of B.
+
 
 ## 5. Micro‑Exercises
 

@@ -143,10 +143,69 @@ Model 4 is powerful because it:
 
 ---
 
+
+> So far Model 4 is:
+
+* You have **input data** (ΔT, maybe OAT context indirectly)
+* You have **observed outputs** (actual warm-up minutes)
+* You choose a **model shape**
+  ( t = \tau \ln(1 + k\Delta T) )
+* You **fit parameters** (τ, k) so the model best matches reality
+* You evaluate error and re-train when new runs happen
+
+That is formally:
+
+### 👉 **Nonlinear Regression**
+
+which lives under the umbrella of **supervised machine learning**.
+
+Linear regression → ML
+Quadratic regression → ML
+Multiple regression plane → ML
+Nonlinear curve fitting → still ML
+
+What makes Model 4 “feel” extra ML-ish is:
+
+* It cannot be solved with simple algebra
+* It requires **iterative numerical optimization**
+* It has **convergence behavior**
+* It learns from historical data
+* It updates over time = adaptive model
+
+> Models 0–3 can be solved using algebra and linear regression tools.
+> Model 4 crosses the line into real machine-learning style regression because:
+>
+> * it’s nonlinear
+> * parameters must be learned with an optimizer
+> * we iteratively minimize error instead of plugging into a formula
+
+
+* Model 0
+  → signal processing / EMA / adaptive filter
+
+* Model 1
+  → polynomial regression
+
+* Model 2
+  → weather-feature-augmented regression
+
+* Model 3
+  → multivariate regression / linear models in feature space
+
+* **Model 4**
+  → **nonlinear regression + numerical optimization**
+  → same mathematical concepts used in:
+
+  * logistic regression training
+  * neural network weight training
+  * physics-informed ML models
+  * curve fitting in engineering
+
+---
+
 ### **Model 5 — Machine Learning**
 
-* TODO 
-
+* TODO
 
 ---
 
