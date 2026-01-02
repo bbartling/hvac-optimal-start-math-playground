@@ -466,6 +466,267 @@ Upload this text into your AI assistant to act as your daily math coach.
 
 ---
 
+
+## Bonus Week — Matrix Algebra for Model 3 (from scratch)
+
+### Day B1 — Vectors & dot products (the “atoms”)
+
+**Goal:** Get comfortable with vectors as lists and the dot product, because matrix multiply is *just dot products everywhere*.
+
+**Mini build (10 min):**
+
+* Implement:
+
+  * `dot(a, b)`
+  * `add(a, b)`
+  * `scale(a, k)`
+
+**Micro-exercises (10 min):**
+
+1. Compute dot([1,2,3],[4,5,6])
+2. Interpret dot as “weighted sum” (why it shows up in prediction)
+
+**Porting note:** Every language has loops—this is 100% portable.
+
+---
+
+### Day B2 — Matrices as list-of-lists + transpose
+
+**Goal:** Represent a matrix, and write `transpose(M)`.
+
+**Mini build:**
+
+* `transpose(X)` because **XᵀX** and **Xᵀy** are the whole regression pipeline 
+
+**Micro-exercises:**
+
+1. Transpose a 3×2 into a 2×3
+2. Check you didn’t swap incorrectly (print rows)
+
+---
+
+### Day B3 — Matrix multiply (general) + “specials” you actually need
+
+**Goal:** Implement:
+
+* `matmul(A, B)` (general)
+* `matvec(A, v)` (matrix × vector)
+
+Then show you can compute:
+
+* `XT = transpose(X)`
+* `XTX = matmul(XT, X)`
+* `XTy = matvec(XT, y)` (or treat y as Nx1 matrix)
+
+This directly matches your manual pipeline where you compute **XᵀX** and **XᵀY** .
+
+**Micro-exercises:**
+
+1. Multiply a 2×3 by a 3×1
+2. Confirm dimensions checks (catch bugs early)
+
+---
+
+### Day B4 — Solve linear systems with Gaussian elimination (recommended)
+
+**Goal:** Solve **Aβ = b** without determinants.
+
+Why: your current script uses **Cramer’s Rule** (fine for learning) , but **Gaussian elimination** is what you’ll want in “real” code and other languages.
+
+**Mini build:**
+
+* `solve(A, b)` for 3×3 using forward elimination + back substitution
+
+**Micro-exercises:**
+
+1. Solve a simple 3×3 where the solution is obvious
+2. Add a tiny “pivot if needed” swap (even one swap is huge)
+
+---
+
+### Day B5 — Determinants + Cramer’s Rule (as a learning mirror)
+
+**Goal:** Understand what your current script is doing:
+
+* det(3×3) via Sarrus 
+* Replace columns with Xᵀy and divide by det(XᵀX)
+
+**Mini build:**
+
+* Implement `det3(M)`
+* Implement Cramer for 3×3
+* Compare Cramer vs Gaussian output
+
+**Micro-exercises:**
+
+1. Create a case where det ≈ 0 and see failure mode (“singular matrix”)
+
+---
+
+### Day B6 — Conditioning, scaling, and “why regression can explode”
+
+**Goal:** Learn the practical stuff that matters in the field:
+
+* If features are huge or correlated, **XᵀX gets ill-conditioned**
+* Your solve becomes unstable (big swings in coefficients)
+
+**Mini build:**
+
+* Add feature scaling:
+
+  * scale ΔT into a reasonable range (or just divide by max ΔT)
+* Optional: add tiny ridge term: **XᵀX + λI** (λ = 0.01)
+
+**Micro-exercises:**
+
+1. Try λ = 0 vs λ small and see coefficient stability
+2. Explain in one sentence what λ does (“prevents wild coefficients”)
+
+---
+
+### Day B7 — Build Model 3 end-to-end (portable “reference implementation”)
+
+**Goal:** Put it all together into a tiny module you can port to Rust/C/JS.
+
+**End result:**
+
+* Build X from history as `[1, dT, dT*WF]` 
+* Compute XTX and XTy
+* Solve for β = [α3,d, α3,a, α3,b]
+* Predict: `t = β0 + β1*dT + β2*(dT*WF)` 
+
+**Micro-exercises:**
+
+1. Print coefficients and do one prediction (your “new day” test)
+2. Compare to the scikit version for sanity 
+
+---
+
+## Pure-Python “portable core” you can teach and port
+
+This is the core I’d base the week on (no NumPy, no libs). Keep it small so it fits the 20-minute format.
+
+```python
+# ----------------------------
+# Vectors / matrices utilities
+# ----------------------------
+
+def transpose(M):
+    rows = len(M)
+    cols = len(M[0])
+    return [[M[r][c] for r in range(rows)] for c in range(cols)]
+
+def matmul(A, B):
+    a_rows, a_cols = len(A), len(A[0])
+    b_rows, b_cols = len(B), len(B[0])
+    if a_cols != b_rows:
+        raise ValueError("Dimension mismatch in matmul")
+    out = [[0.0] * b_cols for _ in range(a_rows)]
+    for i in range(a_rows):
+        for j in range(b_cols):
+            s = 0.0
+            for k in range(a_cols):
+                s += A[i][k] * B[k][j]
+            out[i][j] = s
+    return out
+
+def matvec(A, v):
+    rows, cols = len(A), len(A[0])
+    if cols != len(v):
+        raise ValueError("Dimension mismatch in matvec")
+    out = [0.0] * rows
+    for i in range(rows):
+        s = 0.0
+        for j in range(cols):
+            s += A[i][j] * v[j]
+        out[i] = s
+    return out
+
+# ----------------------------
+# Solve 3x3 via Gaussian elimination (with simple pivoting)
+# ----------------------------
+
+def solve_3x3(A, b, eps=1e-12):
+    # Make copies (don’t mutate caller data)
+    M = [row[:] for row in A]
+    y = b[:]
+
+    n = 3
+
+    # Forward elimination
+    for col in range(n):
+        # Pivot: find best row
+        pivot = col
+        best = abs(M[col][col])
+        for r in range(col + 1, n):
+            if abs(M[r][col]) > best:
+                best = abs(M[r][col])
+                pivot = r
+
+        if best < eps:
+            raise ValueError("Singular / ill-conditioned matrix")
+
+        # Swap rows if needed
+        if pivot != col:
+            M[col], M[pivot] = M[pivot], M[col]
+            y[col], y[pivot] = y[pivot], y[col]
+
+        # Eliminate below
+        for r in range(col + 1, n):
+            factor = M[r][col] / M[col][col]
+            # Row_r = Row_r - factor * Row_col
+            for c in range(col, n):
+                M[r][c] -= factor * M[col][c]
+            y[r] -= factor * y[col]
+
+    # Back substitution
+    x = [0.0] * n
+    for r in range(n - 1, -1, -1):
+        s = y[r]
+        for c in range(r + 1, n):
+            s -= M[r][c] * x[c]
+        x[r] = s / M[r][r]
+    return x
+
+# ----------------------------
+# Model 3 fit/predict
+# ----------------------------
+
+def fit_model3(history):
+    # X = [1, dT, dT*WF], y = minutes
+    X = []
+    y = []
+    for row in history:
+        X.append([1.0, float(row["dT"]), float(row["dT"]) * float(row["wf"])])
+        y.append(float(row["mins"]))
+
+    XT = transpose(X)
+    XTX = matmul(XT, X)     # 3x3
+    XTy = matvec(XT, y)     # 3
+
+    beta = solve_3x3(XTX, XTy)
+    return beta  # [alpha_3_d, alpha_3_a, alpha_3_b]
+
+def predict_model3(beta, dT, wf):
+    return beta[0] + beta[1]*dT + beta[2]*(dT*wf)
+
+# Demo dataset (matches your tutorial files)
+history = [
+    {"dT": 3.0, "wf": 0.4, "mins": 20.0},
+    {"dT": 5.0, "wf": 0.6, "mins": 35.0},
+    {"dT": 7.0, "wf": 0.8, "mins": 50.0},
+    {"dT": 2.0, "wf": 0.3, "mins": 15.0},
+    {"dT": 6.0, "wf": 0.7, "mins": 40.0},
+]
+
+beta = fit_model3(history)
+print("beta =", [round(v, 4) for v in beta])
+
+print("prediction =", round(predict_model3(beta, dT=4.0, wf=0.5), 2), "minutes")
+```
+
+---
+
 ### 👉 **See Also For Niagara Building Automation**
 
 You can also find **active Java implementations for Niagara 4** in the Vibe Coder
