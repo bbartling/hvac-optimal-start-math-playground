@@ -29,52 +29,93 @@ Model 0 is included as a **traditional linear degrees-per-minute (DPM)** approac
 
 ---
 
-## Model Overview
+## Mathematical Models
 
-### Model 0 — Linear Rate Model (EMA-Based)
-Model 0 estimates warm-up or cool-down time using a smoothed rate of temperature
-change:
 
-```
-minutes = ΔT / rate
-```
+### **Model 0 — Adaptive Linear Recovery (EMA-Smoothed)**
 
-The rate is updated using an **Exponential Moving Average (EMA)**, making Model 0
-inherently self-tuning and stable.
+Model 0 assumes the zone recovers at an approximately linear rate
+(measured in **degrees per minute**). After each completed run, a new rate
+measurement is computed:
 
-> ✅ EMA is explicitly part of Model 0 behavior.
+$$
+r_{\text{new}} = \frac{\left|T_{\text{zone,start}} - T_{\text{setpoint}}\right|}{t_{\text{actual}}}
+$$
+
+To avoid noisy predictions and allow the system to “learn” over time,
+the recovery rate is updated using an **Exponential Moving Average** (EMA):
+
+$$
+r_{\text{EMA}}(k) = \alpha \cdot r_{\text{new}} + (1-\alpha)\cdot r_{\text{EMA}}(k-1)
+$$
+
+where:
+
+* $\alpha$ is the learning weight (tunable)
+* larger $\alpha$ → faster learning
+* smaller $\alpha$ → more stability
+
+The predicted optimal start time is then:
+
+$$
+t_{\text{pred}} = \frac{\left|T_{\text{zone,current}} - T_{\text{setpoint}}\right|}{r_{\text{EMA}}}
+$$
 
 ---
 
-### Model 1 — Quadratic-in-ΔT Model
-Model 1 captures non-linear behavior between temperature difference and run time:
+### **Model 1 — Quadratic Recovery Model (Interior / Stable Zones)**
 
-```
-t = α₁,a · (ΔT²) + α₁,b
-```
+For thermally stable or interior zones, recovery behavior often follows
+a **non-linear** curve. PNNL recommends fitting a quadratic model of the form:
 
-Coefficients are learned via **ordinary least squares (OLS)** regression using
-historical run data.
+$$
+t = a\cdot(\Delta T)^2 + b\cdot(\Delta T) + c
+$$
 
-#### 🔎 Implementation Note (Not in the PNNL Paper)
+where:
 
-The original PNNL paper recomputes Model 1 coefficients using a rolling historical
-window (e.g., the last N days).
+* * $t = a(\Delta T)^2 + b(\Delta T) + c$
+* (a, b, c) are continuously self-tuned regression coefficients
+  learned from historical runs.
 
-In this repository, an **optional EMA smoothing layer** is applied to the learned
-coefficients (α₁,a and α₁,b):
+Thus, optimal start time becomes:
 
-```
-α_est ← α_prev + λ · (α_new − α_prev)
-```
+$$
+t_{\text{pred}} = a\cdot(\Delta T)^2 + b\cdot(\Delta T) + c
+$$
 
-This enhancement:
-- Reduces day-to-day jitter
-- Improves numerical stability
-- Makes the model safer for noisy or sparse BAS data
+This model works best when outdoor temperature has **minimal influence**
+on warm-up or cool-down behavior.
 
-> ⚠️ EMA smoothing for Model 1 is a **practical field enhancement**, not a
-> requirement of the original PNNL formulation.
+---
+
+### **Model 2 — Weather-Sensitive Linear Model (Exterior / OAT-Driven Zones)**
+
+For exterior or weather-exposed zones, recovery rate changes
+significantly with outdoor air temperature (OAT).
+Model 2 begins with a baseline Model-0 prediction:
+
+$$
+t_{\text{base}} = \frac{\left|T_{\text{zone,current}} - T_{\text{setpoint}}\right|}{r_{\text{EMA}}}
+$$
+
+Then applies a learned **OAT sensitivity ratio**:
+
+$$
+t_{\text{pred}} = t_{\text{base}} \cdot R(T_{\text{OAT}})
+$$
+
+Where the ratio function is self-tuned over time, commonly modeled as:
+
+$$
+R(T_{\text{OAT}}) = m\cdot T_{\text{OAT}} + b
+$$
+
+meaning:
+
+* colder weather → longer recovery
+* hotter weather → shorter (cooling) or longer (heating), depending on mode
+* automatically adapts based on historical runtime error
 
 ---
 
@@ -143,15 +184,30 @@ Model 4 is powerful because it:
 
 ---
 
+### **Model Selection Logic**
+
+At runtime, models are continuously evaluated and compared based on
+historical prediction error:
+
+$$
+\text{Error} = t_{\text{pred}} - t_{\text{actual}}
+$$
+
+and the system dynamically favors whichever model shows superior accuracy
+over recent runs.
+
+
+---
+
 
 > So far Model 4 is:
 
-* You have **input data** (ΔT, maybe OAT context indirectly)
-* You have **observed outputs** (actual warm-up minutes)
-* You choose a **model shape**
+* Has **input data** (ΔT, maybe OAT context indirectly)
+* Has **observed outputs** (actual warm-up minutes)
+* Has a **model shape**
   ( t = \tau \ln(1 + k\Delta T) )
-* You **fit parameters** (τ, k) so the model best matches reality
-* You evaluate error and re-train when new runs happen
+* Has **fit parameters** (τ, k) so the model best matches reality
+* Has evaluate error and re-train when new runs happen
 
 That is formally:
 
