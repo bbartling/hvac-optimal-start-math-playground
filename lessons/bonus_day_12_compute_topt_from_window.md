@@ -1,4 +1,4 @@
-# Day F5 — Compute Model 4 t_opt from a Real Startup Window
+# Day B12 — Compute Model 4 t_opt from a Real Startup Window
 
 **Goal:** From a short “after startup” window, estimate `c`, then compute `t_opt`.
 

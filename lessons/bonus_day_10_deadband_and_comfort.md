@@ -1,4 +1,4 @@
-# Day F3 — Deadband (Comfort) vs Runtime
+# Day B10 — Deadband (Comfort) vs Runtime
 
 **Goal:** Understand the **deadband** (acceptable remaining error) and why Model 4 needs it.
 

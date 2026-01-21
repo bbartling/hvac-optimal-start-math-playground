@@ -1,4 +1,4 @@
-# Day F6 — Guardrails + EMA Smoothing (Make it Production‑Safe)
+# Day B13 — Guardrails + EMA Smoothing (Make it Production‑Safe)
 
 **Goal:** Stop Model 4 from doing stupid things on noisy days (Monday problem, weird loads, sensor noise).
 

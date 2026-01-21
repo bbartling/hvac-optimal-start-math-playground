@@ -1,4 +1,4 @@
-# Day F2 — Exponentials, Logs, and “Time to Target”
+# Day B9 — Exponentials, Logs, and “Time to Target”
 
 **Goal:** Learn why Model 4 uses **logs** to solve “how many minutes until we’re close enough?”
 

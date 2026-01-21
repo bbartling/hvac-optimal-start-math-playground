@@ -1,4 +1,4 @@
-# Day F7 — Model 4 End‑to‑End (Pure Python Mini Version)
+# Day B14 — Model 4 End‑to‑End (Pure Python Mini Version)
 
 **Goal:** Implement a runnable “mini Model 4” loop:
 1) build errors from samples

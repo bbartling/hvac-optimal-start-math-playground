@@ -1,4 +1,4 @@
-# Day F1 — First‑Order Response (Intuition)
+# Day B8 — First‑Order Response (Intuition)
 
 **Goal:** Build the mental model for **first‑order response**: the temperature “error” shrinks by the **same percentage** each sample.
 

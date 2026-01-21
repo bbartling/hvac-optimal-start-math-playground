@@ -1,4 +1,4 @@
-# Day F4 — Estimating the “c” Parameter from Real Data
+# Day B11 — Estimating the “c” Parameter from Real Data
 
 **Goal:** Estimate the first‑order decay ratio `c` from a batch of error samples after startup.
 
