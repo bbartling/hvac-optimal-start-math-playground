@@ -39,3 +39,13 @@ Draft PR: https://github.com/bbartling/hvac-optimal-start-math-playground/pull/2
 2. Pick the winners: frontier vs fixed schedules, simulator reward, and minimax regret across scenarios.
    Set RECOMMENDED_* and README tables.
 3. Final README, update the PR body, mark it ready (do not merge).
+
+
+## 2026-11-16 22:50 CST: interim results in the README
+- README now has the plain-English findings and the interim tables. Regenerate them with
+  `python benchmarks/neurips_sim/update_readme.py <an_all> --stop <an_stop> --note "..."`.
+- Interim: no start algorithm beats the fixed-schedule frontier consistently. m0_linear_ema
+  and v6 come out about even. Stop: first_order_coast with a 0.2 F guard saves about 8 % of
+  end-of-day energy (Denver 7 only so far).
+- Still running: desktop phase2 (Denver 8 onward) then phase3 (fixed anchors), and box
+  stopexp then boxmpls2.
