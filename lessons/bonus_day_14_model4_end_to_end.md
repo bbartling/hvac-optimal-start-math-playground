@@ -23,9 +23,15 @@ Model 4 uses:
 
 ## 2) Run the Script
 
+The original lesson scripts now live in `archive/lessons/scripts/` (kept as-is for learning):
+
 ```bash
-python scripts/dayF7_model4_end_to_end.py
+cd archive/lessons
+python -m scripts.dayF7_model4_end_to_end
 ```
+
+The production version of Model 4 (with PNNL's exact EMA and window) is
+`hvac_optimal.PNNLModel4Exponential` in `src/hvac_optimal/start_models.py`.
 
 ---
 

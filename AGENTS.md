@@ -1,3 +1,22 @@
+# AGENTS.md
+
+## 0. Start here (v1.0 layout)
+
+- **Production code:** `src/hvac_optimal/` (standard library only). Use
+  `OptimalStartPlanner.recommended()` and `OptimalStopPlanner.recommended()`. The
+  defaults are the benchmark winners; see README.md "Results".
+- **Every algorithm** is registered by name in `START_MODELS` / `STOP_MODELS`. Add a new
+  one there, then run it through the benchmark before you change a default.
+- **Tests:** `pip install -e .[dev] && pytest` (they check the PNNL equations, the PNNL
+  EMA against aems-edge, planner clamps and exclusions, and stop bounds).
+- **Benchmark:** `benchmarks/neurips_sim/` runs the NeurIPS 2026 smart-buildings simulator
+  closed loop (see its README). Pick defaults on evidence: paired metrics over many
+  scenarios, AHUs and days, never one zone.
+- **Archive:** `archive/` holds the original tutorials. Do not edit them; they back the
+  lessons. The specification below describes the teaching models.
+
+---
+
 # AGENTS_HVAC_v3.md — Token‑Optimized Specification for AI Agents Implementing HVAC Optimal‑Start Algorithms
 
 ## 1. Purpose

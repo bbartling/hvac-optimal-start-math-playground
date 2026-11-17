@@ -1,5 +1,9 @@
 # Lesson Index
 
+The lessons teach the math behind each model. The original lesson scripts are in
+`archive/lessons/scripts/`; the tested implementations are in `src/hvac_optimal/`
+(see [README.md](README.md) and [docs/LEARN_THE_MATH.md](docs/LEARN_THE_MATH.md)).
+
 - [Day 1](lessons/day01.md)
 - [Day 2](lessons/day02.md)
 - [Day 3](lessons/day03.md)
