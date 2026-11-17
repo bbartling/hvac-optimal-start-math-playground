@@ -19,12 +19,12 @@ Draft PR: https://github.com/bbartling/hvac-optimal-start-math-playground/pull/2
   - The simulator reward slightly prefers fixed_120 in cooling (pre-cooling mass) and later starts in cold climates.
 - Stop: with guard 0.9 F (0.5 K) no algorithm ever stops early. The G36 controller holds zones only 0.4 K inside the band.
   This includes the native v6 stop, which uses the same 0.5 K guard.
-  -> A dedicated stop experiment is running (fixed_120 start, guard 0.2 F, 6 stop arms x 6 b1 scenarios).
+  -> A dedicated stop experiment is running (fixed_120 start, guard 0.2 F, 4 stop arms x 4 b1 scenarios).
 
 ## Running (detached)
 - Desktop: phase2 queue `%TEMP%\osbench\phase2_jobs.json`, log `phase2_jobs.log`, results `%TEMP%\osbench\results\phase1`.
   116 jobs, about 15/h, ETA about 04:30.
-- Box: `/workspace/osbench/box_chain.sh` runs `stopexp_jobs.json` (36 runs, log stopexp.log), then `boxmpls2_jobs.json`.
+- Box: `/workspace/osbench/box_chain.sh` runs `stopexp_jobs.json` (16 runs: fixed_120 start x {no_early_stop, first_order_coast, vavrl_const_drift, v6} x b1 {denver_7, atlanta_2, minneapolis_1, phoenix_5}, guard 0.2 F; log stopexp.log; it only progresses while a box shell is active, so keep `sleep 290` polls running), then `boxmpls2_jobs.json`.
 
 - Desktop chain3.ps1 (after phase 2): phase3_jobs.json = fixed_60 anchors on the 6 reduced scenarios plus fixed_180 on all 12
   phase-1 scenarios (the schedule-curve anchors for the "savings beyond schedule" criterion in analyze.py).
