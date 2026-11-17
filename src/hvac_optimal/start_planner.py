@@ -25,7 +25,7 @@ class OptimalStartPlanner:
                  max_lead: float = 180.0, min_lead: float = 10.0, group: bool = False,
                  exclude_nonrecovering: bool = True, outcome_window: int = 3, fail_limit: int = 2,
                  arrival_feedback: bool = False, fb_tol: float = 0.5, fb_q: float = 0.8,
-                 fb_step: float = 0.5, fb_max: float = 2.0):
+                 fb_step: float = 10.0, fb_max: float = 120.0):
         """
         model    : name in ``START_MODELS`` or a zero-arg factory
         max_lead : earliest allowed start (minutes before occupancy); also the
@@ -38,13 +38,15 @@ class OptimalStartPlanner:
                    recoveries. No start time can fix a capacity-limited zone;
                    letting it vote only pins the start at ``max_lead`` and wastes
                    energy. Flagged zones are reported by :meth:`nonrecovering`.
-        arrival_feedback : learn an "aim point" offset from what actually happened
-                   at occupancy (see :meth:`record_arrival`). The planner then plans to
-                   reach ``offset`` degrees INSIDE the band, so zones that are in band
-                   now but drift out before occupancy (night-cycled zones, solar and
-                   internal gains after start) still get a start. The offset follows a
-                   Robbins-Monro quantile update, so the share of days with an arrival
-                   deficit above ``fb_tol`` converges to ``1 - fb_q``.
+        arrival_feedback : learn an extra lead (minutes, ``offset``) from what actually
+                   happened after occupancy started (see :meth:`record_arrival`). It is
+                   added to the model's lead, and it is also used as the lead on days when
+                   every zone is in band at decision time. Zones that night cycling just
+                   pulled into the band, or that lose ground to solar and internal gains
+                   after the start, still get a start that way. The offset follows a
+                   Robbins-Monro quantile update (step ``fb_step``, cap ``fb_max``), so the
+                   share of days with a comfort deficit above ``fb_tol`` degrees converges
+                   to ``1 - fb_q``.
         """
         self._factory = (lambda: make_start_model(model)) if isinstance(model, str) else model
         self.max_lead, self.min_lead, self.group = float(max_lead), float(min_lead), bool(group)
@@ -115,24 +117,19 @@ class OptimalStartPlanner:
         return self._lead_now(zones, oat, post_weekend)
 
     def record_arrival(self, arrival_error: float) -> None:
-        """Feed the worst (non-excluded) zone's deficit at occupancy start.
+        """Feed the comfort outcome of one morning (degrees outside the band).
 
-        ``arrival_error`` > 0: degrees short of the band at occupancy; <= 0: in band.
+        Use the worst (non-capacity-limited) zone's deficit at occupancy start, or a
+        high percentile of it over the first occupied hour. > 0 means short.
         """
         if not self.arrival_feedback or arrival_error is None:
             return
         late = 1.0 if arrival_error > self.fb_tol else 0.0
         self.offset = clamp(self.offset + self.fb_step * (late - (1.0 - self.fb_q)), 0.0, self.fb_max)
 
-    def _aim(self, zones: Sequence[ZoneReading]) -> Sequence[ZoneReading]:
-        if self.offset <= 0:
-            return zones
-        return [ZoneReading(z.zone_id, z.temp, z.heat_sp + self.offset, z.cool_sp - self.offset) for z in zones]
-
     def _lead_now(self, zones, oat, post_weekend):
-        zones = self._aim(zones)
         leads = self.zone_leads(zones, oat, post_weekend)
-        worst = max(leads.values(), default=0.0)
+        worst = max(leads.values(), default=0.0) + self.offset
         if worst <= 0:
             return 0.0
         return clamp(worst, self.min_lead, self.max_lead)

@@ -133,27 +133,29 @@ def test_union_bounds_are_wider_without_occupied_history():
     assert lo_u <= lo_g and hi_u >= hi_g - 1e-9
 
 
-def test_arrival_feedback_moves_aim_inside_band():
-    p = OptimalStartPlanner("m0_linear_ema", group=True, arrival_feedback=True, fb_step=0.5, fb_q=0.8)
+def test_arrival_feedback_adds_lead_even_when_in_band():
+    p = OptimalStartPlanner("m0_linear_ema", group=True, arrival_feedback=True, fb_step=10.0, fb_q=0.8)
     p.learn("g", linear_recovery(66.0, 70.0, 10.0))
     in_band = zones(70.3)
     assert p.lead_minutes(in_band, oat=20.0) == 0.0
+    base = p.lead_minutes(zones(68.0), oat=20.0)
     for _ in range(4):
-        p.record_arrival(1.5)        # short by 1.5 F at occupancy, four days running
-    assert p.offset == pytest.approx(1.6)
-    assert p.lead_minutes(in_band, oat=20.0) > 0.0
+        p.record_arrival(1.5)        # 1.5 F short after occupancy, four days running
+    assert p.offset == pytest.approx(32.0)
+    assert p.lead_minutes(in_band, oat=20.0) == pytest.approx(32.0)
+    assert p.lead_minutes(zones(68.0), oat=20.0) == pytest.approx(base + 32.0)
     for _ in range(100):
-        p.record_arrival(0.0)        # on time: the offset decays back toward zero
+        p.record_arrival(0.0)        # comfortable: the offset decays back to zero
     assert p.offset == 0.0
 
 
 def test_arrival_feedback_converges_to_target_quantile():
     import random
     rng = random.Random(3)
-    p = OptimalStartPlanner("fixed_60", group=True, arrival_feedback=True, fb_step=0.1, fb_q=0.8)
+    p = OptimalStartPlanner("fixed_60", group=True, arrival_feedback=True, fb_step=1.0, fb_q=0.8)
     late = 0
     for day in range(4000):
-        need = rng.gauss(1.0, 0.5)   # degrees of extra aim the day would have needed
+        need = rng.gauss(40.0, 15.0)  # extra minutes the day would have needed
         is_late = need > p.offset
         p.record_arrival(1.0 if is_late else 0.0)
         if day >= 1000:

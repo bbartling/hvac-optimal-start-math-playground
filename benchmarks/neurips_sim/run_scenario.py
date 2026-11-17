@@ -260,9 +260,14 @@ class Bookkeeper:
             traj = [(t, [temps[i] for i in keep]) for t, temps in traj]
             if tr["occ_temps"] is not None:
                 tr = dict(tr, occ_temps=[tr["occ_temps"][i] for i in keep])
-            if tr["occ_temps"] is not None:
-                # arrival feedback: worst kept-zone deficit at occupancy start (deg F)
-                planner.record_arrival(max(max(hsp - x, x - csp, 0.0) for x in tr["occ_temps"]))
+            if tr["occ_min"] is not None:
+                # arrival feedback: worst kept-zone deficit from occupancy start through the
+                # first hour (deg F), the 75th percentile over that hour so one blip does not count
+                o = tr["occ_min"] - tr["t0"]
+                worst = sorted(max(max(hsp - x, x - csp, 0.0) for x in temps)
+                               for t, temps in traj if o <= t <= o + 60)
+                if worst:
+                    planner.record_arrival(worst[int(0.75 * (len(worst) - 1))])
             dh = max(hsp - x for x in t0)
             dc = max(x - csp for x in t0)
             if max(dh, dc) <= 0:
