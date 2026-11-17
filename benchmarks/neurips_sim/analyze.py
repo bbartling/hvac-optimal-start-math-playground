@@ -258,6 +258,68 @@ def stop_summary(A: pd.DataFrame, D: pd.DataFrame, by=None, baseline="no_early_s
     return pd.DataFrame(out)
 
 
+def _beyond_schedule(anchors, unmet, saved):
+    """Energy % saved beyond the fixed-lead schedule curve at equal comfort.
+
+    ``anchors`` = sorted (unmet, saved %) of the fixed-lead runs. The curve is piecewise
+    linear between anchors and extended along the end segments.
+    """
+    pts = [(u, e) for u, e in anchors if np.isfinite(u) and np.isfinite(e)]
+    if len(pts) < 2:
+        return np.nan
+    us = [u for u, _ in pts]
+    es = [e for _, e in pts]
+    if unmet <= us[0]:
+        i = 0
+    elif unmet >= us[-1]:
+        i = len(us) - 2
+    else:
+        i = max(k for k in range(len(us) - 1) if us[k] <= unmet)
+    du = us[i + 1] - us[i]
+    if abs(du) < 1e-9:
+        return np.nan
+    sched = es[i] + (es[i + 1] - es[i]) * (unmet - us[i]) / du
+    return saved - sched
+
+
+def winner_criteria(P: pd.DataFrame) -> list:
+    """Evidence tables used to pick the start winner.
+
+    savings beyond schedule: per scenario, the fixed-lead runs (60/120/180 min) define
+    the schedule trade-off curve (energy saved % vs unmet K*min/zone). For each arm, the
+    extra energy % it saves compared with a fixed schedule that gives the SAME comfort
+    (positive = beats any fixed schedule on the energy-comfort trade-off).
+    reward regret: per scenario, the arm's reward gain minus the best arm's (<= 0).
+    """
+    rows = []
+    for sc, g in P.groupby("scenario"):
+        g = g.set_index("start")
+        anchors = sorted((g.loc[f, "unmet K*min/zone"], g.loc[f, "energy saved vs fixed120 %"])
+                         for f in ("fixed_60", "fixed_90", "fixed_120", "fixed_180") if f in g.index)
+        best = g["reward gain vs fixed120"].max()
+        for st, r in g.iterrows():
+            beyond = _beyond_schedule(anchors, r["unmet K*min/zone"], r["energy saved vs fixed120 %"])
+            rows.append(dict(scenario=sc, start=st, beyond=beyond,
+                             regret=r["reward gain vs fixed120"] - best))
+    R = pd.DataFrame(rows)
+    if R.empty:
+        return []
+    n_sc = R.scenario.nunique()
+    T = R.groupby("start").agg(scenarios=("scenario", "nunique"),
+                               beyond_mean=("beyond", "mean"), beyond_min=("beyond", "min"),
+                               regret_mean=("regret", "mean"), regret_worst=("regret", "min"))
+    T = T.rename(columns={"beyond_mean": "savings beyond schedule % (mean)",
+                          "beyond_min": "savings beyond schedule % (worst scenario)",
+                          "regret_mean": "reward regret (mean)", "regret_worst": "reward regret (worst)"})
+    T = T.reset_index().sort_values("reward regret (mean)", ascending=False)
+    piv = R.pivot(index="scenario", columns="start", values="beyond")
+    return ["## Winner criteria (start)", "",
+            f"Scenarios: {n_sc}. Arms run on fewer scenarios are not comparable on the worst case.", "",
+            md_table(T), "",
+            "### Savings beyond a fixed schedule at equal comfort, per scenario (%)", "",
+            md_table(piv.reset_index()), ""]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results", nargs="+")
@@ -318,6 +380,7 @@ def main():
         W["scenarios"] = P.groupby("start").scenario.nunique()
         parts += ["## Start, mean over scenarios (each scenario weighted equally)", "",
                   md_table(W.reset_index().sort_values("reward gain vs fixed120", ascending=False)), ""]
+        parts += winner_criteria(P)
     for by in ("season", "post_weekend", "city"):
         parts += [f"## Optimal start by {by}", "", md_table(start_summary(As, Ds, by).sort_values([by, "reward gain vs fixed120"], ascending=[True, False])), ""]
     sc = R.groupby(["scenario", "start"], as_index=False).score.mean().pivot(index="scenario", columns="start", values="score")

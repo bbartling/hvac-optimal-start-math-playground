@@ -3,7 +3,7 @@
 Draft PR: https://github.com/bbartling/hvac-optimal-start-math-playground/pull/2 (into develop, do not merge)
 
 ## Done
-- `src/hvac_optimal` package and pytest suite (57 tests pass). Old tutorials are in `archive/`; the old README is `docs/LEARN_THE_MATH.md`.
+- `src/hvac_optimal` package and pytest suite (55 tests pass). Old tutorials are in `archive/`; the old README is `docs/LEARN_THE_MATH.md`.
 - Benchmark harness in `benchmarks/neurips_sim` (run_scenario, run_queue, make_jobs, analyze).
 - Phase 1 (BensDesktop): 40 runs. Full 14 arms on b1 fairbanks_1, b1 phoenix_5 and b2 singapore_1.
 - Box: Minneapolis unseen-weather runs (b1 mpls_1 complete for 8 core arms, plus b2 mpls_6 in progress).
@@ -25,6 +25,9 @@ Draft PR: https://github.com/bbartling/hvac-optimal-start-math-playground/pull/2
 - Desktop: phase2 queue `%TEMP%\osbench\phase2_jobs.json`, log `phase2_jobs.log`, results `%TEMP%\osbench\results\phase1`.
   116 jobs, about 15/h, ETA about 04:30.
 - Box: `/workspace/osbench/box_chain.sh` runs `stopexp_jobs.json` (36 runs, log stopexp.log), then `boxmpls2_jobs.json`.
+
+- Desktop chain3.ps1 (after phase 2): phase3_jobs.json = fixed_60 anchors on the 6 reduced scenarios plus fixed_180 on all 12
+  phase-1 scenarios (the schedule-curve anchors for the "savings beyond schedule" criterion in analyze.py).
 
 ## Next
 1. When the runs finish, copy the results to the box and run

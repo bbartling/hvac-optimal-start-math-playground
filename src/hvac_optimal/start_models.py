@@ -484,6 +484,7 @@ START_MODELS: Dict[str, Callable[[], StartModel]] = {
     "fixed_60": lambda: FixedLead(60),
     "fixed_90": lambda: FixedLead(90),
     "fixed_120": lambda: FixedLead(120),
+    "fixed_180": lambda: FixedLead(180),
     # vavrl static supervisor: 1.5 F/h heat, 1.2 F/h cool, +15 min, never learns
     "vavrl_static": lambda: _named(LinearRateEMA(1.5 / 60, 1.2 / 60, w=0.0, buffer_min=15.0), "vavrl_static"),
     "m0_linear_ema": lambda: LinearRateEMA(),
