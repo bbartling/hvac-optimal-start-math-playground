@@ -78,7 +78,7 @@ def load_backbone(neurips_root: Path, compat: bool):
 class Bookkeeper:
     """Per-AHU learning bookkeeping for hvac_optimal planners (no future data)."""
 
-    def __init__(self, policy, start_name, stop_name, holidays, max_lead, track_minutes=240):
+    def __init__(self, policy, start_name, stop_name, holidays, max_lead, track_minutes=240, stop_guard=0.9):
         self.p = policy
         self.start_name, self.stop_name = start_name, stop_name
         # robust_rls runs on the AHU critical-zone group; "<model>_group" / "<model>_zone" override
@@ -104,7 +104,8 @@ class Bookkeeper:
                 self.planners[ahu["id"]] = OptimalStartPlanner(base, max_lead=max_lead, min_lead=10.0, group=group,
                                                                arrival_feedback=fb)
             if stop_name not in ("v6", "native"):
-                self.stoppers[ahu["id"]] = OptimalStopPlanner(stop_name, max_early=120.0, guard=0.9, restart_guard=0.27)
+                self.stoppers[ahu["id"]] = OptimalStopPlanner(stop_name, max_early=120.0, guard=stop_guard,
+                                                                  restart_guard=min(0.27, stop_guard))
         self.fixed = float(base.split("_")[1]) if base.startswith("fixed_") else None
         self.holidays = holidays
         self.track = {}           # ahu_id -> dict while a recovery is being tracked
@@ -315,6 +316,8 @@ def main():
     ap.add_argument("--steps", type=int, default=8640)
     ap.add_argument("--max-lead", type=float, default=180.0)
     ap.add_argument("--actor", default=None, help="SAC trim actor json (start=sac_trim)")
+    ap.add_argument("--stop-guard", type=float, default=0.9,
+                    help="deg F the projected end-of-day temperature must stay inside the band")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
@@ -351,7 +354,7 @@ def main():
                 holidays.add(h.date() if hasattr(h, "date") else h)
             except Exception:
                 pass
-        bk = Bookkeeper(policy, a.start, stop_name, holidays, a.max_lead)
+        bk = Bookkeeper(policy, a.start, stop_name, holidays, a.max_lead, stop_guard=a.stop_guard)
         if a.start != "v6":
             policy.start_hook = bk.start_hook
         if stop_name != "v6":
@@ -427,7 +430,7 @@ def main():
         ahu_ids=np.array(ahu_ids))
     summary = {
         "building": scen.parent.name, "weather": scen.name, "start": a.start, "stop": stop_name,
-        "steps": n, "score": float(-np.mean(log_reward[:n])), "minutes": round((time.time() - t0) / 60, 2),
+        "stop_guard_f": a.stop_guard, "steps": n, "score": float(-np.mean(log_reward[:n])), "minutes": round((time.time() - t0) / 60, 2),
         "occ_heat_k": float(policy.occ_heat), "occ_cool_k": float(policy.occ_cool),
         "morning_start": float(policy.morning_start), "occupied_end_hour": float(policy.occupied_end_hour),
         "holidays": sorted(str(h) for h in (meta.get("holidays") or [])),

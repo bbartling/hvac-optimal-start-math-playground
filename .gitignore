@@ -205,3 +205,5 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+benchmarks/neurips_sim/results/
+benchmarks/neurips_sim/STOP

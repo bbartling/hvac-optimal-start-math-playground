@@ -46,6 +46,7 @@ def main():
             cmd = [sys.executable, str(HERE / "run_scenario.py"), "--neurips-root", a.neurips_root,
                    "--scenario-dir", j["scenario_dir"], "--start", j["start"], "--stop", j["stop"],
                    "--steps", str(a.steps), "--out", j["out"]]
+            cmd += [str(x) for x in j.get("args", [])]
             if j["start"] == "sac_trim" and a.actor:
                 cmd += ["--actor", a.actor]
             errf = open(str(j["out"]).replace(".json", ".err"), "w")

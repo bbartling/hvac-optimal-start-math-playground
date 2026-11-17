@@ -291,12 +291,33 @@ def main():
     R.to_csv(out / "runs.csv", index=False)
     As = A[A.start_ok & (A.day_no >= (0 if a.all_days else WARMUP_DAYS))]
     Ds = D[D.start_ok & (D.day_no >= (0 if a.all_days else WARMUP_DAYS))]
+    compact_cols = ["AHU-days", "lead p50", "late % (1F tol)", "late p90 (1F tol)", "unmet K*min/zone",
+                    "unmet w/ people K*min/zone", "energy saved vs fixed120 %", "reward gain vs fixed120"]
     parts = ["# Benchmark summary", "",
              f"runs: {len(R)}, scenarios: {R.scenario.nunique()}, buildings: {R.building.nunique()}, "
              f"climates: {R.city.nunique()}, AHU-days (scored): {len(As)}, "
              f"zones per scenario: {int(R.n_zones.min()) if len(R) else 0}-{int(R.n_zones.max()) if len(R) else 0}", ""]
     S = start_summary(As, Ds).sort_values("reward gain vs fixed120", ascending=False)
     parts += ["## Optimal start, all scenarios", "", md_table(S), ""]
+    parts += ["## Compact: start by climate", ""]
+    Sc = start_summary(As, Ds, "city")
+    parts += [md_table(Sc[["start", "city"] + compact_cols].sort_values(["city", "reward gain vs fixed120"], ascending=[True, False])), ""]
+    if "season" in As:
+        Ss = start_summary(As, Ds, "season")
+        parts += ["## Compact: start by season", "",
+                  md_table(Ss[["start", "season"] + compact_cols].sort_values(["season", "reward gain vs fixed120"], ascending=[True, False])), ""]
+    # equal-weight scenario average (each scenario counts once, whatever its AHU count)
+    rows = []
+    for sc_name, g in As.groupby("scenario"):
+        t = start_summary(g, Ds[Ds.scenario == sc_name])
+        t["scenario"] = sc_name
+        rows.append(t)
+    if rows:
+        P = pd.concat(rows)
+        W = P.groupby("start")[compact_cols[2:]].mean()
+        W["scenarios"] = P.groupby("start").scenario.nunique()
+        parts += ["## Start, mean over scenarios (each scenario weighted equally)", "",
+                  md_table(W.reset_index().sort_values("reward gain vs fixed120", ascending=False)), ""]
     for by in ("season", "post_weekend", "city"):
         parts += [f"## Optimal start by {by}", "", md_table(start_summary(As, Ds, by).sort_values([by, "reward gain vs fixed120"], ascending=[True, False])), ""]
     sc = R.groupby(["scenario", "start"], as_index=False).score.mean().pivot(index="scenario", columns="start", values="score")
