@@ -29,6 +29,10 @@ Draft PR: https://github.com/bbartling/hvac-optimal-start-math-playground/pull/2
 - Desktop chain3.ps1 (after phase 2): phase3_jobs.json = fixed_60 anchors on the 6 reduced scenarios plus fixed_180 on all 12
   phase-1 scenarios (the schedule-curve anchors for the "savings beyond schedule" criterion in analyze.py).
 
+- The box reboots now and then, which kills its jobs. After a resume, check `pgrep -fa run_queue` and relaunch
+  `setsid nohup /workspace/osbench/box_chain.sh > /workspace/osbench/box_chain.out 2>&1 < /dev/null &`.
+  It is resumable. Box files persist.
+
 ## Next
 1. When the runs finish, copy the results to the box and run
    `analyze.py results/phase1 results/boxmpls --out an_all` and `analyze.py results/stopexp --out an_stop --all-days`.
