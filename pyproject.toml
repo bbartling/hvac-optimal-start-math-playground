@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hvac-optimal-playground"
+version = "0.1.0"
+description = "Source-traceable optimal start/stop reference driver and reproducible research tutorial"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+notebook = ["numpy>=1.24", "pandas>=2.0", "matplotlib>=3.7", "jupyter", "nbclient", "jinja2"]
+test = ["pytest>=8", "nbclient", "nbformat", "build"]
+
+[project.scripts]
+hvac-optimal = "hvac_optimal.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["hvac_optimal*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

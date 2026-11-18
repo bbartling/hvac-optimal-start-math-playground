@@ -1,0 +1,11 @@
+{
+  "format_version": 1,
+  "scope": "observed recoveries from archived fixed-180 experiments; not matched closed-loop scores",
+  "temperature_unit": "degF",
+  "time_unit": "minute",
+  "endpoint": "first observed sample within the chosen tolerance",
+  "sha256": {
+    "recovery_events.csv.gz": "d89f2d2752abf466ae1bdc1c3b9707d48157973397cbec823a4e0625b7078737",
+    "recovery_traces.csv.gz": "5139468875dc29402e5c4f79054f46b4c07db6244c81e31965cd0692b6846849"
+  }
+}
