@@ -74,3 +74,14 @@ commit locally. Keep official leaderboard claims separate from local raw reward.
 Quota policy: inspect actual account limits at milestones. At 10% or less
 five-hour remaining, commit coherent work, record running jobs and reset time,
 sleep until renewal, then continue. Do not consume a reset credit automatically.
+
+### Quota sleep checkpoint
+
+2026-11-18 20:49 UTC (14:49 Central): actual five-hour usage reached 90% used,
+10% remaining. Account reports renewal at **2026-11-19 01:20:50 UTC**
+(November 18, 19:20:50 Central). Weekly remaining was 42%.
+Source checkpoint commit: `79f05d2`. Working tree was clean after that commit.
+Matrix process and four workers were alive; manifest reported 60 jobs,
+0 completed, 0 failed at launch. Let them continue during quota sleep.
+Next action after renewal: inspect actual account usage, matrix manifest,
+worker processes and error log; then resume validation. No reset credit used.
