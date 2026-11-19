@@ -1,5 +1,19 @@
 # Official simulator adapter
 
+The canonical local installation is now this repository's `.kit` and `.venv-sim`.
+`python tools/setup_simulator.py --source-kit <official-kit-directory>` imports
+the supplied official kit once, records file hashes and installs the independent
+environment. Later runs of the setup script omit `--source-kit`. Existing kit
+files are never overwritten. Both generated directories are ignored by Git;
+the competition code/data is not redistributed with this project.
+`requirements-simulator-lock.txt` pins the installed dependency set validated
+with Python 3.14. The controller core retains its separate Python 3.10+ support.
+
+Select **HVAC Optimal Start Simulator** in VS Code. The local notebook discovers
+`.kit` without a sibling path, checks kernel dependencies before starting workers,
+and raises an error if any job fails. Local Run All includes the simulator;
+set `RUN_OFFICIAL_SIMULATOR=False` for a quick tutorial. Results stay in TEMP.
+
 `hvac_optimal.simulation` discovers the checked-out official starter kit's actual
 `smart_buildings/training_scenarios/*/*/config.gin` files. It does not infer a
 scenario matrix from weather names. The supplied checkout contains 30 scenarios

@@ -28,7 +28,13 @@ def build_bundle(project_root, output_dir):
     for name in ("recovery_events.csv.gz", "recovery_traces.csv.gz", "recovery_manifest.json"):
         shutil.copyfile(root / "data" / name, out / "data" / name)
     notebook = root / "optimal_start_stop_tutorial.ipynb"
-    shutil.copyfile(notebook, out / notebook.name)
+    exported = json.loads(notebook.read_text(encoding="utf-8"))
+    exported["metadata"]["kernelspec"] = {"display_name": "Python 3", "language": "python", "name": "python3"}
+    for cell in exported["cells"]:
+        if cell["cell_type"] == "code":
+            cell["source"] = [line.replace("RUN_OFFICIAL_SIMULATOR = True", "RUN_OFFICIAL_SIMULATOR = False")
+                              for line in cell["source"]]
+    (out / notebook.name).write_text(json.dumps(exported, indent=1) + "\n", encoding="utf-8")
     assets = [archive, out / notebook.name, *sorted((out / "data").glob("*"))]
     manifest = {
         "format_version": 1, "purpose": "offline educational notebook; not a competition policy submission",

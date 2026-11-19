@@ -209,3 +209,5 @@ __marimo__/
 # Reproducible exports and simulator outputs are generated, not source.
 kaggle_bundle/
 simulation_runs/
+.kit/
+.venv-sim/

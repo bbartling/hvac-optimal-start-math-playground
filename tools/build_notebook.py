@@ -300,7 +300,8 @@ identical to Niagara's minute scans at :15. Geometry classification and any fall
 **8640 steps** means a full 30-day episode. Short runs are integration smoke tests, never comparable competition scores.
 Full runs can take hours. Results are resumable, job identities include source/config hashes, and output belongs in
 a new TEMP directory locally or `/kaggle/working` on Kaggle. Attach the official simulator dataset separately; it is
-not redistributed in this tutorial bundle. This cell is off by default so Run All remains a quick tutorial.
+not redistributed in this tutorial bundle. Locally, select the **HVAC Optimal Start Simulator** kernel. This cell
+is enabled for the local notebook, so Run All includes the full simulator. Set it to False for just the quick tutorial.
 """)
 evidence_path = ROOT / 'docs' / 'validation' / '2026-11-18-simulation.json'
 if evidence_path.is_file():
@@ -334,19 +335,19 @@ run signature `{evidence['run_signature']}`. Full traces remain outside the offl
 """)
 
 code(r"""
-RUN_OFFICIAL_SIMULATOR = False
-KIT = None  # e.g. Path(r'C:\Users\ben\Documents\neurips-2026-smart-buildings\.kit')
+RUN_OFFICIAL_SIMULATOR = True
+KIT = None  # Automatically discover this repository's .kit or an attached Kaggle kit.
 POLICIES = ['native']  # add names from summary.index for matched research arms
 STEPS = 8640          # shorter horizons are smoke tests only
 
 if RUN_OFFICIAL_SIMULATOR:
     from hvac_optimal.simulation import discover_scenarios, run_matrix
+    from hvac_optimal.simulator_setup import resolve_kit, preflight
     import tempfile
-    if KIT is None:
-        candidates = sorted(Path('/kaggle/input').rglob('smart_buildings/training_scenarios'))
-        if not candidates:
-            raise FileNotFoundError('Set KIT to the directory containing the official smart_buildings package.')
-        KIT = candidates[0].parent.parent
+    KIT = resolve_kit(KIT)
+    preflight()
+    print('Simulator kit:', KIT)
+    print('Python:', sys.executable)
     scenarios = discover_scenarios(KIT)
     display(pd.DataFrame(scenarios))
     output = (Path('/kaggle/working/optimal-start-stop-runs') if Path('/kaggle').exists()
@@ -354,6 +355,10 @@ if RUN_OFFICIAL_SIMULATOR:
     receipt = run_matrix(KIT, output, policies=tuple(POLICIES), steps=STEPS, workers=2,
                          phase='both', sample_fraction=.30, resume=True)
     display(pd.DataFrame(simulation_table(receipt)))
+    print('Results saved to:', output)
+    if receipt['failed']:
+        errors = [job for job in receipt['results'] if job['status'] != 'complete']
+        raise RuntimeError(f"{receipt['failed']} simulator jobs failed. First error: {errors[0].get('error', 'See receipt')}")
     completed = [job for job in receipt['results'] if job['status'] == 'complete']
     if completed:
         plot_ahu_trace(completed[0]['history_path'])
@@ -404,7 +409,7 @@ competition submission has been performed. The Python driver is not a claim of N
 """)
 
 notebook = nbf.v4.new_notebook(cells=cells, metadata={
-    "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+    "kernelspec": {"display_name": "HVAC Optimal Start Simulator", "language": "python", "name": "hvac-optimal-sim"},
     "language_info": {"name": "python"},
 })
 nbf.write(notebook, ROOT / "optimal_start_stop_tutorial.ipynb")

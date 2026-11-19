@@ -52,11 +52,14 @@ Verified-unoccupied temperature recovery normally requests full recirculation th
 
 ## Actual simulator, all buildings
 
-Use the sibling competition environment, which already has simulator dependencies:
+This repository owns its simulator kit and environment. Select **HVAC Optimal Start Simulator** in VS Code.
+For another checkout, supply a legitimately obtained official kit once:
 
 ```powershell
-$simPy = "C:\Users\ben\Documents\neurips-2026-smart-buildings\.venv-sim\Scripts\python.exe"
-& $simPy -m hvac_optimal simulate --kit "C:\Users\ben\Documents\neurips-2026-smart-buildings\.kit" --out "$env:TEMP\optimal-start-full" --steps 8640 --workers 2
+python tools/setup_simulator.py --source-kit "C:\path\to\official-kit"
+# Later dependency refreshes need no source-kit argument:
+python tools/setup_simulator.py
+& .\.venv-sim\Scripts\python.exe -m hvac_optimal simulate --kit .kit --out "$env:TEMP\optimal-start-full" --steps 8640 --workers 2
 ```
 
 The runner discovers every configured scenario: currently six buildings and 30 scenarios. Each AHU receives its own reference controller and learner bank. Start comparisons hold stop/plant/schedule fixed; stop comparisons hold start fixed. Short runs are integration tests, not competition scores. Resume requires matching source/config identities. [Simulator instructions](docs/simulator.md).

@@ -5,6 +5,29 @@ No push, Kaggle upload/submission or field write has been performed.
 
 ## Current verified state after quota renewal
 
+November 19 simulator migration COMPLETE: this checkout now owns `.kit` and
+`.venv-sim`, both ignored by Git. The existing official kit was imported read-only
+with a file-hash manifest; the sibling checkout and its environment were not
+modified. `tools/setup_simulator.py` provisions dependencies from the committed
+lock file and registers **HVAC Optimal Start Simulator**. Local notebook kit
+discovery uses this repository; no sibling path is needed. Missing kernel
+dependencies fail before worker startup, and failed jobs raise a notebook error.
+
+Validation: **155 tests passed**, `pip check` passed, and the actual notebook
+executed using the new environment with **30/30 scenarios passing at 12 steps**,
+zero failures (163 seconds). This is migration/integration validation, not a new
+full-month score comparison. Evidence is under
+`%TEMP%\optimal-self-contained-notebook-20261119` and
+`%TEMP%\optimal-start-stop-runs-5dz_7603`.
+
+The local notebook is enabled for full 8,640-step runs with the registered kernel.
+Reload it from disk, select that kernel, restart, then Run All. Exported Kaggle
+bundles retain the generic Python kernel and disable the optional simulator so
+the lightweight offline tutorial still works without a separately attached kit.
+The user's earlier notebook with all 30 missing-gin failures was retained only
+as a TEMP diagnostic before regeneration. No earlier failures are presented as
+successful simulations.
+
 Follow-up, November 19: added **Controller without NumPy or pandas** to the
 notebook. It explains primitive arithmetic, vanilla-Java portability, the native
 MPD versus rate-EMA distinction, and fixed/irregular sampling for M4. The plain
