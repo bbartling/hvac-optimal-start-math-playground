@@ -1,0 +1,97 @@
+{
+  "manifest_sha256": "b4e2f91ef0317af31016518709fa6c1ef2af7e0ed873e7e94926d0929ddc9750",
+  "manifest_signature": "afd138a475c14c48e683c1dd51adc8cf504ec0ecd0ae2bde5b59a76952644685",
+  "frozen_commit": "79f05d2",
+  "all_history_hashes_match": true,
+  "all_step_clocks_and_coverage_match": true,
+  "all_frozen_package_sources_unchanged": true,
+  "selector_decisions_independently_recomputed": 255158,
+  "method": "Reconstruct prior common-cohort error history in trace order, separated by AHU/mode/post-weekend; recompute 8-event ResearchSelector choice before current outcome. Reassess all declared endpoints and verify no observed trajectory sample exceeds then-current timestamp. Count native learning/accepted fits against job receipts.",
+  "violation_count": 0,
+  "violations": [],
+  "policies": {
+    "native": {
+      "counts": {
+        "job_header": 30,
+        "ahu_tick": 1468800,
+        "assessment_prediction": 2564,
+        "outcome": 2564,
+        "native_observation": 2238,
+        "native_training": 2238,
+        "terminal_research_observation": 170,
+        "deferred_research_training": 211
+      },
+      "learning_kinds": {
+        "start": 2238,
+        "stop": 1157
+      },
+      "trigger_kinds": {
+        "start": 2564,
+        "stop": 2287
+      },
+      "decision_selections": {},
+      "start_selections": {},
+      "outcome_statuses": {
+        "complete": 2317,
+        "at_endpoint": 212,
+        "partial": 28,
+        "censored": 7
+      },
+      "complete_outcomes": 2529,
+      "common_cohort_outcomes": 2307
+    },
+    "winner": {
+      "counts": {
+        "job_header": 30,
+        "ahu_tick": 1468800,
+        "prediction": 255158,
+        "selector_verified": 255158,
+        "assessment_prediction": 1978,
+        "outcome": 1978,
+        "native_observation": 1385,
+        "native_training": 1385,
+        "deferred_research_training": 396,
+        "terminal_research_observation": 170
+      },
+      "learning_kinds": {
+        "start": 1385,
+        "stop": 1200
+      },
+      "trigger_kinds": {
+        "start": 1978,
+        "stop": 2441
+      },
+      "decision_selections": {
+        "native": 81426,
+        "pnnl_m1_quadratic": 51339,
+        "pnnl_m2_oat_ratio": 21288,
+        "m0_linear_ema": 26674,
+        "pnnl_m4_exponential": 28989,
+        "g36_inspired_legacy": 8214,
+        "pnnl_deployed_median_split": 16344,
+        "native_minutes_per_degree": 15580,
+        "pnnl_m3_regression": 5304
+      },
+      "start_selections": {
+        "native": 492,
+        "pnnl_m2_oat_ratio": 184,
+        "pnnl_m1_quadratic": 439,
+        "m0_linear_ema": 186,
+        "pnnl_m4_exponential": 305,
+        "g36_inspired_legacy": 51,
+        "native_minutes_per_degree": 101,
+        "pnnl_deployed_median_split": 170,
+        "pnnl_m3_regression": 50
+      },
+      "outcome_statuses": {
+        "complete": 1858,
+        "at_endpoint": 46,
+        "partial": 42,
+        "censored": 32
+      },
+      "complete_outcomes": 1904,
+      "common_cohort_outcomes": 1688
+    }
+  },
+  "scope": "Within-policy common MAEs use different policy-dependent trajectories; native actual lead targets full boundary while winner candidates use 1F assessment endpoint plus exact-native fallback; not an isolated model-selection ablation."
+}

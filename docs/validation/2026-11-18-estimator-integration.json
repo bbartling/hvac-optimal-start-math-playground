@@ -1,0 +1,809 @@
+{
+  "format_version": 1,
+  "generated_utc": "2026-11-19T02:02:18.523231+00:00",
+  "run_signature": "f067b5cf9a84e44295d38e73f7a58c8a19762b6de9e8cb7067dd55aa4467e3a5",
+  "complete": 240,
+  "failed": 0,
+  "all_full_horizon": false,
+  "steps_per_job": {
+    "360": 240
+  },
+  "simulator_steps_total": 86400,
+  "ahu_ticks_total": 489600,
+  "scenarios": 30,
+  "buildings": [
+    {
+      "building": "building_train_1",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.023845818321706198,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.023280523443934477,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.023280523443934477,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.02003199180461752,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.023136773181278995,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.023136773181278995,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.023136773181278995,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.021130506583221218
+    },
+    {
+      "building": "building_train_2",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.044284625183142266,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.04374719046833976,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.04374719046833976,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.04227997396725476,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.04362303223005596,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.04362303223005596,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.04362303223005596,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.04426429372848019
+    },
+    {
+      "building": "building_train_4",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.01244846183630721,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.012190976057470632,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.012190976057470632,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.013471656147887895,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.012247651428629575,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.012247651428629575,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.012247651428629575,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.01263627485360909
+    },
+    {
+      "building": "building_train_5",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.01042192044788155,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.010484824622336015,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.010484824622336015,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.011453452489906037,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.010625991801030068,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.010625991801030068,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.010625991801030068,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.01064118448242324
+    },
+    {
+      "building": "building_train_7",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.01614393214099304,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.016468424807468473,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.016468424807468473,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.015352776424706147,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.015029621243760718,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.015029621243760718,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.015029621243760718,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.015360646447858308
+    },
+    {
+      "building": "building_train_8",
+      "g36_inspired_legacy_jobs": 5,
+      "g36_inspired_legacy_mean_raw_reward": -0.05986299274553193,
+      "m0_linear_ema_jobs": 5,
+      "m0_linear_ema_mean_raw_reward": -0.057406319981009216,
+      "native_minutes_per_degree_jobs": 5,
+      "native_minutes_per_degree_mean_raw_reward": -0.057406319981009216,
+      "pnnl_deployed_median_split_jobs": 5,
+      "pnnl_deployed_median_split_mean_raw_reward": -0.06679131141584692,
+      "pnnl_m1_quadratic_jobs": 5,
+      "pnnl_m1_quadratic_mean_raw_reward": -0.05992507409571208,
+      "pnnl_m2_oat_ratio_jobs": 5,
+      "pnnl_m2_oat_ratio_mean_raw_reward": -0.05992507409571208,
+      "pnnl_m3_regression_jobs": 5,
+      "pnnl_m3_regression_mean_raw_reward": -0.05992507409571208,
+      "pnnl_m4_exponential_jobs": 5,
+      "pnnl_m4_exponential_mean_raw_reward": -0.07340426083776029
+    }
+  ],
+  "ahu_runs": 1360,
+  "independent_scenario_ahu_pairs": 170,
+  "reward_scope": "local raw simulator reward; higher is better; single seed; not an official leaderboard score",
+  "simulator_recirculation_caps": {
+    "0.7": 240
+  },
+  "sample_fallbacks": {
+    "none": 1120,
+    "only_exterior_classified": 240
+  },
+  "policies": {
+    "g36_inspired_legacy": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.0278346251125937,
+      "native_learning_events": 103,
+      "accepted_research_fits": 824,
+      "zero_native_update_ahu_runs": 67,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 103,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 103,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 103,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 103,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "m0_linear_ema": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.027263043230093095,
+      "native_learning_events": 80,
+      "accepted_research_fits": 641,
+      "zero_native_update_ahu_runs": 90,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "native_minutes_per_degree": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.027263043230093095,
+      "native_learning_events": 80,
+      "accepted_research_fits": 641,
+      "zero_native_update_ahu_runs": 90,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 86,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 86,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "pnnl_deployed_median_split": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.02823019370836988,
+      "native_learning_events": 100,
+      "accepted_research_fits": 800,
+      "zero_native_update_ahu_runs": 70,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "pnnl_m1_quadratic": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.0274313573300779,
+      "native_learning_events": 102,
+      "accepted_research_fits": 816,
+      "zero_native_update_ahu_runs": 68,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "pnnl_m2_oat_ratio": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.0274313573300779,
+      "native_learning_events": 102,
+      "accepted_research_fits": 816,
+      "zero_native_update_ahu_runs": 68,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "pnnl_m3_regression": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.0274313573300779,
+      "native_learning_events": 102,
+      "accepted_research_fits": 816,
+      "zero_native_update_ahu_runs": 68,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 102,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 102,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    },
+    "pnnl_m4_exponential": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.029572861155558725,
+      "native_learning_events": 100,
+      "accepted_research_fits": 800,
+      "zero_native_update_ahu_runs": 70,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "m0_linear_ema": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_endpoint_adapter": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "native_minutes_per_degree": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m3_regression": {
+          "assessed": 0,
+          "unassessed": 0,
+          "unsupported": 100,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 100,
+          "unassessed": 0,
+          "unsupported": 0,
+          "common_assessed": 0,
+          "common_absolute_error_sum": 0.0,
+          "common_mae_minutes": null
+        }
+      }
+    }
+  },
+  "paired_scenarios": [],
+  "winner_better_scenarios": 0,
+  "winner_worse_scenarios": 0,
+  "limitations": [
+    "No full-return-air simulation: observed maximum recirculation is 70%.",
+    "Five-minute adapter cadence differs from minute scans in the supplied Java.",
+    "Common cohorts are matched within each policy trajectory, not across different controller arms.",
+    "Shadow-model MAE does not measure counterfactual controlled energy or comfort.",
+    "Six buildings and five weather cities; one fixed seed; no uncertainty estimate."
+  ],
+  "input_manifest_sha256": "3d9eb49050f06faa60cca54cc98e11b4abaaa56d6c4aa0178e53ab44d355bc17"
+}
