@@ -5,6 +5,18 @@ No push, Kaggle upload/submission or field write has been performed.
 
 ## Current verified state after quota renewal
 
+Follow-up, November 19: added **Controller without NumPy or pandas** to the
+notebook. It explains primitive arithmetic, vanilla-Java portability, the native
+MPD versus rate-EMA distinction, and fixed/irregular sampling for M4. The plain
+Python 3.10+ example uses the existing complete native driver and prints an
+eligible partial-response update without importing numerical/plotting packages.
+The extracted notebook cell passed in a fresh `python -S` subprocess importing
+the bundled ZIP; third-party numerical modules were absent. Four targeted tests
+passed, plus fresh-kernel execution of the full notebook. Core code is unchanged.
+The notebook now has 22 cells, nine code cells. Latest preview and bundle:
+`%TEMP%\optimal-stdlib-notebook-preview-20261119` and
+`%TEMP%\optimal-stdlib-kaggle-bundle-20261119`.
+
 Renewed at 2026-11-19 01:20:50 UTC; resumed after the requested quota sleep.
 **60/60 full 30-day simulator jobs passed, zero failures.** Six buildings,
 five weather cities, 30 scenarios, 34 physical AHUs, 340 AHU-scenario-policy runs.
@@ -18,7 +30,7 @@ Native reward exceeded adaptive on 24/30 scenarios. Commanded arrival objectives
 differ (full boundary native, 1°F research with native fallback), so this is not
 an isolated selector ablation. Native remains default. See docs/validation/.
 
-Latest tests: **151 passed**. Final 20-cell, 8-code-cell source notebook is 22,511
+At the full simulator checkpoint: **151 tests passed**. Its 20-cell, 8-code-cell source notebook was 22,511
 bytes. Fresh-kernel offline execution passed from both ZIP and unpacked driver
 bundles, with HTTP disabled. A wheel was built in TEMP and installed without
 dependencies into a clean TEMP environment; core imports and CLI passed.

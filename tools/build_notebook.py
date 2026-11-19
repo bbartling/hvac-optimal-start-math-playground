@@ -11,8 +11,11 @@ def md(text):
     cells.append(nbf.v4.new_markdown_cell(text.strip()))
 
 
-def code(text):
-    cells.append(nbf.v4.new_code_cell(text.strip()))
+def code(text, *, tags=None):
+    cell = nbf.v4.new_code_cell(text.strip())
+    if tags:
+        cell.metadata['tags'] = tags
+    cells.append(cell)
 
 
 md("""
@@ -120,6 +123,63 @@ ax = learning.plot.bar(x='case', y=['old_minutes_per_degree', 'new_minutes_per_d
 ax.set(ylabel='Minutes per °F', title='All four native learners update on eligible partial responses')
 plt.tight_layout(); plt.show()
 """)
+md("""
+### Controller without NumPy or pandas
+
+**The existing controller and all eight estimators use Python's standard library only.** NumPy, pandas and Matplotlib
+belong to this notebook's analysis and charts. A controller can run the same driver and equations without them;
+there is no need to substitute a different learning algorithm.
+
+For a small BAS controller, the native **minutes-per-degree** learner is the simplest starting point. Its learning
+arithmetic uses only multiplication, division and addition, with four separate learned values:
+
+```text
+observed_minutes_per_degree = elapsed_minutes / measured_directional_temperature_change
+updated = (old * old_parameter_multiplier + observed_minutes_per_degree) / (old_parameter_multiplier + 1)
+```
+
+Call that update only through the original state machine's eligibility checks. Keep the original float32 arithmetic,
+time handling, start/stop latches and command value/null status when porting the native implementation. No extra
+minimum-change or sample-count gate is required. The separate `LinearRateEMA` averages degrees/minute; averaging
+reciprocals gives a different answer, so it is **not** an equivalent rewrite of the native learner.
+
+| Algorithm | What vanilla Java needs |
+| --- | --- |
+| Native start/stop | Primitive scalar arithmetic; four learned minutes/degree values plus the original state machine |
+| PNNL M1–M3 | Scalar coefficient formulas and short primitive arrays for coefficient history; no matrix solver |
+| PNNL M4 | Scalar sums and `Math.log` / `Math.pow`; fixed-cadence fitting is simplest |
+| Median ensemble | Four predictions, a small sort, and separate history banks |
+
+M4's fixed-cadence fit accumulates `sum(previous_error * error)` and `sum(previous_error * previous_error)`.
+Irregular sampling uses the existing scalar search and needs its sample pairs; do not treat irregular samples as
+equally spaced to shorten the code. Java's built-in `Math` provides the logarithms and powers; no numerical package
+is needed. Niagara slots, status flags and clock callbacks still need the Niagara adapter/API.
+
+**Standalone Python example:** the next cell also runs as a plain Python 3.10+ script with `hvac_optimal/` available
+on the import path. It imports no numerical or plotting package. The package supplies the complete tested BAS behavior;
+copy/install that driver beside your script instead of replacing it with the two-line learning formula alone.
+The original Java already uses scalar arithmetic; a Program Object port must preserve its surrounding behavior.
+""")
+code("""
+from datetime import datetime
+from hvac_optimal import Inputs, OptimizedStartStop
+
+controller = OptimizedStartStop()
+for clock, temperature, occupied in [('05:50:15', 66.0, False), ('06:00:15', 66.2, True)]:
+    now = datetime.fromisoformat(f'2026-11-19T{clock}+00:00')
+    next_event = now.replace(hour=18 if occupied else 6, minute=0, second=0)
+    result = controller.tick(Inputs(
+        space_temp=temperature, outside_temp=35.0,
+        start_enable=True, stop_enable=True, schedule_status=occupied,
+        next_event_time=next_event, next_event_value=not occupied,
+    ), now=now)
+    print(clock, 'heating minutes/degree:', result.state.runtime_per_degree_heating)
+    for event in result.events:
+        if event['type'] == 'native_learning':
+            print('Native learning:', event['parameter'],
+                  '| measured change:', event['temperature_change'],
+                  '| full comfort reached:', event['target_reached'])
+""", tags=['stdlib-controller'])
 md("""
 ### Real BAS ventilation versus this simulator
 

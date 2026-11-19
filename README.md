@@ -4,6 +4,8 @@ A short [Kaggle tutorial](optimal_start_stop_tutorial.ipynb) backed by a readabl
 
 The notebook replays recorded recoveries, plots errors and selection over time, and can run the actual competition simulator. The standard-library core also works without Jupyter, pandas or NumPy for an IoT/BAS adapter.
 
+The notebook's **Controller without NumPy or pandas** section includes a plain-Python example and explains equivalent scalar arithmetic for a vanilla Java/Niagara adapter. All eight estimators use the standard library; native start/stop needs no matrix math.
+
 ## Run
 
 ```powershell
