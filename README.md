@@ -53,6 +53,9 @@ Verified-unoccupied temperature recovery normally requests full recirculation th
 ## Actual simulator, all buildings
 
 This repository owns its simulator kit and environment. Select **HVAC Optimal Start Simulator** in VS Code.
+The notebook also works from the general Python kernel: it launches simulation
+in the project environment automatically. Run All defaults to one building for
+36 hours; set `FULL_RUN=True` for all scenarios over 30 days.
 For another checkout, supply a legitimately obtained official kit once:
 
 ```powershell

@@ -9,10 +9,13 @@ the competition code/data is not redistributed with this project.
 `requirements-simulator-lock.txt` pins the installed dependency set validated
 with Python 3.14. The controller core retains its separate Python 3.10+ support.
 
-Select **HVAC Optimal Start Simulator** in VS Code. The local notebook discovers
-`.kit` without a sibling path, checks kernel dependencies before starting workers,
-and raises an error if any job fails. Local Run All includes the simulator;
-set `RUN_OFFICIAL_SIMULATOR=False` for a quick tutorial. Results stay in TEMP.
+The local notebook discovers `.kit` without a sibling path and launches simulation
+using this repository's `.venv-sim` automatically. The general Python notebook
+kernel can therefore run the tutorial without having simulator packages installed.
+**HVAC Optimal Start Simulator** also remains available as a registered kernel.
+Local Run All defaults to one scenario/building for 360 steps (36 hours), including
+all its AHUs. Set `FULL_RUN=True` for all scenarios at 8,640 steps. Failures raise
+an error, and outputs stay in TEMP. Short runs are integration tests only.
 
 `hvac_optimal.simulation` discovers the checked-out official starter kit's actual
 `smart_buildings/training_scenarios/*/*/config.gin` files. It does not infer a

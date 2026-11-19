@@ -301,7 +301,9 @@ identical to Niagara's minute scans at :15. Geometry classification and any fall
 Full runs can take hours. Results are resumable, job identities include source/config hashes, and output belongs in
 a new TEMP directory locally or `/kaggle/working` on Kaggle. Attach the official simulator dataset separately; it is
 not redistributed in this tutorial bundle. Locally, select the **HVAC Optimal Start Simulator** kernel. This cell
-is enabled for the local notebook, so Run All includes the full simulator. Set it to False for just the quick tutorial.
+is enabled locally with a **one-building, 36-hour smoke test** (all AHUs in that building). The simulator uses this
+repository's environment automatically, even when VS Code selected the general Python kernel. Set `FULL_RUN=True`
+for all scenarios at the full 30-day horizon. Short smoke results are not competition scores.
 """)
 evidence_path = ROOT / 'docs' / 'validation' / '2026-11-18-simulation.json'
 if evidence_path.is_file():
@@ -338,22 +340,23 @@ code(r"""
 RUN_OFFICIAL_SIMULATOR = True
 KIT = None  # Automatically discover this repository's .kit or an attached Kaggle kit.
 POLICIES = ['native']  # add names from summary.index for matched research arms
-STEPS = 8640          # shorter horizons are smoke tests only
+FULL_RUN = False      # True runs all 30 scenarios for a full month.
+STEPS = 8640 if FULL_RUN else 360
+SCENARIO_LIMIT = None if FULL_RUN else 1
 
 if RUN_OFFICIAL_SIMULATOR:
     from hvac_optimal.simulation import discover_scenarios, run_matrix
-    from hvac_optimal.simulator_setup import resolve_kit, preflight
+    from hvac_optimal.simulator_setup import resolve_kit, run_notebook_matrix
     import tempfile
     KIT = resolve_kit(KIT)
-    preflight()
     print('Simulator kit:', KIT)
     print('Python:', sys.executable)
     scenarios = discover_scenarios(KIT)
     display(pd.DataFrame(scenarios))
     output = (Path('/kaggle/working/optimal-start-stop-runs') if Path('/kaggle').exists()
               else Path(tempfile.mkdtemp(prefix='optimal-start-stop-runs-')))
-    receipt = run_matrix(KIT, output, policies=tuple(POLICIES), steps=STEPS, workers=2,
-                         phase='both', sample_fraction=.30, resume=True)
+    receipt = run_notebook_matrix(KIT, output, policies=tuple(POLICIES), steps=STEPS,
+                                 workers=1 if SCENARIO_LIMIT else 2, limit=SCENARIO_LIMIT)
     display(pd.DataFrame(simulation_table(receipt)))
     print('Results saved to:', output)
     if receipt['failed']:

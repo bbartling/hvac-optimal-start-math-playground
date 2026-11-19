@@ -5,6 +5,19 @@ No push, Kaggle upload/submission or field write has been performed.
 
 ## Current verified state after quota renewal
 
+November 19 follow-up kernel fix: the user's saved error came from the general
+Python 3.14 kernel lacking gin-config/numba, despite the installed project kernel.
+The simulator cell now launches its CLI in this project's `.venv-sim` regardless
+of the notebook kernel. Default is one building/scenario, all four mapped AHUs,
+360 steps / 36 simulated hours. `FULL_RUN=True` selects all scenarios / 8,640
+steps. The full notebook passed from the SAME general `python3` kernel in
+72.85 seconds, one completed job, zero failures, and five rendered charts.
+Evidence: `%TEMP%\optimal-general-kernel-smoke-20261119` and
+`%TEMP%\optimal-start-stop-runs-n97ucf77`. The full suite passed 155 tests;
+the added interpreter-selection regression also passed with the four setup tests.
+Reload the source notebook from disk and Run All; manual kernel switching is
+no longer necessary when the notebook's plotting dependencies are available.
+
 November 19 simulator migration COMPLETE: this checkout now owns `.kit` and
 `.venv-sim`, both ignored by Git. The existing official kit was imported read-only
 with a file-hash manifest; the sibling checkout and its environment were not

@@ -36,7 +36,8 @@ def main():
             if args.skip_simulator:
                 cell.source = cell.source.replace('RUN_OFFICIAL_SIMULATOR = True', 'RUN_OFFICIAL_SIMULATOR = False')
             elif args.simulator_smoke:
-                cell.source = cell.source.replace('STEPS = 8640', 'STEPS = 12')
+                cell.source = cell.source.replace('STEPS = 8640 if FULL_RUN else 360', 'STEPS = 12')
+                cell.source = cell.source.replace('SCENARIO_LIMIT = None if FULL_RUN else 1', 'SCENARIO_LIMIT = None')
     if args.bundle:
         # Kernel transport stays available, while tutorial HTTP access fails.
         notebook.cells.insert(0, nbformat.v4.new_code_cell(
