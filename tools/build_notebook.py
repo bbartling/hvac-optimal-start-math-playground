@@ -24,6 +24,33 @@ md("""
 Learn how a source-traceable BAS state machine schedules temperature recovery, how each AHU learns independently,
 and how to compare PNNL-style estimators without changing the operating rules underneath them.
 
+**What is optimal start?** A building may be unoccupied overnight but need comfortable rooms when people arrive.
+Starting every air handler two hours early wastes conditioning time on mild mornings and can still be too late on
+extreme days. Optimal start estimates how long heating or cooling will take, then starts before scheduled occupancy.
+For example, a 30-minute recovery estimate for an 8:00 AM occupied schedule suggests a 7:30 AM start, subject to the
+original BAS sequence. The controller learns from measured temperature response. Optimal stop estimates when
+conditioning can stop before scheduled departure while temperatures remain within the occupied comfort limits.
+
+**The research behind this project.** We implement and examine adaptations of four optimal-start models from
+PNNL research: Kim, Yu, Lutes and Katipamula, *Implementation and validation of optimal start control strategy for
+air conditioners and heat pumps*, Applied Thermal Engineering 257 (2024), 124256.
+[Find the paper through its DOI](https://doi.org/10.1016/j.applthermaleng.2024.124256).
+The repository copy is `PNNL_Paper/Optimal Start Control for ACs and HPs.pdf`. The supplied research code,
+paper equations and our event-based adaptations are distinguished in `docs/model-provenance.md`; they are not
+claimed to be identical implementations.
+
+**Why use the Kaggle simulator?** The Smart Buildings competition's official simulator provides repeatable
+building, weather, AHU and VAV-zone dynamics for testing these ideas beyond a single recorded recovery curve.
+Our installed kit supplies **six simulated buildings, 34 AHU systems serving mapped VAV zones, and 30 building/weather
+scenarios across five weather cities**. Each AHU has independent learners and its own representative zone sample.
+These are simulated buildings, not 34 field installations.
+
+We completed **60 full 30-day runs** comparing native and adaptive policies, with all research estimators evaluated
+as shadow forecasts, plus **240 shorter runs** exercising each of the eight candidate start policies across all
+30 scenarios. The shorter runs establish integration rather than full-month performance for every candidate.
+This tests research-derived algorithms in the competition simulator; it does not reproduce PNNL's field study or
+establish savings in real buildings. Later sections report measured results and differing arrival objectives.
+
 **Three separate layers:** `reference.py` owns native start/stop behavior; `models.py` estimates durations;
 `replay.py` records predictions before outcomes and training. The standard-library driver also accepts JSONL for IoT adapters.
 
