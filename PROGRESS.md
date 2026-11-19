@@ -3,6 +3,40 @@
 Branch: `rewrite/java-reference-tutorial`. Canonical work stays in this checkout.
 No push, Kaggle upload/submission or field write has been performed.
 
+## Current verified state after quota renewal
+
+Renewed at 2026-11-19 01:20:50 UTC; resumed after the requested quota sleep.
+**60/60 full 30-day simulator jobs passed, zero failures.** Six buildings,
+five weather cities, 30 scenarios, 34 physical AHUs, 340 AHU-scenario-policy runs.
+All 340 AHU instances learned; 5,980 total native updates. Full independent audit
+checked all 2,937,600 AHU ticks, all 60 history hashes and 255,158 causal selector
+decisions: zero violations. Package sources match source snapshot `79f05d2`.
+
+Native reward exceeded adaptive on 24/30 scenarios. Commanded arrival objectives
+differ (full boundary native, 1°F research with native fallback), so this is not
+an isolated selector ablation. Native remains default. See docs/validation/.
+
+Latest tests: **144 passed**. Final 20-cell, 8-code-cell source notebook is 22,511
+bytes. Fresh-kernel offline execution passed from both ZIP and unpacked driver
+bundles, with HTTP disabled. A wheel was built in TEMP and installed without
+dependencies into a clean TEMP environment; core imports and CLI passed.
+
+Current artifacts under `%TEMP%`:
+
+- `optimal-final-kaggle-bundle-20261118`: final offline notebook/driver/data.
+- `optimal-final-notebook-preview-20261118/tutorial_preview.html`: executed preview.
+- `optimal-final-evidence-20261118`: aggregate JSON/CSV and actual AHU trace PNGs.
+- `optimal-final-wheel-20261118`: wheel; `optimal-driver-venv-20261118`: clean install.
+
+Still running: **240 active-estimator integration jobs** (eight research policies
+× all 30 scenarios), 360 steps each, phase start, four workers. These test the
+actual candidate-control paths; they are not full-month score comparisons.
+Output `%TEMP%\optimal-start-model-integration-20261118\manifest.json`, log same
+basename `.log` directly under TEMP; shell session 54585. At checkpoint, 48
+completed and none failed. Package source remains frozen until these finish.
+Next: inspect all 240 results, verify actual predictor calls and report any
+unassessed/no-learning instances honestly; retain compact evidence and commit.
+
 ## Implemented
 
 - Source-traceable Java behavior port for BOTH start and stop, four independent
@@ -13,7 +47,7 @@ No push, Kaggle upload/submission or field write has been performed.
 - Default 30% fixed per-AHU sample, exterior/interior balance where metadata
   permits, equal weights unless configured. Full-recirculation BAS note and
   observed simulator 70% cap are explicit.
-- Slim 19-cell notebook, with model provenance, recorded-data comparisons,
+- Slim 20-cell notebook, with model provenance, recorded-data comparisons,
   learning/selection charts, optional actual-simulator traces and an IoT example.
 
 ## Verified before the broad simulator matrix
@@ -32,13 +66,13 @@ TEMP evidence: `optimal-final-preview-20261118-v2`,
 `optimal-final-offline-preview-20261118-v3`,
 `optimal-final-bundle-20261118-v3` under `%TEMP%`.
 
-## Next / resume
+## Historical full-matrix launch / reproduction
 
 Terminal observation handling is fixed and regression tested, with no extra
 native tick, learning update or plant action. Package source is now FROZEN while
 the actual simulator runs; do not edit any `hvac_optimal/*.py` during the matrix.
 
-Running: 60 full-length jobs (all 30 scenarios × native and research-winner),
+Completed: 60 full-length jobs (all 30 scenarios × native and research-winner),
 8,640 five-minute steps each, phase both, four workers, seed 0, sample 30%.
 All eight research models are shadow-assessed independently per AHU in each job;
 this is not eight separately controlled energy experiments.
@@ -47,7 +81,7 @@ this is not eight separately controlled energy experiments.
 - Log: `%TEMP%\optimal-start-full-matrix-20261118.log`.
 - Shell session ID at launch: 96494 (may expire; process/manifest are authoritative).
 - Simulator Python: sibling `.venv-sim\Scripts\python.exe`; official kit `.kit`.
-- No completed full-length jobs at launch. Do not report them as passed yet.
+- At launch there were no completed jobs; all 60 have since passed and been audited.
 
 Resume by inspecting manifest/log and process status first. Run the same command
 only if no matrix process remains; matching source/config and complete history
@@ -66,10 +100,8 @@ $env:MKL_NUM_THREADS = '1'
 & 'C:\Users\ben\Documents\neurips-2026-smart-buildings\.venv-sim\Scripts\python.exe' -m hvac_optimal simulate --kit "$env:SMART_BUILDINGS_KIT" --out "$env:TEMP\optimal-start-full-matrix-20261118" --policies native winner --steps 8640 --workers 4 --phase both
 ```
 
-After completion: inspect failures, learning counts, all-six-building AHU
-coverage, common-cohort error, actual recirculation caps and local reward scope.
-Plot representative real traces; record measured evidence in this file/docs and
-commit locally. Keep official leaderboard claims separate from local raw reward.
+Full-run coverage, learning, cohort and integrity checks are now complete.
+Keep official leaderboard claims separate from local raw reward.
 
 Quota policy: inspect actual account limits at milestones. At 10% or less
 five-hour remaining, commit coherent work, record running jobs and reset time,

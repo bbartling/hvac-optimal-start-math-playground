@@ -59,6 +59,8 @@ $simPy = "C:\Users\ben\Documents\neurips-2026-smart-buildings\.venv-sim\Scripts\
 
 The runner discovers every configured scenario: currently six buildings and 30 scenarios. Each AHU receives its own reference controller and learner bank. Start comparisons hold stop/plant/schedule fixed; stop comparisons hold start fixed. Short runs are integration tests, not competition scores. Resume requires matching source/config identities. [Simulator instructions](docs/simulator.md).
 
+**Executed:** 60 full 30-day jobs passed across all 30 scenarios, with 340 AHU-scenario runs and no failures. Adaptive improved six scenarios and worsened 24; native remains the default. The two policies use different commanded arrival objectives, so this is not an isolated selector comparison. [Results and limits](docs/validation/README.md).
+
 ## Source and evidence
 
 - [`reference.py`](hvac_optimal/reference.py): native start/stop and separately named prediction extension.

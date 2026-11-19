@@ -1,5 +1,6 @@
 """Generate the readable notebook; implementations live in hvac_optimal/."""
 from pathlib import Path
+import json
 import nbformat as nbf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,9 +43,13 @@ import importlib.util
 if importlib.util.find_spec('hvac_optimal') is None:
     archives = list(Path.cwd().glob('hvac_optimal_driver.zip'))
     archives += sorted(Path('/kaggle/input').rglob('hvac_optimal_driver.zip'))
-    if not archives:
+    extracted = sorted(Path('/kaggle/input').rglob('hvac_optimal/__init__.py'))
+    if archives:
+        sys.path.insert(0, str(archives[0]))
+    elif extracted:  # Dataset upload tools may unpack the driver ZIP.
+        sys.path.insert(0, str(extracted[0].parents[1]))
+    else:
         raise FileNotFoundError('Attach the exported offline tutorial dataset first.')
-    sys.path.insert(0, str(archives[0]))
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -210,6 +215,37 @@ Full runs can take hours. Results are resumable, job identities include source/c
 a new TEMP directory locally or `/kaggle/working` on Kaggle. Attach the official simulator dataset separately; it is
 not redistributed in this tutorial bundle. This cell is off by default so Run All remains a quick tutorial.
 """)
+evidence_path = ROOT / 'docs' / 'validation' / '2026-11-18-simulation.json'
+if evidence_path.is_file():
+    evidence = json.loads(evidence_path.read_text(encoding='utf-8'))
+    table = '\n'.join(
+        f"| {row['building'].replace('building_train_', '')} | {row['native_mean_raw_reward']:.5f} | {row['winner_mean_raw_reward']:.5f} |"
+        for row in evidence['buildings'])
+    md(f"""
+### What we actually ran
+
+**{evidence['complete']} full 30-day jobs passed, zero failures:** six buildings, five weather cities,
+30 scenarios, native and adaptive policies, {evidence['ahu_runs']} AHU-scenario runs.
+All AHU instances recorded native learning. Every job ran 8,640 steps with its own fixed sample.
+
+| Building | Native mean raw reward | Adaptive mean raw reward |
+| --- | ---: | ---: |
+{table}
+
+Higher raw reward is better. Adaptive improved **{evidence['winner_better_scenarios']} of 30** scenarios and worsened
+**{evidence['winner_worse_scenarios']}**. Native stays the default. This is one seed and local simulator reward,
+not an official leaderboard result or proof of savings.
+
+**The command objectives differ:** native commands target the full comfort boundary. Adaptive candidates predict the
+1 °F arrival endpoint, with full-boundary native fallback when needed; the legacy G36 comparator adds its documented
+margin. These are two configured policies, **not an isolated test of selector quality**. Common-endpoint MAE applies
+to their shadow forecasts, not to these different commanded trajectories. A matched arrival-objective baseline is
+still needed before attributing a reward difference solely to selection.
+
+The retained summary is `docs/validation/2026-11-18-simulation.json`;
+run signature `{evidence['run_signature']}`. Full traces remain outside the offline tutorial bundle.
+""")
+
 code(r"""
 RUN_OFFICIAL_SIMULATOR = False
 KIT = None  # e.g. Path(r'C:\Users\ben\Documents\neurips-2026-smart-buildings\.kit')

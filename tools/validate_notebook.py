@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--bundle", type=Path, help="validate exported offline assets from outside the checkout")
+    parser.add_argument("--unpacked", action="store_true", help="assert local unpacked driver import instead of ZIP")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     working = args.bundle.resolve() if args.bundle else root
@@ -36,10 +37,11 @@ def main():
             "urllib.request.urlopen = offline_only\n"
             "http.client.HTTPConnection.connect = offline_only\n"
             "http.client.HTTPSConnection.connect = offline_only\n"))
+        origin_check = ("assert Path(hvac_optimal.__file__).resolve().is_relative_to(Path.cwd()), hvac_optimal.__file__"
+                        if args.unpacked else "assert 'hvac_optimal_driver.zip' in hvac_optimal.__file__, hvac_optimal.__file__")
         notebook.cells.append(nbformat.v4.new_code_cell(
-            "import hvac_optimal\n"
-            "assert 'hvac_optimal_driver.zip' in hvac_optimal.__file__, hvac_optimal.__file__\n"
-            "print('Verified driver imported from offline ZIP:', hvac_optimal.__file__)"))
+            "import hvac_optimal\n" + origin_check + "\n"
+            "print('Verified offline driver origin:', hvac_optimal.__file__)"))
         os.environ.pop("PYTHONPATH", None)
     start = time.monotonic()
     try:

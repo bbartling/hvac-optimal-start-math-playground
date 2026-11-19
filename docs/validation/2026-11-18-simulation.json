@@ -1,0 +1,456 @@
+{
+  "format_version": 1,
+  "generated_utc": "2026-11-19T01:24:09.816962+00:00",
+  "run_signature": "afd138a475c14c48e683c1dd51adc8cf504ec0ecd0ae2bde5b59a76952644685",
+  "complete": 60,
+  "failed": 0,
+  "all_full_horizon": true,
+  "steps_per_job": {
+    "8640": 60
+  },
+  "simulator_steps_total": 518400,
+  "ahu_ticks_total": 2937600,
+  "scenarios": 30,
+  "buildings": [
+    {
+      "building": "building_train_1",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.09774713919815785,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.10052783188620795
+    },
+    {
+      "building": "building_train_2",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.08753570786070763,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.09369769507151929
+    },
+    {
+      "building": "building_train_4",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.052698375971379725,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.058945625250224766
+    },
+    {
+      "building": "building_train_5",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.06102628541661985,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.07320245903209052
+    },
+    {
+      "building": "building_train_7",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.06986889629904909,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.08303455282240184
+    },
+    {
+      "building": "building_train_8",
+      "native_jobs": 5,
+      "native_mean_raw_reward": -0.10330126038156799,
+      "winner_jobs": 5,
+      "winner_mean_raw_reward": -0.10160305889649142
+    }
+  ],
+  "ahu_runs": 340,
+  "independent_scenario_ahu_pairs": 170,
+  "reward_scope": "local raw simulator reward; higher is better; single seed; not an official leaderboard score",
+  "simulator_recirculation_caps": {
+    "0.7": 60
+  },
+  "sample_fallbacks": {
+    "none": 280,
+    "only_exterior_classified": 60
+  },
+  "policies": {
+    "native": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.07869627752124703,
+      "native_learning_events": 3395,
+      "accepted_research_fits": 17650,
+      "zero_native_update_ahu_runs": 0,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 41882.08239465712,
+          "common_mae_minutes": 18.15434867562077
+        },
+        "m0_linear_ema": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 26984.902546882175,
+          "common_mae_minutes": 11.69696686037372
+        },
+        "native_endpoint_adapter": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 656671.0,
+          "common_mae_minutes": 284.6428261811877
+        },
+        "native_minutes_per_degree": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 656389.4412511919,
+          "common_mae_minutes": 284.5207807764161
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 905525.0331838514,
+          "common_mae_minutes": 392.51193462672364
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 2350,
+          "unassessed": 35,
+          "unsupported": 179,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 262596.79831870884,
+          "common_mae_minutes": 113.82609376623704
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 2322,
+          "unassessed": 28,
+          "unsupported": 214,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 207371.97748420096,
+          "common_mae_minutes": 89.8881566901608
+        },
+        "pnnl_m3_regression": {
+          "assessed": 2352,
+          "unassessed": 35,
+          "unsupported": 177,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 852936.3531147935,
+          "common_mae_minutes": 369.71666801681556
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 2529,
+          "unassessed": 35,
+          "unsupported": 0,
+          "common_assessed": 2307,
+          "common_absolute_error_sum": 43530.170874830415,
+          "common_mae_minutes": 18.868734666159696
+        }
+      }
+    },
+    "winner": {
+      "jobs": 30,
+      "ahu_runs": 170,
+      "mean_raw_reward": -0.08516853715982263,
+      "native_learning_events": 2585,
+      "accepted_research_fits": 11190,
+      "zero_native_update_ahu_runs": 0,
+      "shadow_metrics": {
+        "g36_inspired_legacy": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 43761.65074783143,
+          "common_mae_minutes": 25.925148547293503
+        },
+        "m0_linear_ema": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 27661.638273747758,
+          "common_mae_minutes": 16.38722646549038
+        },
+        "native_endpoint_adapter": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 985837.0,
+          "common_mae_minutes": 584.0266587677725
+        },
+        "native_minutes_per_degree": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 985500.8419749559,
+          "common_mae_minutes": 583.8275130183388
+        },
+        "pnnl_deployed_median_split": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 344368.4154230962,
+          "common_mae_minutes": 204.00972477671576
+        },
+        "pnnl_m1_quadratic": {
+          "assessed": 1727,
+          "unassessed": 74,
+          "unsupported": 177,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 106155.78563567076,
+          "common_mae_minutes": 62.88849859933102
+        },
+        "pnnl_m2_oat_ratio": {
+          "assessed": 1701,
+          "unassessed": 63,
+          "unsupported": 214,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 276358.78188723995,
+          "common_mae_minutes": 163.7196575161374
+        },
+        "pnnl_m3_regression": {
+          "assessed": 1728,
+          "unassessed": 74,
+          "unsupported": 176,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 1376868.3443981751,
+          "common_mae_minutes": 815.6802988140848
+        },
+        "pnnl_m4_exponential": {
+          "assessed": 1904,
+          "unassessed": 74,
+          "unsupported": 0,
+          "common_assessed": 1688,
+          "common_absolute_error_sum": 77005.27671287897,
+          "common_mae_minutes": 45.61923975881456
+        }
+      }
+    }
+  },
+  "paired_scenarios": [
+    {
+      "scenario": "building_train_1/atlanta_2",
+      "building": "building_train_1",
+      "native_mean_raw_reward": -0.025160643114904353,
+      "winner_mean_raw_reward": -0.025216128930890768,
+      "reward_difference_winner_minus_native": -5.5485815986414805e-05
+    },
+    {
+      "scenario": "building_train_1/denver_7",
+      "building": "building_train_1",
+      "native_mean_raw_reward": -0.030650354240338348,
+      "winner_mean_raw_reward": -0.03104014736090556,
+      "reward_difference_winner_minus_native": -0.00038979312056721185
+    },
+    {
+      "scenario": "building_train_1/fairbanks_1",
+      "building": "building_train_1",
+      "native_mean_raw_reward": -0.20991316987243255,
+      "winner_mean_raw_reward": -0.21002913397547773,
+      "reward_difference_winner_minus_native": -0.00011596410304517968
+    },
+    {
+      "scenario": "building_train_1/phoenix_5",
+      "building": "building_train_1",
+      "native_mean_raw_reward": -0.16339413388304894,
+      "winner_mean_raw_reward": -0.16312079425528972,
+      "reward_difference_winner_minus_native": 0.00027333962775921705
+    },
+    {
+      "scenario": "building_train_1/singapore_8",
+      "building": "building_train_1",
+      "native_mean_raw_reward": -0.05961739488006507,
+      "winner_mean_raw_reward": -0.07323295490847596,
+      "reward_difference_winner_minus_native": -0.013615560028410897
+    },
+    {
+      "scenario": "building_train_2/atlanta_3",
+      "building": "building_train_2",
+      "native_mean_raw_reward": -0.022021381943888703,
+      "winner_mean_raw_reward": -0.022539962538431216,
+      "reward_difference_winner_minus_native": -0.0005185805945425136
+    },
+    {
+      "scenario": "building_train_2/denver_8",
+      "building": "building_train_2",
+      "native_mean_raw_reward": -0.03838427057456142,
+      "winner_mean_raw_reward": -0.03966581031365077,
+      "reward_difference_winner_minus_native": -0.0012815397390893504
+    },
+    {
+      "scenario": "building_train_2/fairbanks_2",
+      "building": "building_train_2",
+      "native_mean_raw_reward": -0.0744512486864517,
+      "winner_mean_raw_reward": -0.07555614066251337,
+      "reward_difference_winner_minus_native": -0.0011048919760616727
+    },
+    {
+      "scenario": "building_train_2/phoenix_6",
+      "building": "building_train_2",
+      "native_mean_raw_reward": -0.17969368090416368,
+      "winner_mean_raw_reward": -0.18464773789371253,
+      "reward_difference_winner_minus_native": -0.004954056989548844
+    },
+    {
+      "scenario": "building_train_2/singapore_1",
+      "building": "building_train_2",
+      "native_mean_raw_reward": -0.12312795719447264,
+      "winner_mean_raw_reward": -0.14607882394928853,
+      "reward_difference_winner_minus_native": -0.02295086675481589
+    },
+    {
+      "scenario": "building_train_4/atlanta_5",
+      "building": "building_train_4",
+      "native_mean_raw_reward": -0.05282906753040972,
+      "winner_mean_raw_reward": -0.06931527144568109,
+      "reward_difference_winner_minus_native": -0.01648620391527137
+    },
+    {
+      "scenario": "building_train_4/denver_2",
+      "building": "building_train_4",
+      "native_mean_raw_reward": -0.054570065189535964,
+      "winner_mean_raw_reward": -0.05458969991728332,
+      "reward_difference_winner_minus_native": -1.9634727747352976e-05
+    },
+    {
+      "scenario": "building_train_4/fairbanks_4",
+      "building": "building_train_4",
+      "native_mean_raw_reward": -0.03194164506337529,
+      "winner_mean_raw_reward": -0.03286846876346119,
+      "reward_difference_winner_minus_native": -0.0009268237000858992
+    },
+    {
+      "scenario": "building_train_4/phoenix_8",
+      "building": "building_train_4",
+      "native_mean_raw_reward": -0.029188381777795612,
+      "winner_mean_raw_reward": -0.030144770936139924,
+      "reward_difference_winner_minus_native": -0.0009563891583443118
+    },
+    {
+      "scenario": "building_train_4/singapore_3",
+      "building": "building_train_4",
+      "native_mean_raw_reward": -0.09496272029578205,
+      "winner_mean_raw_reward": -0.1078099151885583,
+      "reward_difference_winner_minus_native": -0.012847194892776248
+    },
+    {
+      "scenario": "building_train_5/atlanta_6",
+      "building": "building_train_5",
+      "native_mean_raw_reward": -0.05595548837053609,
+      "winner_mean_raw_reward": -0.10576050750930806,
+      "reward_difference_winner_minus_native": -0.049805019138771965
+    },
+    {
+      "scenario": "building_train_5/denver_3",
+      "building": "building_train_5",
+      "native_mean_raw_reward": -0.043288992285732984,
+      "winner_mean_raw_reward": -0.043376270887380296,
+      "reward_difference_winner_minus_native": -8.72786016473115e-05
+    },
+    {
+      "scenario": "building_train_5/fairbanks_5",
+      "building": "building_train_5",
+      "native_mean_raw_reward": -0.016702445942881165,
+      "winner_mean_raw_reward": -0.01684608920578033,
+      "reward_difference_winner_minus_native": -0.0001436432628991631
+    },
+    {
+      "scenario": "building_train_5/phoenix_1",
+      "building": "building_train_5",
+      "native_mean_raw_reward": -0.0328704410532761,
+      "winner_mean_raw_reward": -0.033043419811632876,
+      "reward_difference_winner_minus_native": -0.0001729787583567774
+    },
+    {
+      "scenario": "building_train_5/singapore_4",
+      "building": "building_train_5",
+      "native_mean_raw_reward": -0.15631405943067292,
+      "winner_mean_raw_reward": -0.16698600774635108,
+      "reward_difference_winner_minus_native": -0.010671948315678165
+    },
+    {
+      "scenario": "building_train_7/atlanta_8",
+      "building": "building_train_7",
+      "native_mean_raw_reward": -0.04901253097821933,
+      "winner_mean_raw_reward": -0.048927264485364906,
+      "reward_difference_winner_minus_native": 8.526649285442445e-05
+    },
+    {
+      "scenario": "building_train_7/denver_5",
+      "building": "building_train_7",
+      "native_mean_raw_reward": -0.04553316130262849,
+      "winner_mean_raw_reward": -0.04787044305445655,
+      "reward_difference_winner_minus_native": -0.0023372817518280617
+    },
+    {
+      "scenario": "building_train_7/fairbanks_7",
+      "building": "building_train_7",
+      "native_mean_raw_reward": -0.055465654361432824,
+      "winner_mean_raw_reward": -0.05630219345164404,
+      "reward_difference_winner_minus_native": -0.0008365390902112177
+    },
+    {
+      "scenario": "building_train_7/phoenix_3",
+      "building": "building_train_7",
+      "native_mean_raw_reward": -0.07606698288515752,
+      "winner_mean_raw_reward": -0.08710373024866427,
+      "reward_difference_winner_minus_native": -0.011036747363506752
+    },
+    {
+      "scenario": "building_train_7/singapore_6",
+      "building": "building_train_7",
+      "native_mean_raw_reward": -0.1232661519678073,
+      "winner_mean_raw_reward": -0.17496913287187943,
+      "reward_difference_winner_minus_native": -0.05170298090407213
+    },
+    {
+      "scenario": "building_train_8/atlanta_1",
+      "building": "building_train_8",
+      "native_mean_raw_reward": -0.030561952295635433,
+      "winner_mean_raw_reward": -0.030455889092267322,
+      "reward_difference_winner_minus_native": 0.00010606320336811054
+    },
+    {
+      "scenario": "building_train_8/denver_6",
+      "building": "building_train_8",
+      "native_mean_raw_reward": -0.025072054454776355,
+      "winner_mean_raw_reward": -0.025538781222028014,
+      "reward_difference_winner_minus_native": -0.0004667267672516587
+    },
+    {
+      "scenario": "building_train_8/fairbanks_8",
+      "building": "building_train_8",
+      "native_mean_raw_reward": -0.08334938283024393,
+      "winner_mean_raw_reward": -0.08021412178564256,
+      "reward_difference_winner_minus_native": 0.0031352610446013646
+    },
+    {
+      "scenario": "building_train_8/phoenix_4",
+      "building": "building_train_8",
+      "native_mean_raw_reward": -0.20316364209504628,
+      "winner_mean_raw_reward": -0.20111475281468696,
+      "reward_difference_winner_minus_native": 0.0020488892803593173
+    },
+    {
+      "scenario": "building_train_8/singapore_7",
+      "building": "building_train_8",
+      "native_mean_raw_reward": -0.174359270232138,
+      "winner_mean_raw_reward": -0.1706917495678322,
+      "reward_difference_winner_minus_native": 0.0036675206643057845
+    }
+  ],
+  "winner_better_scenarios": 6,
+  "winner_worse_scenarios": 24,
+  "limitations": [
+    "No full-return-air simulation: observed maximum recirculation is 70%.",
+    "Five-minute adapter cadence differs from minute scans in the supplied Java.",
+    "Common cohorts are matched within each policy trajectory, not across different controller arms.",
+    "Shadow-model MAE does not measure counterfactual controlled energy or comfort.",
+    "Six buildings and five weather cities; one fixed seed; no uncertainty estimate."
+  ],
+  "input_manifest_sha256": "b4e2f91ef0317af31016518709fa6c1ef2af7e0ed873e7e94926d0929ddc9750"
+}

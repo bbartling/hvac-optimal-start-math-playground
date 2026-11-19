@@ -116,6 +116,14 @@ comfort boundary and remains visible in controller state and prediction logs.
 Neither shadow prediction MAE nor short-run reward establishes a counterfactual
 energy saving or official leaderboard performance.
 
+The default native command targets the full comfort boundary. Research candidates
+use the 1°F forecast endpoint, with full-boundary native fallback; the G36 legacy
+candidate has its documented margin. A native-versus-winner reward comparison is
+therefore a comparison of configured policies, not an isolated model-selection
+ablation. Holding the opposite phase/plant fixed does not remove that difference.
+Use a separately named fixed research predictor with the same arrival objective
+for a later selector-only comparison. Keep the frozen native formulas unchanged.
+
 ## Ventilation boundary
 
 For verified-unoccupied recovery, the real BAS convention requests full
