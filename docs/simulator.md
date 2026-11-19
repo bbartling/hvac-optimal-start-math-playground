@@ -155,3 +155,18 @@ events, predictions, endpoint outcomes and fit receipts. The manifest is
 updated atomically as jobs complete. A completed short run is labeled
 `integration_only_not_a_competition_score`; a full 8,640-step run reports local
 raw reward without pretending that it is an official submission result.
+
+On Windows, a concurrent reader can briefly prevent replacement of an existing
+manifest or receipt if it does not share delete access. Atomic JSON publication
+retries **only** `PermissionError`, for at most eight replacement attempts and
+1.575 seconds of scheduled delay. Other I/O and serialization errors propagate;
+an unsuccessful publication removes its owned temporary file and leaves the
+previous destination intact. Worker-result collection is separate from manifest
+publication: a publication error cannot fabricate a failed simulation or append
+a duplicate outcome. The in-memory manifest advances only after publication.
+
+An interrupted manifest can be reconciled by identical-code/config `--resume`:
+the runner rebuilds results from unique planned job receipts and verifies their
+history hashes without rerunning valid completed jobs. A code change, including
+this persistence fix, still changes the package signature and requires a new
+output directory. Historical results retain their original source identity.

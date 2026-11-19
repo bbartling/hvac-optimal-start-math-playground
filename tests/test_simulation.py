@@ -1,8 +1,12 @@
 """Simulator adapter tests; importing the runner needs only the stdlib."""
 from copy import deepcopy
+from concurrent.futures import Future
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+import errno
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -12,12 +16,46 @@ from unittest.mock import patch
 from hvac_optimal.reference import Config, Inputs
 from hvac_optimal.sampling import ZoneSampler
 from hvac_optimal.simulation import (
-    _AHUExperiment, _clean, _digest, _file_hash, available_policies,
+    _AHUExperiment, _atomic_json, _clean, _digest, _file_hash, ATOMIC_REPLACE_DELAYS, available_policies,
     classify_geometry, discover_scenarios, run_matrix,
 )
 
 
 DAY = datetime(2026, 11, 18, tzinfo=timezone.utc)
+
+
+@contextmanager
+def windows_read_lock(path):
+    """Hold an actual Windows reader that omits FILE_SHARE_DELETE.
+
+    Yields an idempotent release callback, useful for an actual simulator smoke
+    that releases a deliberately held manifest reader on the first retry.
+    """
+    if os.name != "nt":
+        raise RuntimeError("This sharing-mode fixture requires Windows")
+    import ctypes
+    from ctypes import wintypes
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.CreateFileW.argtypes = (wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                  wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE)
+    kernel.CreateFileW.restype = wintypes.HANDLE
+    kernel.CloseHandle.argtypes = (wintypes.HANDLE,)
+    kernel.CloseHandle.restype = wintypes.BOOL
+    # GENERIC_READ; share read/write, intentionally omit share-delete; OPEN_EXISTING.
+    handle = kernel.CreateFileW(str(path), 0x80000000, 0x1 | 0x2, None, 3, 0x80, None)
+    if handle == ctypes.c_void_p(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+
+    def release():
+        nonlocal handle
+        if handle is not None:
+            if not kernel.CloseHandle(handle):
+                raise ctypes.WinError(ctypes.get_last_error())
+            handle = None
+    try:
+        yield release
+    finally:
+        release()
 
 
 def at(hour, minute=0):
@@ -206,6 +244,80 @@ class SimulatorAdapterTests(unittest.TestCase):
         self.assertIn("coordinates", evidence["method"])
 
 
+class AtomicPublicationTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.directory = Path(self.temporary.name)
+        self.destination = self.directory / "manifest.json"
+        self.original = '{"old": true}\n'
+        self.destination.write_text(self.original, encoding="utf-8")
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def assert_no_owned_temporary(self):
+        self.assertEqual(list(self.directory.glob("manifest.json.*.tmp")), [])
+
+    def test_transient_permission_error_retries_then_publishes(self):
+        real_replace = os.replace
+        attempts = 0
+        def replace(source, target):
+            nonlocal attempts
+            attempts += 1
+            if attempts <= 2:
+                raise PermissionError("temporary reader denies delete sharing")
+            return real_replace(source, target)
+        with patch("hvac_optimal.simulation.os.replace", side_effect=replace) as replacement, patch("hvac_optimal.simulation.time.sleep") as sleep:
+            _atomic_json(self.destination, {"complete": 1})
+        self.assertEqual(replacement.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], list(ATOMIC_REPLACE_DELAYS[:2]))
+        self.assertEqual(json.loads(self.destination.read_text()), {"complete": 1})
+        self.assert_no_owned_temporary()
+
+    def test_permanent_permission_error_is_bounded_and_cleans_temporary(self):
+        error = PermissionError("permanent destination denial")
+        with patch("hvac_optimal.simulation.os.replace", side_effect=error) as replacement, patch("hvac_optimal.simulation.time.sleep") as sleep:
+            with self.assertRaises(PermissionError) as caught:
+                _atomic_json(self.destination, {"complete": 1})
+        self.assertIs(caught.exception, error)
+        self.assertEqual(replacement.call_count, len(ATOMIC_REPLACE_DELAYS) + 1)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], list(ATOMIC_REPLACE_DELAYS))
+        self.assertEqual(self.destination.read_text(), self.original)
+        self.assert_no_owned_temporary()
+
+    def test_other_oserror_is_not_retried_and_keeps_original(self):
+        error = OSError(errno.ENOSPC, "fixture disk full")
+        with patch("hvac_optimal.simulation.os.replace", side_effect=error) as replacement, patch("hvac_optimal.simulation.time.sleep") as sleep:
+            with self.assertRaises(OSError) as caught:
+                _atomic_json(self.destination, {"complete": 1})
+        self.assertIs(caught.exception, error)
+        self.assertEqual(replacement.call_count, 1)
+        sleep.assert_not_called()
+        self.assertEqual(self.destination.read_text(), self.original)
+        self.assert_no_owned_temporary()
+
+    def test_serialization_error_cleans_partial_temporary_without_replace(self):
+        with patch("hvac_optimal.simulation.os.replace") as replacement, patch("hvac_optimal.simulation.time.sleep") as sleep:
+            with self.assertRaises(TypeError):
+                _atomic_json(self.destination, {"not_json": object()})
+        replacement.assert_not_called()
+        sleep.assert_not_called()
+        self.assertEqual(self.destination.read_text(), self.original)
+        self.assert_no_owned_temporary()
+
+    @unittest.skipUnless(os.name == "nt", "Windows delete-sharing fixture requires CreateFileW")
+    def test_actual_windows_reader_without_delete_sharing_releases_on_retry(self):
+        with windows_read_lock(self.destination) as release:
+            # The first REAL os.replace must fail while the reader is open.
+            # Release that actual OS handle at the retry wait, then use real
+            # os.replace again. No filesystem error is mocked in this test.
+            with patch("hvac_optimal.simulation.time.sleep", side_effect=lambda _delay: release()) as sleep:
+                _atomic_json(self.destination, {"complete": 1})
+            self.assertEqual(sleep.call_count, 1)
+        self.assertEqual(json.loads(self.destination.read_text()), {"complete": 1})
+        self.assert_no_owned_temporary()
+
+
 class MatrixReceiptTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -263,6 +375,47 @@ class MatrixReceiptTests(unittest.TestCase):
         self.assertEqual(result["failed"], 1)
         self.assertEqual(result["status"], "failed")
         self.assertEqual(json.loads((self.out / "manifest.json").read_text())["pending"], 0)
+
+    def test_publication_error_is_not_a_fake_worker_failure_and_resume_recovers(self):
+        publication_error = PermissionError("fixture permanent manifest publication error")
+        real_atomic = _atomic_json
+        publications = []
+        def publish(path, value):
+            publications.append(deepcopy(value))
+            if len(publications) == 2:
+                raise publication_error
+            return real_atomic(path, value)
+        def submit(_function, job):
+            future = Future()
+            future.set_result(self.job(job))  # Complete durable worker result.
+            return future
+        with patch("hvac_optimal.simulation.ProcessPoolExecutor") as executor, patch("hvac_optimal.simulation._tree_hash", return_value="fixture-sha"):
+            executor.return_value.__enter__.return_value.submit.side_effect = submit
+            with patch("hvac_optimal.simulation._atomic_json", side_effect=publish):
+                with self.assertRaises(PermissionError) as caught:
+                    run_matrix(self.kit, self.out, steps=12, workers=2)
+            self.assertIs(caught.exception, publication_error)
+            self.assertEqual(len(publications), 2)  # No fake failed publication.
+            self.assertEqual(len(publications[-1]["results"]), 1)
+            self.assertEqual(publications[-1]["results"][0]["status"], "complete")
+            self.assertEqual(publications[-1]["failed"], 0)
+            with patch("hvac_optimal.simulation._run_job", side_effect=AssertionError("valid receipt must not rerun")) as worker:
+                recovered = run_matrix(self.kit, self.out, steps=12, workers=1)
+            worker.assert_not_called()
+        self.assertEqual((recovered["complete"], recovered["failed"], recovered["pending"]), (1, 0, 0))
+        self.assertEqual(len(recovered["results"]), 1)
+
+    def test_exceptional_future_records_exactly_one_worker_failure(self):
+        def submit(_function, _job):
+            future = Future()
+            future.set_exception(RuntimeError("fixture worker exploded"))
+            return future
+        with patch("hvac_optimal.simulation.ProcessPoolExecutor") as executor:
+            executor.return_value.__enter__.return_value.submit.side_effect = submit
+            result = run_matrix(self.kit, self.out, steps=12, workers=2)
+        self.assertEqual((result["complete"], result["failed"], result["pending"]), (0, 1, 0))
+        self.assertEqual(len(result["results"]), 1)
+        self.assertIn("fixture worker exploded", result["results"][0]["error"])
 
 
 if __name__ == "__main__":

@@ -10,13 +10,15 @@ Renewed at 2026-11-19 01:20:50 UTC; resumed after the requested quota sleep.
 five weather cities, 30 scenarios, 34 physical AHUs, 340 AHU-scenario-policy runs.
 All 340 AHU instances learned; 5,980 total native updates. Full independent audit
 checked all 2,937,600 AHU ticks, all 60 history hashes and 255,158 causal selector
-decisions: zero violations. Package sources match source snapshot `79f05d2`.
+decisions: zero violations. Package sources matched snapshot `79f05d2` throughout
+those runs. The later Windows persistence fix changes only result publication;
+native/controller/estimator/sampling calculations remain unchanged.
 
 Native reward exceeded adaptive on 24/30 scenarios. Commanded arrival objectives
 differ (full boundary native, 1°F research with native fallback), so this is not
 an isolated selector ablation. Native remains default. See docs/validation/.
 
-Latest tests: **144 passed**. Final 20-cell, 8-code-cell source notebook is 22,511
+Latest tests: **151 passed**. Final 20-cell, 8-code-cell source notebook is 22,511
 bytes. Fresh-kernel offline execution passed from both ZIP and unpacked driver
 bundles, with HTTP disabled. A wheel was built in TEMP and installed without
 dependencies into a clean TEMP environment; core imports and CLI passed.
@@ -28,14 +30,24 @@ Current artifacts under `%TEMP%`:
 - `optimal-final-evidence-20261118`: aggregate JSON/CSV and actual AHU trace PNGs.
 - `optimal-final-wheel-20261118`: wheel; `optimal-driver-venv-20261118`: clean install.
 
-Still running: **240 active-estimator integration jobs** (eight research policies
-× all 30 scenarios), 360 steps each, phase start, four workers. These test the
-actual candidate-control paths; they are not full-month score comparisons.
-Output `%TEMP%\optimal-start-model-integration-20261118\manifest.json`, log same
-basename `.log` directly under TEMP; shell session 54585. At checkpoint, 48
-completed and none failed. Package source remains frozen until these finish.
-Next: inspect all 240 results, verify actual predictor calls and report any
-unassessed/no-learning instances honestly; retain compact evidence and commit.
+Completed: **240/240 active-estimator integration jobs** (eight research policies
+× all 30 scenarios), 360 steps each, phase start, four workers, 1,360 AHU runs.
+Every job called its predictor. All 240 histories passed SHA checks. There were
+769 native updates; 591 AHU runs had no eligible update within the short horizon.
+These are control-path integration tests, not full-month score comparisons.
+
+Three transient Windows manifest replacements created synthetic failed duplicate
+rows while durable jobs were complete. Identical-source resume reconciled 240
+valid receipts, zero failures, without new simulation attempts (240 total).
+The IO-only fix adds bounded PermissionError retry/temp cleanup and separates
+publication failure from worker outcomes. A new real two-job, 12-step smoke
+forced WinError 5 using an actual Windows reader: retry and no-rerun resume
+passed. Evidence: `%TEMP%\optimal-fixed-publication-smoke-jwa1zhb8`.
+
+All simulator jobs are finished. No further broad run is required for the
+persistence-only fix. The old matrix outputs retain their frozen source identity;
+use a new TEMP output directory to run the current package, whose source hash
+now includes that IO change. Existing result audits remain valid.
 
 ## Implemented
 

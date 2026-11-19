@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "forced_actual_windows_errors": [
+    5
+  ],
+  "jobs": 2,
+  "steps_per_job": 12,
+  "failed": 0,
+  "resume_without_rerun": true,
+  "signature": "7ecb85c830687e17859b393d0078ba53577c240c490bf80f437b80e5d6fc9559",
+  "scope": "Actual official simulator smoke of persistence fix; control algorithms unchanged; not full-month scoring."
+}

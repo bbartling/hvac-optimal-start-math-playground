@@ -54,5 +54,27 @@ violations. Native updates comprise 2,238 start / 1,157 stop observations;
 adaptive updates comprise 1,385 start / 1,200 stop observations. Partial response
 learning is included; no minimum-change guard was added.
 
-Separate shorter active-estimator integration runs are recorded in PROGRESS.md;
-they must never be represented as full-month reward comparisons.
+## Active-estimator integration
+
+**240/240 shorter jobs passed:** eight research start policies × all 30
+scenarios, 360 five-minute steps each (36 hours), holding scheduled stop fixed.
+This covers 1,360 AHU-scenario-policy instances. Every job called its selected
+predictor. All 240 history hashes match, with exactly 240 attempt directories.
+[Summary](2026-11-18-estimator-integration.json) and
+[audit](2026-11-18-estimator-integration-audit.json).
+
+There were 769 eligible native updates; 591 AHU instances had no eligible update
+inside this short horizon. That is reported rather than inventing training
+observations. These integration tests are not full-month score comparisons.
+
+Three Windows manifest-publication errors generated synthetic failed rows even
+though the corresponding durable jobs completed. The unchanged-code resume
+verified and reconciled all 240 receipts without rerunning simulations. The
+runner now retries transient replacement permission errors, cleans its temporary
+file, and keeps publication errors separate from worker outcomes. Controller,
+estimator, sampling and native learning behavior were not changed by that fix.
+
+The persistence fix passed a new [actual-simulator smoke](2026-11-18-windows-publication.json): native/adaptive,
+12 steps each, forcing a genuine WinError 5 with a Windows reader that denies
+delete sharing. Replacement succeeded on retry; resume reused the valid jobs
+without simulation. The complete test suite then passed **151 tests**.

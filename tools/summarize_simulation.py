@@ -103,7 +103,7 @@ def summarize(manifest):
                         "Five-minute adapter cadence differs from minute scans in the supplied Java.",
                         "Common cohorts are matched within each policy trajectory, not across different controller arms.",
                         "Shadow-model MAE does not measure counterfactual controlled energy or comfort.",
-                        "Six buildings and five weather cities; one fixed seed; no uncertainty estimate."],
+                        "Configured scenarios and one fixed seed per matched comparison; no uncertainty estimate."],
     }
 
 

@@ -1,0 +1,45 @@
+{
+  "signature": "f067b5cf9a84e44295d38e73f7a58c8a19762b6de9e8cb7067dd55aa4467e3a5",
+  "attempt_directories": 240,
+  "steps_per_job": 360,
+  "all_history_hashes_match": true,
+  "jobs_without_predictor_calls": 0,
+  "native_learning_events": 769,
+  "ahu_runs_without_native_learning": 591,
+  "policies": {
+    "g36_inspired_legacy": {
+      "jobs": 30,
+      "prediction_calls": 11035
+    },
+    "m0_linear_ema": {
+      "jobs": 30,
+      "prediction_calls": 11282
+    },
+    "native_minutes_per_degree": {
+      "jobs": 30,
+      "prediction_calls": 11282
+    },
+    "pnnl_deployed_median_split": {
+      "jobs": 30,
+      "prediction_calls": 8991
+    },
+    "pnnl_m1_quadratic": {
+      "jobs": 30,
+      "prediction_calls": 11086
+    },
+    "pnnl_m2_oat_ratio": {
+      "jobs": 30,
+      "prediction_calls": 11086
+    },
+    "pnnl_m3_regression": {
+      "jobs": 30,
+      "prediction_calls": 11086
+    },
+    "pnnl_m4_exponential": {
+      "jobs": 30,
+      "prediction_calls": 7678
+    }
+  },
+  "receipt_reconciliation": "Three transient manifest publication errors created synthetic failed duplicates; identical-code resume rebuilt unique results from 240 valid durable receipts, without new attempts. Controller calculations did not fail.",
+  "scope": "360-step integration only; no full-month reward comparison. Some AHUs have no eligible learning observation within this short horizon."
+}

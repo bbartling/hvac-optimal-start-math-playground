@@ -33,6 +33,7 @@ ADAPTER_VERSION = "official-pid-water-native-ahu-v1"
 SIMULATOR_RECIRCULATION_CAP = 0.7
 ASSESSMENT_DEVIATION_F = 1.0
 FULL_HORIZON_STEPS = 8640
+ATOMIC_REPLACE_DELAYS = (0.025, 0.05, 0.1, 0.2, 0.4, 0.4, 0.4)
 
 
 def _clean(value):
@@ -67,10 +68,31 @@ def _tree_hash(root: Path, files) -> str:
 def _atomic_json(path: Path, value) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + "." + uuid.uuid4().hex + ".tmp")
-    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
-        json.dump(_clean(value), stream, allow_nan=False, sort_keys=True, indent=2)
-        stream.write("\n")
-    os.replace(temporary, path)
+    primary_error = None
+    try:
+        with temporary.open("w", encoding="utf-8", newline="\n") as stream:
+            json.dump(_clean(value), stream, allow_nan=False, sort_keys=True, indent=2)
+            stream.write("\n")
+        # Windows readers can briefly deny delete sharing on an existing file.
+        # Retry only that error class, after closing our own temporary file.
+        for attempt in range(len(ATOMIC_REPLACE_DELAYS) + 1):
+            try:
+                os.replace(temporary, path)
+                break
+            except PermissionError:
+                if attempt == len(ATOMIC_REPLACE_DELAYS):
+                    raise
+                time.sleep(ATOMIC_REPLACE_DELAYS[attempt])
+    except BaseException as error:
+        primary_error = error
+        raise
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            if primary_error is not None:
+                raise primary_error from cleanup_error
+            raise
 
 
 def _can_resume(receipt, signature, steps):
@@ -635,10 +657,14 @@ def run_matrix(kit, out, *, policies=("native",), steps=FULL_HORIZON_STEPS, work
                 "pending": len(jobs), "results": results}
     _atomic_json(manifest_path, manifest)
     def record(receipt):
+        candidate_results = results + [receipt]
+        candidate_manifest = {**manifest, "results": candidate_results,
+                              "complete": sum(item["status"] == "complete" for item in candidate_results),
+                              "failed": sum(item["status"] != "complete" for item in candidate_results),
+                              "pending": manifest["job_count"] - len(candidate_results)}
+        _atomic_json(manifest_path, candidate_manifest)
         results.append(receipt)
-        manifest.update(results=results, complete=sum(item["status"] == "complete" for item in results),
-                        failed=sum(item["status"] != "complete" for item in results), pending=manifest["job_count"] - len(results))
-        _atomic_json(manifest_path, manifest)
+        manifest.update(candidate_manifest)
     if workers == 1:
         for job in jobs:
             record(_run_job(job))
@@ -647,9 +673,12 @@ def run_matrix(kit, out, *, policies=("native",), steps=FULL_HORIZON_STEPS, work
             futures = {pool.submit(_run_job, job): job for job in jobs}
             for future in as_completed(futures):
                 try:
-                    record(future.result())
+                    receipt = future.result()
                 except Exception:
-                    record({**futures[future], "status": "failed", "steps_completed": 0, "error": traceback.format_exc()})
+                    receipt = {**futures[future], "status": "failed", "steps_completed": 0, "error": traceback.format_exc()}
+                # A publication failure is an I/O error, not a worker outcome.
+                # Durable job receipts remain available for exact resume.
+                record(receipt)
     manifest["status"] = "complete" if not manifest["failed"] else "failed"
     _atomic_json(manifest_path, manifest)
     return manifest
